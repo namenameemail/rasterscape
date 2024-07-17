@@ -23,6 +23,22 @@
 }
 
 
+.pattern .stack-size-input-number {
+  background-color: #ebebeb;
+
+}
+
+.video-toggle {
+  background-color: #ebebeb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &.button-select-selected {
+    color: red;
+  }
+}
+
+
 .camera-axis, .edge-mode, .stack-type {
   background-color: #ebebeb;
 
@@ -34,6 +50,9 @@
 
 .on-off {
   border-right: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   //border-bottom: none;
 
   &.button-select-selected {

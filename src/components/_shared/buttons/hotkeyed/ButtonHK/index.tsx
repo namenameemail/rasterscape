@@ -147,7 +147,8 @@ const ButtonHKComponent = React.forwardRef<ButtonHKImperativeHandlers, ButtonHKP
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 {...buttonProps}
-                pressed={pressed}/>
+                pressed={pressed}
+            />
             {path && (
                 <>
                     <ButtonHotkeyInputs

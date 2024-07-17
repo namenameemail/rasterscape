@@ -26,7 +26,7 @@
 //
 //}
 
-.button:active {
+.button:not([disabled]):active {
   border-color: #ababab #d3d3d3 #d3d3d3 #ababab;
 
   color: black;
@@ -34,4 +34,5 @@
 
 .button.button-pressed {
   border-color: #ababab #d3d3d3 #d3d3d3 #ababab; // !important;
+  background: red !important;
 }

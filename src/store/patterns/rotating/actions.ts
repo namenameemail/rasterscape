@@ -12,5 +12,6 @@ export interface SetRotationAction extends PatternAction {
 
 export const setRotation = (id: string, rotation: RotationValue) => (dispatch) => {
     patternsService.pattern[id].setRotationAngle(rotation.angle);
+    patternsService.pattern[id].setRotationView(rotation.rotateDrawAreaElement);
     dispatch({type: ERotationAction.SET_ROTATION, id, rotation});
 };

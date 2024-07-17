@@ -94,7 +94,7 @@ export const Button = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((p
     const handleClick = React.useCallback(e => {
 
 
-        console.log('Button handleClick', getButtonEventData(e));
+        // console.log('Button handleClick', getButtonEventData(e));
         if (disabled) return;
 
         onClick && onClick(getButtonEventData(e))

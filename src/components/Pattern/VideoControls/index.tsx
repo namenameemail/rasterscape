@@ -299,13 +299,14 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                         hkLabel={'pattern.hotkeysDescription.video.cameraOn'}
                         hkData1={patternId}
                         path={`pattern.${patternId}.video.cameraOn`}
-                        className={'on-off'}
+                        className={'video-toggle'}
                         selected={cameraOn}
                         name={'cameraOn'}
-                        disabled={videoDisabled}
+                        disabled={videoDisabled || !params.device?.deviceId}
                         onClick={this.handleChangeCameraOnParam}
                     >
-                        {cameraOn ? t('pattern.video.stop') : t('pattern.video.start')}
+                        {/* {cameraOn ? t('pattern.video.stop') : t('pattern.video.camera')} */}
+                        {t('pattern.video.camera')}
                     </ButtonHK>
                 </div>
 
@@ -315,22 +316,24 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                     <InputNumber
                         autoblur={autoblur}
                         autofocus={autofocus}
-                        className={'size-input-number'}
+                        className={'stack-size-input-number'}
                         onChange={this.handleChangeStackSize}
                         value={params.stackSize}
-                        {...inputNumberProps}/>
+                        {...inputNumberProps}
+                    />
 
                     <ButtonHK
                         hkLabel={'pattern.hotkeysDescription.video.updatingOn'}
                         hkData1={patternId}
                         path={`pattern.${patternId}.video.updatingOn`}
-                        className={'on-off'}
+                        className={'video-toggle'}
                         selected={updatingOn}
                         name={'updatingOn'}
                         disabled={videoDisabled}
                         onClick={this.handleChangeUpdatingOnParam}
                     >
-                        {updatingOn ? t('pattern.video.stop') : t('pattern.video.start')}
+                        {/* {updatingOn ? t('pattern.video.stop') : t('pattern.video.update')} */}
+                        {t('pattern.video.update')}
                     </ButtonHK>
                     <SelectDrop
 

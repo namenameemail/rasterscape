@@ -380,6 +380,8 @@
     "video": {
       "stop": "stop",
       "start": "start",
+      "camera": "camera",
+      "update": "update",
       "play": "play",
       "pause": "pause",
       "mirror": "mirror",

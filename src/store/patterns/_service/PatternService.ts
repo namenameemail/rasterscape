@@ -111,6 +111,13 @@ export class PatternService {
 
         return this;
     };
+    
+    setRotationView = (value: boolean): PatternService => {
+        this.patternToolService.canvasEventsService.rotationView = value;
+        this.patternToolService.maskCanvasEventsService.rotationView = value;
+
+        return this;
+    };
 
 
 }

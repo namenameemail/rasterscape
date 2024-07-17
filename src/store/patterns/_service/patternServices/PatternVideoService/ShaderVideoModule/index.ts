@@ -53,7 +53,7 @@ export class ShaderVideoModule {
     mirrorW: boolean = false
     cutFunctionType: FxyType | ECFType.DEPTH | null
     cutFuncParams: AnyFxyParams | CfDepthParams
-    error: number = 2
+    error: number = 2 // кадры краев которые обрезаются чтобы не смешивались края
 
 
     depth: number
@@ -337,7 +337,7 @@ export class ShaderVideoModule {
 
     updateStackSize(value: number): ShaderVideoModule {
         this.stackSizeWithError = value + this.error
-        this.initTexture()
+        this.gl && this.initTexture()
         return this
     }
 
@@ -354,10 +354,13 @@ export class ShaderVideoModule {
     updateCutFunctionType(value: FxyType | ECFType.DEPTH): ShaderVideoModule {
         this.cutFunctionType = value
 
-        const u_CutFuncType = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CutFuncType')
-        this.gl.uniform1i(u_CutFuncType, XYCutFunctionTypeToNumber[this.cutFunctionType])
+        if (this.gl) {
+            const u_CutFuncType = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CutFuncType')
+            this.gl.uniform1i(u_CutFuncType, XYCutFunctionTypeToNumber[this.cutFunctionType])
+        }
 
         coordHelper4.writeln('this.cutFunctionType', this.cutFunctionType)
+        
         return this
     }
 

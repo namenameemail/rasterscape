@@ -23,6 +23,7 @@ export class CanvasEventsService {
     pointerLock: boolean = false;
     drawOnMove: boolean = false;
     rotationAngle: number = 0;
+    rotationView: boolean = true;
 
     requestFrameID: number;
 
@@ -174,7 +175,7 @@ export class CanvasEventsService {
         const rotatedE = rotate(
             canvasCenter.x, canvasCenter.y,
             e.pageX, e.pageY,
-            this.rotationAngle
+            this.rotationView ? this.rotationAngle : 0
         );
 
         return {
