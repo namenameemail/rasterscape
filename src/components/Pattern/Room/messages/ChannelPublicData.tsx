@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as cn from 'classnames';
+import cn from "classnames";
 import {MessageComponentType, withT} from "./helpers";
 
 export const ChannelPublicData: MessageComponentType = withT((props) => {

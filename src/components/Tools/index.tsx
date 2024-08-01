@@ -8,7 +8,7 @@ import {Brush} from "./Brush";
 import {Line} from "./Line";
 import {SelectTool} from "./SelectTool";
 import {reverseFullScreen} from "../../store/fullscreen";
-import * as classNames from "classnames";
+import classNames from "classnames";
 import "../../styles/tools.scss";
 import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 

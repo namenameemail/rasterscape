@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Button, ButtonEventData, ButtonProps} from '../Button';
-import * as classNames from "classnames";
+import classNames from "classnames";
 
 export const defaultGetValue = ({value}) => value;
 export const defaultGetText = ({text}) => text;

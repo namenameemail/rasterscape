@@ -1,4 +1,5 @@
-import * as Bezier from "bezier-js";
+
+import Bezier from "bezier-js";
 import {ERepeatsType, RepeatsBezierGridParams, RepeatsFlatGridParams, RepeatsParams, RepeatsValue} from "./types";
 import {getFunctionState} from "../../../utils/patterns/function";
 import {EToolType} from "../../tool/types";

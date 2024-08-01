@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as cn from 'classnames';
+import cn from "classnames";
 import './GlobalHotkeysInfo.scss'
 import {WithTranslation, withTranslation} from "react-i18next";
 

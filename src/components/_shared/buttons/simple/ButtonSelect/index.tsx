@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Button, ButtonEventData, ButtonImperativeHandlers, ButtonProps} from "../Button";
-import * as classNames from "classnames";
+import classNames from "classnames";
 import './styles.scss';
 
 export interface ButtonSelectEventData extends ButtonEventData {

@@ -3,10 +3,10 @@ import {ECFType} from "./types";
 import {
     depthInitialParams,
     depthNumberChangeFunction,
-    depthVideoChangeFunction
+    // depthVideoChangeFunction
 } from "./functions/depth";
 import {waveChangeFunction, waveInitialParams, waveParamsConfig} from "./functions/wave";
-import {fxyChangeFunction, fxyInitialParams, fxyVideoChangeFunction} from "./functions/fxy";
+import {fxyChangeFunction, fxyInitialParams} from "./functions/fxy";
 
 const getId = (key: string, type: ECFType) => +key.slice(type.toString().length);
 
@@ -47,8 +47,8 @@ export const changeFunctionByType = {
     [ECFType.DEPTH]: depthNumberChangeFunction,
 };
 
-export const videoChangeFunctionByType = {
-    [ECFType.FXY]: fxyVideoChangeFunction,
-    [ECFType.DEPTH]: depthVideoChangeFunction,
-};
+// export const videoChangeFunctionByType = {
+//     [ECFType.FXY]: fxyVideoChangeFunction,
+//     [ECFType.DEPTH]: depthVideoChangeFunction,
+// };
 //({a, b, c, h}) => (x, y) => (Math.sin(x / a) * Math.cos(y / b) * c + h),

@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as classNames from "classnames";
+import classNames from "classnames";
 import {ButtonSelect, ButtonSelectProps, ButtonSelectEventData} from "../../simple/ButtonSelect";
 import {ChangeFunctionState, ECFType} from "../../../../../store/changeFunctions/types";
 import {LoopAmplitude} from "./LoopAmplitude";
@@ -238,7 +238,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             from,
             to
         } = this.props;
-        let value = this.calcValue(e, true);
+        const value = this.calcValue(e, true);
 
 
         // const one = this.calculateOneStep(value);

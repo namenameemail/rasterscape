@@ -375,7 +375,7 @@
     },
     "blur": {
       "onUpdate": "on update",
-      "once": "once"
+      "once": "apply"
     },
     "video": {
       "stop": "stop",

@@ -7,7 +7,7 @@ export interface BlurParams {
 
 export interface BlurValue {
     radius: number
-    onUpdate: boolean
+    // onUpdate: boolean
 }
 
 export type BlurState = FunctionState<BlurValue, BlurParams>;

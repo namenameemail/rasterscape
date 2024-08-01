@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {MessageData, MessageType} from "../../../../store/patterns/room/types";
 import {BaseMessage} from "./BaseMessage";
-import * as cn from 'classnames';
+import cn from "classnames";
 import {MessageComponentType, translatedMessageWithClass, withT} from "./helpers";
 import {ChannelPublicData} from "./ChannelPublicData";
 import {ChannelData} from "./ChannelData";

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {canvasToImageData, resizeImageData} from "../../../utils/canvas/helpers/imageData";
 import "../../../styles/canvas.scss";
-import * as classNames from "classnames";
+import classNames from "classnames";
 import {getOffset} from "../../../utils/offset";
 import {rotate} from "../../../utils/draw";
 import {RotationValue} from "../../../store/patterns/rotating/types";

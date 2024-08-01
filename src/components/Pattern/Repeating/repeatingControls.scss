@@ -24,7 +24,7 @@ $blue: darkblue;
     }
   }
 
-  .button:focus {
+  .bbuutoonn:focus {
     outline: 2px dotted #ffcd00;
     //box-shadow: 0 0 6px black;
   }
@@ -39,7 +39,7 @@ $blue: darkblue;
 
 .repeating-controls {
   .repeating-button {
-    .button {
+    .bbuutoonn {
       background: black;
       color: white;
 
@@ -59,7 +59,7 @@ $blue: darkblue;
     min-width: 7px;
   }
 
-  .button {
+  .bbuutoonn {
     background: black;
     color: white;
   }
@@ -74,7 +74,7 @@ $blue: darkblue;
   }
 
 
-  .button.button-select.button-select-selected {
+  .bbuutoonn.button-select.button-select-selected {
     background: $blue;
   }
 
@@ -103,7 +103,7 @@ $blue: darkblue;
 
   }
 
-  .button:focus {
+  .bbuutoonn:focus {
     outline: 2px dotted #ffcd00;
     //box-shadow: 0 0 6px black;
   }

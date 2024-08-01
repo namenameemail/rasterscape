@@ -13,6 +13,7 @@ export const XYCutFunctionTypeToNumber = {
     [FxyType.Sis2]: 2,
     [FxyType.Array]: 3,
     [ECFType.DEPTH]: 4,
+    [FxyType.Sq]: 5,
 }
 export const XYArrayCutFunctionTypeToNumber = {
     [FxyArrayType.X]:1,

@@ -4,7 +4,7 @@ import {AppState} from "../../../store";
 import {InputText} from "../../_shared/inputs/InputText";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {resetUnreaded, sendMessage, SendMessageAction, setDrawer} from "../../../store/patterns/room/actions";
-import * as classNames from 'classnames';
+import classNames from "classnames";
 import {Resizable} from "../../_shared/Resizable";
 import {ButtonHK} from "../../_shared/buttons/hotkeyed/ButtonHK";
 import {Message} from "../../../store/patterns/room/types";

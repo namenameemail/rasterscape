@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as keyboardjs from "keyboardjs";
+import keyboardjs from "keyboardjs";
 import {NodeType} from "../../../utils/consts";
 import {coordHelper} from "../../Area/canvasPosition.servise";
 

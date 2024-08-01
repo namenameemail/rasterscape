@@ -124,7 +124,7 @@ export interface UpdateOptions {
     id: string,
     imageData?: ImageData,
     emit?: boolean,
-    blur?: boolean,
+    // blur?: boolean,
     noHistory?: boolean
 }
 

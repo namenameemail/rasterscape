@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import * as cn from 'classnames';
+import cn from "classnames";
 import './styles.scss';
 
 export interface DragAndDropProps {

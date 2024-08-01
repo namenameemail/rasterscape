@@ -3,11 +3,13 @@
   flex-wrap: wrap;
 
   .select-device {
+    width: 140px;
     &, .bbuutoonn-select-drop__items {
       button {
 
+        width: 140px;
         background-color: #ebebeb;
-        width: 70px;
+        // width: 70px;
         overflow: hidden;
 
         &:hover {
@@ -28,7 +30,7 @@
 
 }
 
-.video-toggle {
+.bbuutoonn.video-toggle {
   background-color: #ebebeb;
   display: flex;
   align-items: center;
@@ -91,7 +93,7 @@
 }
 
 
-.depth .button {
+.depth .bbuutoonn {
   //border: none;
   background: #ebebeb;
 }
@@ -125,7 +127,7 @@
     }
   }
 
-  & > .button {
+  & > .bbuutoonn {
     display: flex;
     align-items: flex-end;
 
@@ -158,118 +160,118 @@
   }
 
   &.front {
-    &.rightStack > .button {
+    &.rightStack > .bbuutoonn {
       background: linear-gradient(90deg, lightgrey, white);
     }
 
-    &.leftStack > .button {
+    &.leftStack > .bbuutoonn {
       background: linear-gradient(90deg, white, lightgrey);
     }
 
-    &.toCenterStack > .button {
+    &.toCenterStack > .bbuutoonn {
       background: linear-gradient(90deg, lightgrey, white, lightgrey);
     }
 
-    &.fromCenterStack > .button {
+    &.fromCenterStack > .bbuutoonn {
       background: linear-gradient(90deg, white, lightgrey, white);
     }
   }
 
   &.back {
-    &.rightStack > .button {
+    &.rightStack > .bbuutoonn {
       background: linear-gradient(90deg, white, lightgrey);
     }
 
-    &.leftStack > .button {
+    &.leftStack > .bbuutoonn {
       background: linear-gradient(90deg, lightgrey, white);
     }
 
-    &.toCenterStack > .button {
+    &.toCenterStack > .bbuutoonn {
       background: linear-gradient(90deg, lightgrey, white, lightgrey);
     }
 
-    &.fromCenterStack > .button {
+    &.fromCenterStack > .bbuutoonn {
       background: linear-gradient(90deg, white, lightgrey, white);
     }
   }
 
   &.top {
-    &.rightStack > .button {
+    &.rightStack > .bbuutoonn {
       background: linear-gradient(lightgrey, white);
     }
 
-    &.leftStack > .button {
+    &.leftStack > .bbuutoonn {
       background: linear-gradient(white, lightgrey);
     }
 
-    &.toCenterStack > .button {
+    &.toCenterStack > .bbuutoonn {
       background: linear-gradient(0deg, lightgrey, white, lightgrey);
     }
 
-    &.fromCenterStack > .button {
+    &.fromCenterStack > .bbuutoonn {
       background: linear-gradient(0deg, white, lightgrey, white);
     }
   }
 
   &.bottom {
-    &.rightStack > .button {
+    &.rightStack > .bbuutoonn {
       background: linear-gradient(0deg, lightgrey, white);
     }
 
-    &.leftStack > .button {
+    &.leftStack > .bbuutoonn {
       background: linear-gradient(0deg, white, lightgrey);
     }
 
-    &.toCenterStack > .button {
+    &.toCenterStack > .bbuutoonn {
       background: linear-gradient(0deg, lightgrey, white, lightgrey);
     }
 
-    &.fromCenterStack > .button {
+    &.fromCenterStack > .bbuutoonn {
       background: linear-gradient(0deg, white, lightgrey, white);
     }
   }
 
   &.left {
 
-    &.rightStack > .button {
+    &.rightStack > .bbuutoonn {
       background: linear-gradient(90deg, lightgrey, white);
     }
 
-    &.leftStack > .button {
+    &.leftStack > .bbuutoonn {
       background: linear-gradient(90deg, white, lightgrey);
     }
 
-    &.toCenterStack > .button {
+    &.toCenterStack > .bbuutoonn {
       background: linear-gradient(90deg, lightgrey, white, lightgrey);
     }
 
-    &.fromCenterStack > .button {
+    &.fromCenterStack > .bbuutoonn {
       background: linear-gradient(90deg, white, lightgrey, white);
     }
   }
 
   &.right {
 
-    &.rightStack > .button {
+    &.rightStack > .bbuutoonn {
       background: linear-gradient(90deg, white, lightgrey);
     }
 
-    &.leftStack > .button {
+    &.leftStack > .bbuutoonn {
       background: linear-gradient(90deg, lightgrey, white);
     }
 
-    &.toCenterStack > .button {
+    &.toCenterStack > .bbuutoonn {
       background: linear-gradient(90deg, lightgrey, white, lightgrey);
     }
 
-    &.fromCenterStack > .button {
+    &.fromCenterStack > .bbuutoonn {
       background: linear-gradient(90deg, white, lightgrey, white);
     }
   }
 }
 
 .depth {
-  .button {
+  .bbuutoonn {
     display: flex;
     align-items: flex-end;
     //border-bottom: 1px solid black;
@@ -321,13 +323,13 @@
   &.all .button-number-value {
   }
 
-  &.rightStack .button {
+  &.rightStack .bbuutoonn {
     .button-number-value {
       background: linear-gradient(90deg, lightgrey, white);
     }
   }
 
-  &.leftStack .button {
+  &.leftStack .bbuutoonn {
     background: white;
 
     .button-number-value {
@@ -335,7 +337,7 @@
     }
   }
 
-  &.toCenterStack .button {
+  &.toCenterStack .bbuutoonn {
     background: white;
 
     .button-number-value {
@@ -343,7 +345,7 @@
     }
   }
 
-  &.fromCenterStack .button {
+  &.fromCenterStack .bbuutoonn {
     .button-number-value {
       background: linear-gradient(90deg, white, lightgrey, white);
     }

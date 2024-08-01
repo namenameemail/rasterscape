@@ -2,7 +2,7 @@ import * as React from "react";
 import {createCanvas} from "../../../../../utils/canvas/helpers/base";
 import {Canvas} from "../../../Canvas/index";
 import {AmplitudeComponentProps} from "./types";
-import * as classNames from "classnames";
+import classNames from "classnames";
 import * as Color from "color";
 import xyamplitude from './xyamplitude.png';
 import {WithTranslation, withTranslation} from "react-i18next";

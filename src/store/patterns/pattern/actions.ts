@@ -52,7 +52,7 @@ export const updateImage = (options: UpdateOptions) => //: ThunkResult<UpdatePat
             id,
             imageData,
             emit = true,
-            blur,
+            // blur,
             noHistory,
         } = options;
 
@@ -101,7 +101,7 @@ export const setWidth = (id: string, width: number): ThunkAction<any, any, any, 
 
 
     patternsService.pattern[id]
-        .setWidth(width, !getState().patterns[id].import.params.fit);
+        .setWidth(width, !getState().patterns[id].import?.params.fit);
 
     dispatch(setVideoWidth(id, width));
 
@@ -111,7 +111,7 @@ export const setWidth = (id: string, width: number): ThunkAction<any, any, any, 
 export const setHeight = (id: string, height: number): ThunkAction<any, any, any, SetPatternHeightAction> => (dispatch, getState: () => AppState) => {
 
     patternsService.pattern[id]
-        .setHeight(height, !getState().patterns[id].import.params.fit);
+        .setHeight(height, !getState().patterns[id].import?.params.fit);
 
     dispatch(setVideoHeight(id, height));
     dispatch({type: EPatternAction.SET_HEIGHT, id, height});
@@ -137,7 +137,7 @@ export const copyPatternToClipboard = (id: string) => async (dispatch, getState:
         patternService.valuesService.selected
             ? imageDataToCanvas(getSelectedImageData(getState().patterns[id], false))
             : patternService.canvasService.canvas
-    ).toBlob((blob) => {
-        copyToClipboard(blob);
+    )?.toBlob((blob) => {
+        blob && copyToClipboard(blob);
     });
 };

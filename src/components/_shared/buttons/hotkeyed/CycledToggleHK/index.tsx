@@ -1,7 +1,7 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "store";
-import * as classNames from 'classnames';
+import classNames from "classnames";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {ButtonHotkeyTrigger} from "../../../../Hotkeys/ButtonHotkeyInputs/ButtonHotkeyTrigger";
 import './styles.scss';

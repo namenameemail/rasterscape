@@ -294,6 +294,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                         className={'select-device'}
                         value={params.device?.deviceId}
                         onSelect={this.handleDeviceSelect}
+                        
                     />
                     <ButtonHK
                         hkLabel={'pattern.hotkeysDescription.video.cameraOn'}

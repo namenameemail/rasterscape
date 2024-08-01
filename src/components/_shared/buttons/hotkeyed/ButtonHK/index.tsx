@@ -9,7 +9,7 @@ import {
     ButtonSelectImperativeHandlers,
     ButtonSelectProps
 } from "../../simple/ButtonSelect";
-import * as classNames from 'classnames';
+import classNames from "classnames";
 import {ButtonHotkeyTrigger} from "../../../../Hotkeys/ButtonHotkeyInputs/ButtonHotkeyTrigger";
 import './styles.scss';
 import {HKLabelProps} from "../types";

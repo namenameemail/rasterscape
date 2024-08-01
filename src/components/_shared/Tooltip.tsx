@@ -1,6 +1,6 @@
 import * as React from "react";
 import '../../styles/tooltip.scss';
-import * as classNames from 'classnames';
+import classNames from "classnames";
 
 export interface TooltipProps {
     translate?: any

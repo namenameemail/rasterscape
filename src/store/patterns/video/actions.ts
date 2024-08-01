@@ -86,6 +86,7 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
     }));
     dispatch({type: EVideoAction.START_UPDATING, id: patternId});
 
+    patternService.previewService.autoUpdate(true);
 
     (await patternService.videoService
         .init({
@@ -113,6 +114,8 @@ export const stop = (id: string) => (dispatch, getState: () => AppState) => {
     dispatch({type: EVideoAction.STOP_UPDATING, id});
     
     patternsService.pattern[id].videoService.stop();
+
+    patternsService.pattern[id].previewService.autoUpdate(false);
     
 };
 

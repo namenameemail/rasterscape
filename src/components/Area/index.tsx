@@ -5,7 +5,7 @@ import {EToolType, selectionTools} from "../../store/tool/types";
 import {Selection} from "./Selection";
 import {Draw} from "./Draw";
 import "./area.scss";
-import * as cn from 'classnames';
+import cn from "classnames";
 import {RotationValue} from "../../store/patterns/rotating/types";
 import {Segments, SelectionParams, SelectionValue} from "../../store/patterns/selection/types";
 import {EBrushType} from "../../store/brush/types";

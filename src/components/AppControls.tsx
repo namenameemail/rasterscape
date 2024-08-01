@@ -4,7 +4,7 @@ import {withTranslation, WithTranslation} from 'react-i18next';
 import {AppState} from "store";
 import {Button} from "./_shared/buttons/simple/Button";
 import {reverseFullScreen} from "store/fullscreen";
-import * as classNames from "classnames";
+import classNames from "classnames";
 import {setLanguage} from "store/language";
 import {activateTutorial} from "store/tutorial";
 import '../styles/tutorial.scss';

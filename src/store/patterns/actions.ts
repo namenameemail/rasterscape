@@ -32,6 +32,7 @@ export const addPattern = (config?: PatternConfig, params?: PatternParams) => (d
     patternsService.addPattern(id)
         .maskService.setEnabled(config.mask)
         .maskService.setImageData(startMask)
+        .maskService.setInverted(!!params?.mask?.inverse)
         .canvasService.setImageData(startImage)
         .valuesService.update()
         .patternToolService.bindTool(tool, toolType, width, height)

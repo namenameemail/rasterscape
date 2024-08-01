@@ -43,6 +43,23 @@ export class PatternPreviewService {
     update = () => {
         this.canvases.forEach(this.putImage);
     }
+    
+    isAutoUpdateEnabled: number = 0;
+    autoUpdateInterval?: ReturnType<typeof setInterval>;
+    autoUpdate = (enabled: boolean) => {
+        this.isAutoUpdateEnabled = this.isAutoUpdateEnabled + (enabled ? 1 : -1);
+
+        if (this.isAutoUpdateEnabled) {
+            if (!this.autoUpdateInterval) {
+                this.autoUpdateInterval = setInterval(this.update, 400);
+            }
+        } else {
+            if (this.autoUpdateInterval) {
+                clearInterval(this.autoUpdateInterval);
+            }
+        }
+    }
+
     putImageByType = {
         [PreviewCanvasType.Select]: (previewItem: PreviewCanvasItem) => {
 

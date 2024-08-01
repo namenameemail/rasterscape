@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as cn from "classnames";
+import cn from "classnames";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import './styles.scss';

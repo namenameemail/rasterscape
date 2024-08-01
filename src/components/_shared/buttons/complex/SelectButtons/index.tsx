@@ -1,6 +1,6 @@
 import * as React from "react";
 import {RefObject} from "react";
-import * as classNames from "classnames";
+import classNames from "classnames";
 import {ButtonSelect} from "../../simple/ButtonSelect";
 import {ButtonEventData} from "../../simple/Button";
 import '../../../../../styles/selectButtonsStyles.scss';

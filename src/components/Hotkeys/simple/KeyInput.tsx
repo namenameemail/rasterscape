@@ -1,8 +1,8 @@
 import * as React from "react";
 import {useCallback, useEffect, useRef, useState} from "react";
 import {InputText, InputTextImperativeHandlers} from "../../_shared/inputs/InputText";
-import * as keyboardjs from "keyboardjs";
-import * as classNames from 'classnames';
+import keyboardjs from "keyboardjs";
+import classNames from "classnames";
 import './KeyInput.scss';
 import {HotkeyControlType} from "../../../store/hotkeys/types";
 

@@ -1,6 +1,7 @@
 import * as React from "react";
 import classNames from "classnames";
 import "./styles.scss";
+import { Button as B2 } from 'bbuutoonnss'
 
 export interface ButtonEventData {
     value: any,
@@ -57,7 +58,8 @@ export interface ButtonImperativeHandlers {
     click(e)
 }
 
-export const Button = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((props, ref) => {
+export const Button = B2;
+export const Button2 = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((props, ref) => {
 
     const {
         children,

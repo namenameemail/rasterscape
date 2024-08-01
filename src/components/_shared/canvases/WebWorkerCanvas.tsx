@@ -100,3 +100,4 @@ export const Saw = webWorkerCanvas('./workers/saw.js');
 export const Sin = webWorkerCanvas('./workers/sin.js');
 export const Sis2 = webWorkerCanvas('./workers/sis2.js');
 export const Noise = webWorkerCanvas('./workers/noise.js');
+export const Sq = webWorkerCanvas('./workers/sq.js');

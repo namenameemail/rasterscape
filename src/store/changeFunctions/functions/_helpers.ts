@@ -4,6 +4,9 @@ export const xyParaboloid = (centerX, centerY, kx, ky) => (x, y) =>
     Math.pow(x - centerX, 2) * kx
     + Math.pow(y - centerY, 2) * ky;
 
+    
+export const xySq = (a, b, c) => (x, y) => (Math.sin(x / a) * Math.cos(y / b) * c);
+
 export const xySis2 = ({cosA, h, xN, yN, xD, yD, XA, xdd, ydd}) =>
     (x, y) => {
 

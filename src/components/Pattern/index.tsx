@@ -279,6 +279,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                                     hkData1={id}
                                     selected={config.room}
                                     onClick={this.handleConfigToggle}
+                                    disabled
                                 >
                                     {t('plugins.room')}</ButtonHK>
                                 <ButtonHK

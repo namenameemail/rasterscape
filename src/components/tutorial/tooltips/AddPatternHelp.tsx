@@ -1,7 +1,7 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
-import * as classNames from 'classnames';
+import classNames from "classnames";
 
 export interface AddPatternHelpStateProps {
     thereIsPattern: boolean

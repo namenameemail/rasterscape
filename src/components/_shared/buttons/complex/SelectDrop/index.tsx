@@ -6,7 +6,7 @@ import {
     SelectButtonsImperativeHandlers,
     SelectButtonsProps
 } from "../SelectButtons";
-import * as classNames from "classnames";
+import classNames from "classnames";
 import "./styles.scss";
 import {Button, ButtonImperativeHandlers} from "components/_shared/buttons/simple/Button";
 

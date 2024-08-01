@@ -10,6 +10,7 @@ import {
     FxyType,
     ParabParams,
     Sis2Params,
+    SqParams,
 } from '../../../../../changeFunctions/functions/fxy'
 import {EdgeMode, CameraAxis, StackType, VideoOffset} from './types'
 import {
@@ -409,6 +410,24 @@ export class ShaderVideoModule {
             this.gl.uniform1f(u_CFParamF8, params.xdd)
             this.gl.uniform1f(u_CFParamF9, params.ydd)
         },
+        
+        [FxyType.Sq]: () => {
+
+            const params = this.cutFuncParams as SqParams
+            // coordHelper4.writeln('FxyType.Sis2', ...Object.keys(params))
+
+            const u_CFParamF0 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF0')
+            const u_CFParamF1 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF1')
+            const u_CFParamF2 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF2')
+            const u_CFParamF3 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF3')
+            const u_CFParamF4 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF4')
+           
+            this.gl.uniform1f(u_CFParamF0, params.a)
+            this.gl.uniform1f(u_CFParamF1, params.b)
+            this.gl.uniform1f(u_CFParamF2, params.c)
+            this.gl.uniform1f(u_CFParamF3, params.h)
+            this.gl.uniform1f(u_CFParamF4, params.end)
+        },
         [FxyType.Array]: () => {
             const params = this.cutFuncParams as FxyArrayParams
 
@@ -429,7 +448,6 @@ export class ShaderVideoModule {
             this.gl.uniform1i(u_CFParamI4, typeParams.drawHeight)
             this.gl.uniform1iv(u_CFParamIV0, typeParams.valuesArray)
 
-
         },
         [ECFType.DEPTH]: (state: AppState) => {
             const params = this.cutFuncParams as CfDepthParams
@@ -441,7 +459,11 @@ export class ShaderVideoModule {
                 const {component, patternId, id, zed, zd} = item
 
                 const canvas = patternsService.pattern[patternId].canvasService.canvas
-                const imageData = patternsService.pattern[patternId].canvasService.context.getImageData(0, 0, canvas.width, canvas.height);
+                const imageData = canvas && patternsService.pattern[patternId].canvasService.context?.getImageData(0, 0, canvas.width, canvas.height);
+
+                if (!canvas || !imageData) {
+                    return;
+                }
 
                 this.updateParamTextureByIndex(index, new Uint8Array(imageData.data.buffer), canvas.width, canvas.height)
 

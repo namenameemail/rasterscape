@@ -1,6 +1,6 @@
 import * as React from "react";
 import './styles.scss';
-import * as cn from 'classnames';
+import cn from "classnames";
 
 export interface BaseMessageProps {
     children?: React.ReactNode

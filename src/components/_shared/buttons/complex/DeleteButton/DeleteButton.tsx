@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as cn from 'classnames';
+import cn from "classnames";
 import {Button, ButtonProps} from "../../simple/Button";
 import {WithTranslation, withTranslation} from "react-i18next";
 import './styles.scss';

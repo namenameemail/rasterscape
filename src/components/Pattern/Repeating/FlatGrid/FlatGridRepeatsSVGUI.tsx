@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Bezier from "bezier-js";
+import Bezier from "bezier-js";
 import "../styles.scss";
 import {SVG} from "../../../_shared/SVG";
 import {

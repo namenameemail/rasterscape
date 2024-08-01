@@ -84,6 +84,18 @@ float xySis2(float cosA, float h, float xN, float yN, float xD, float yD, float 
     return r;
 }
 
+
+float xySq(float a, float b, float c, float h, float x, float y) {
+    
+
+    float r = (sin(x / a) * cos(y / b) * c + h);
+
+
+    // coordHelper.writeln(r);
+
+    return r;
+}
+
 void main() {
 
     float x = 0.0;
@@ -105,6 +117,7 @@ void main() {
         float yk = u_CFParamF3;
         tex_z = xyParaboloid(0.5, 0.5, xk, yk, tex_x, tex_y) * end_1 + zd;
         break;
+
         case 2:
         float end_2 = u_CFParamF0;
         float cosA = u_CFParamF1;
@@ -118,6 +131,16 @@ void main() {
         float ydd = u_CFParamF9;
         tex_z = xySis2(cosA, h, xN, yN, xD, yD, XA, xdd, ydd, tex_x, tex_y) * end_2;
         break;
+
+        case 5:
+        float a = u_CFParamF0;
+        float b = u_CFParamF1;
+        float c = u_CFParamF2;
+        float h_5 = u_CFParamF3;
+        float end_5 = u_CFParamF4;
+        tex_z = xySq(a, b, c, h_5, tex_x, tex_y) * end_5;
+        break;
+
         case 3:
 
         float from = u_CFParamF1;

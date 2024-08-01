@@ -6,7 +6,8 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column-reverse;
-
+  overflow-x: scroll;
+  overflow-y: hidden;
 
   height: 100vh;
 

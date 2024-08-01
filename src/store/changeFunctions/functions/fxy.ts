@@ -1,11 +1,21 @@
-import {xyParaboloid, xySis2} from "./_helpers";
+import {xyParaboloid, xySis2, xySq} from "./_helpers";
 import {coordHelper5} from "../../../components/Area/canvasPosition.servise";
 import {patternsService} from "../../index";
 
 export enum FxyType {
     Parab = 'parab',
+    Sq = 'sq',
     Sis2 = 'sis2',
     Array = 'array',
+}
+
+
+export interface SqParams {
+    a: number
+    b: number
+    c: number
+    h: number
+    end: number
 }
 
 export interface ParabParams {
@@ -50,7 +60,7 @@ export interface FxyArrayParams {
     }
 }
 
-export type AnyFxyParams = ParabParams | Sis2Params | FxyArrayParams;
+export type AnyFxyParams = ParabParams | Sis2Params | FxyArrayParams | SqParams;
 
 export interface FxyParams {
     type: FxyType
@@ -67,6 +77,13 @@ export const fxyInitialParams: FxyParams = {
             end: 1,
             x: 1.5,
             y: 1.5,
+        },
+        [FxyType.Sq]: {
+            a: 0.25,
+            b: 0.25,
+            c: .5,
+            h: 0,
+            end: 1,
         },
         [FxyType.Sis2]: {
             end: 1,
@@ -195,6 +212,32 @@ const fxyFunctionByType = {
         );
 
     },
+    [FxyType.Sq]: ({startValue, range, params, pattern, position}) => {
+
+        if (!pattern) return;
+
+        const {a, b, c, h: zd, end} = params;
+
+        const f = xySq(a, b, c);
+
+        const width = patternsService.pattern[pattern.id].canvasService.canvas?.width || 0;
+        const height = patternsService.pattern[pattern.id].canvasService.canvas?.height || 0;
+
+        const xnorm = position.x / width;
+        const ynorm = position.y / height;
+        const znorm = f(xnorm, ynorm) + zd;
+
+        // (range[1] - startValue) * end;
+
+        return Math.max(
+            Math.min(
+                (znorm * end) * (range[1] - range[0]) + startValue,
+                startValue + (range[1] - startValue) * end
+            ),
+            startValue
+        );
+
+    },
     [FxyType.Sis2]: ({startValue, range, params, pattern, position}) => {
 
         const {end} = params;
@@ -240,90 +283,92 @@ export const fxyChangeFunction = () => {
     };
 };
 // VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO
-export const xyArrayVideoFunctionByType: {
-    [type: string]: ({x, y, width, height, params}) => number
-} = {
-    [FxyArrayType.X]: ({x, y, width, height, params}) => {
+// export const xyArrayVideoFunctionByType: {
+//     [type: string]: ({x, y, width, height, params}) => number
+// } = {
+//     [FxyArrayType.X]: ({x, y, width, height, params}) => {
 
-        const {valuesArray, from, to, drawWidth, drawHeight} = params as FxyArrayCoordinateParams;
-
-
-        const i = Math.floor(x / width * drawWidth);
+//         const {valuesArray, from, to, drawWidth, drawHeight} = params as FxyArrayCoordinateParams;
 
 
-        const coordinateValue = valuesArray[i] / drawHeight;
+//         const i = Math.floor(x / width * drawWidth);
 
 
-        const amplitude = Math.abs(to - from);
-        const min = Math.min(from, to);
-        // const inverse = to < from;
+//         const coordinateValue = valuesArray[i] / drawHeight;
 
 
-        return min + amplitude * coordinateValue;
-    },
-    [FxyArrayType.Y]: ({x, y, width, height, params}) => {
-        const {valuesArray, from, to, drawWidth, drawHeight} = params as FxyArrayCoordinateParams;
+//         const amplitude = Math.abs(to - from);
+//         const min = Math.min(from, to);
+//         // const inverse = to < from;
 
 
-        const i = Math.floor(y / height * drawWidth);
+//         return min + amplitude * coordinateValue;
+//     },
+//     [FxyArrayType.Y]: ({x, y, width, height, params}) => {
+//         const {valuesArray, from, to, drawWidth, drawHeight} = params as FxyArrayCoordinateParams;
 
 
-        const coordinateValue = valuesArray[i] / drawHeight;
+//         const i = Math.floor(y / height * drawWidth);
 
 
-        const amplitude = Math.abs(to - from);
-        const min = Math.min(from, to);
-        const inverse = to < from;
-
-        const znorm = min + amplitude * coordinateValue;
-
-        return znorm;
-    },
-};
-export const xyVideoFunctionByType = {
-    [FxyType.Parab]: ({x, y, width, height, params}) => {
-
-        const {x: xk, y: yk, end, zd} = params;
-
-        const f = xyParaboloid(1 / 2, 1 / 2, xk, yk);
+//         const coordinateValue = valuesArray[i] / drawHeight;
 
 
-        const xnorm = x / width;
-        const ynorm = y / height;
-        const znorm = f(xnorm, ynorm) * end + zd;
+//         const amplitude = Math.abs(to - from);
+//         const min = Math.min(from, to);
+//         const inverse = to < from;
 
-        // (range[1] - startValue) * end;
+//         const znorm = min + amplitude * coordinateValue;
 
-        return znorm;// * width;
-    },
-    [FxyType.Sis2]: ({x, y, width, height, params}) => {
-
-
-        const f = xySis2(params);
+//         return znorm;
+//     },
+// };
 
 
-        const xnorm = x / width;
-        const ynorm = y / height;
-        const znorm = f(xnorm, ynorm) * params.end;
+// export const xyVideoFunctionByType = {
+//     [FxyType.Parab]: ({x, y, width, height, params}) => {
 
-        // (range[1] - startValue) * end;
+//         const {x: xk, y: yk, end, zd} = params;
 
-        return znorm;// * width;
-    },
-    [FxyType.Array]: ({x, y, width, height, params: functionParams}) => {
-        const {type, typeParams} = functionParams as FxyArrayParams;
-        const params = typeParams[type];
-
-        return xyArrayVideoFunctionByType[type]?.({x, y, width, height, params});
-    }
-};
+//         const f = xyParaboloid(1 / 2, 1 / 2, xk, yk);
 
 
-export const fxyVideoChangeFunction =
-    (x, y, width, height, params: FxyParams) => {
+//         const xnorm = x / width;
+//         const ynorm = y / height;
+//         const znorm = f(xnorm, ynorm) * end + zd;
 
-        return xyVideoFunctionByType[params.type]({
-            x, y, width, height,
-            params: params.typeParams[params.type]
-        });
-    };
+//         // (range[1] - startValue) * end;
+
+//         return znorm;// * width;
+//     },
+//     [FxyType.Sis2]: ({x, y, width, height, params}) => {
+
+
+//         const f = xySis2(params);
+
+
+//         const xnorm = x / width;
+//         const ynorm = y / height;
+//         const znorm = f(xnorm, ynorm) * params.end;
+
+//         // (range[1] - startValue) * end;
+
+//         return znorm;// * width;
+//     },
+//     [FxyType.Array]: ({x, y, width, height, params: functionParams}) => {
+//         const {type, typeParams} = functionParams as FxyArrayParams;
+//         const params = typeParams[type];
+
+//         return xyArrayVideoFunctionByType[type]?.({x, y, width, height, params});
+//     }
+// };
+
+
+// export const fxyVideoChangeFunction =
+//     (x, y, width, height, params: FxyParams) => {
+
+//         return xyVideoFunctionByType[params.type]({
+//             x, y, width, height,
+//             params: params.typeParams[params.type]
+//         });
+//     };

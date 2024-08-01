@@ -1,7 +1,7 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "store";
-import * as classNames from "classnames";
+import classNames from "classnames";
 import {ButtonNumber, ButtonNumberProps} from "../../complex/ButtonNumber";
 import {SelectItem} from "utils/utils";
 import {SelectDrop, SelectDropImperativeHandlers} from "../../complex/SelectDrop";

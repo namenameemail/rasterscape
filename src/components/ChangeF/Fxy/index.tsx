@@ -10,6 +10,7 @@ import {ParabCF} from "./Parab";
 import {SelectDrop} from "../../_shared/buttons/complex/SelectDrop";
 import {arrayToSelectItems} from "../../../utils/utils";
 import {Sis2CF} from "./Sis2";
+import {SqCF} from "./Sq";
 import {WaveParams} from "../../../store/changeFunctions/functions/wave";
 import {ChangeFunctionState} from "../../../store/changeFunctions/types";
 import {withTranslation, WithTranslation} from "react-i18next";
@@ -89,9 +90,10 @@ export class FxyCFComponent extends React.PureComponent<FxyCFProps, FxyCFState> 
     } = {
         [FxyType.Parab]: ParabCF,
         [FxyType.Sis2]: Sis2CF,
+        [FxyType.Sq]: SqCF,
         [FxyType.Array]: FxyArrayCF,
     };
-    selectItems = arrayToSelectItems([FxyType.Parab, FxyType.Sis2, FxyType.Array]);
+    selectItems = arrayToSelectItems(Object.values(FxyType));
 
     typeText = ({value}) => this.props.t('cf.xy.type.' + value);
 
@@ -109,7 +111,8 @@ export class FxyCFComponent extends React.PureComponent<FxyCFProps, FxyCFState> 
                     hkLabel={'cf.hotkeysDescription.xy.type'}
                     hkData2={functionParams.number}
                     onChange={this.handleTypeChange}
-                    items={this.selectItems}/>
+                    items={this.selectItems}
+                    />
                 {FxyComponent &&
                 <FxyComponent
                     name={name}
