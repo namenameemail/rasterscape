@@ -1,7 +1,6 @@
 import {VideoParams, VideoValue} from './types'
 import {getFunctionState} from '../../../utils/patterns/function'
-import {StackType} from './_old/capture/pixelStack'
-import {CameraAxis, EdgeMode, MirrorMode} from "../_service/patternServices/PatternVideoService/ShaderVideoModule";
+import {CameraAxis, EdgeMode, MirrorMode, StackType} from '../_service/patternServices/PatternVideoService/ShaderVideoModule'
 
 export const getVideoState = getFunctionState<VideoValue, VideoParams>(
     {}, {

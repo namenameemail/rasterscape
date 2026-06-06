@@ -1,5 +1,4 @@
 import * as React from 'react'
-import * as cn from 'classnames'
 import {VideoParams} from '../../../store/patterns/video/types'
 import {SelectDrop} from '../../_shared/buttons/complex/SelectDrop'
 import {connect, MapDispatchToProps, MapStateToProps} from 'react-redux'
@@ -21,22 +20,19 @@ import {
     setVideoOffset,
 } from '../../../store/patterns/video/actions'
 import {getChangeFunctionsSelectItemsVideo} from '../../../store/changeFunctions/selectors'
-import {EdgeMode, MirrorMode, SlitMode} from '../../../store/patterns/video/services_DEPREC'
-import {StackType} from '../../../store/patterns/video/_old/capture/pixelStack'
 import './videoControls.scss'
 import {setCFHighlights, setCFTypeHighlights} from '../../../store/changeFunctionsHighlights'
 import {SelectButtonsEventData} from '../../_shared/buttons/complex/SelectButtons'
-import {CycledToggleHK} from '../../_shared/buttons/hotkeyed/CycledToggleHK'
 import {ButtonHK} from '../../_shared/buttons/hotkeyed/ButtonHK'
-import {ButtonNumberCF} from '../../_shared/buttons/hotkeyed/ButtonNumberCF'
 import {WithTranslation, withTranslation} from 'react-i18next'
 import {LabelFormatter} from '../../../store/hotkeys/label-formatters'
 import {Translations} from '../../../store/language/helpers'
 import {SelectVideoDevice} from 'bbuutoonnss'
-import {InputNumber} from '../../_shared/inputs/InputNumber'
-import {coordHelper4} from '../../Area/canvasPosition.servise'
+import {InputNumber, InputNumberProps} from '../../_shared/inputs/InputNumber'
 import {VideoOffsetForm} from './VideoOffsetForm'
-import {CameraAxis} from "../../../store/patterns/_service/patternServices/PatternVideoService/ShaderVideoModule";
+import {CameraAxis, EdgeMode, MirrorMode, StackType} from '../../../store/patterns/_service/patternServices/PatternVideoService/ShaderVideoModule'
+import {ButtonEventData} from '../../_shared/buttons/simple/Button'
+import {getVideoState} from '../../../store/patterns/video/helpers'
 
 export interface VideoControlsStateProps {
 
@@ -51,33 +47,33 @@ export interface VideoControlsStateProps {
 }
 
 export interface VideoControlsActionProps {
-    start(id: string)
+    start(id: string): void
 
-    stop(id: string)
+    stop(id: string): void
 
-    startCamera(id: string)
+    startCamera(id: string): void
 
-    stopCamera(id: string)
+    stopCamera(id: string): void
 
-    setCFHighlights(cfName?: string)
+    setCFHighlights(cfName?: string): void
 
-    setCFTypeHighlights(cfType?: ECFType[])
+    setCFTypeHighlights(cfType?: ECFType[]): void
 
-    setDevice(id: string, value: MediaDeviceInfo)
+    setDevice(id: string, value: MediaDeviceInfo): void
 
-    setCameraAxis(id: string, value: CameraAxis)
+    setCameraAxis(id: string, value: CameraAxis): void
 
-    setEdgeMode(id: string, value: EdgeMode)
+    setEdgeMode(id: string, value: EdgeMode): void
 
-    setMirrorMode(id: string, value: MirrorMode)
+    setMirrorMode(id: string, value: MirrorMode): void
 
-    setStackType(id: string, value: StackType)
+    setStackType(id: string, value: StackType): void
 
-    setChangeFunction(id: string, value: string)
+    setChangeFunction(id: string, value: string | null): void
 
-    setStackSize(id: string, value: number)
+    setStackSize(id: string, value: number): void
 
-    setVideoOffset(id: string, name: string, value: number)
+    setVideoOffset(id: string, name: string, value: number): void
 }
 
 export interface VideoControlsOwnProps {
@@ -94,41 +90,28 @@ export interface VideoControlsState {
 
 const availableCFTypes = [ECFType.FXY, ECFType.DEPTH]
 
-const percentRange = [0, 1] as [number, number]
-const offsetRange = [-1, 0] as [number, number]
-const stackTypeClassNames = {
-    [StackType.Right]: 'rightStack',
-    [StackType.Left]: 'leftStack',
-    [StackType.FromCenter]: 'toCenterStack',
-    [StackType.ToCenter]: 'fromCenterStack',
+const inputNumberProps: Pick<InputNumberProps, 'min' | 'max' | 'step' | 'delay' | 'notZero'> = {
+    min: 0,
+    max: Number.MAX_SAFE_INTEGER,
+    step: 1,
+    delay: 1000,
+    notZero: true,
 }
-
-const inputNumberProps = {min: 0, max: null, step: 1, delay: 1000, notZero: true}
 
 export class VideoControlsComponent extends React.PureComponent<VideoControlsProps, VideoControlsState> {
 
-    capture
-    sketch
-    stream
-
     state = {
         pause: false,
-        cutOffsetStyles: null,
     }
 
-
-    componentDidUpdate(prevProps: Readonly<VideoControlsProps>, prevState: Readonly<VideoControlsState>, snapshot?: any): void {
-
-    }
-
-    handleChangeCameraOnParam = (data) => {
+    handleChangeCameraOnParam = () => {
         const {videoParams, patternId} = this.props
         videoParams.cameraOn
             ? this.props.stopCamera(patternId)
             : this.props.startCamera(patternId)
     }
 
-    handleChangeUpdatingOnParam = (data) => {
+    handleChangeUpdatingOnParam = () => {
         const {videoParams, patternId} = this.props
         videoParams.updatingOn
             ? this.props.stop(patternId)
@@ -140,25 +123,24 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
         setCameraAxis(patternId, axis)
     }
 
-    handleChangeEdgeMode = (data) => {
+    handleChangeEdgeMode = (data: SelectButtonsEventData) => {
         const {setEdgeMode, patternId} = this.props
         const {value} = data
         setEdgeMode(patternId, value)
     }
 
-    handleChangeMirrorMode = (data) => {
+    handleChangeMirrorMode = (data: ButtonEventData & {selected?: boolean}) => {
         const {setMirrorMode, patternId} = this.props
-        const {value} = data
         setMirrorMode(patternId, data.selected ? MirrorMode.NO : MirrorMode.HORIZONTAL)
     }
 
-    handleChangeStackType = (data) => {
+    handleChangeStackType = (data: SelectButtonsEventData) => {
         const {setStackType, patternId} = this.props
         const {value} = data
         setStackType(patternId, value)
     }
 
-    handleChangeChangeFunction = (data) => {
+    handleChangeChangeFunction = (data: SelectButtonsEventData) => {
         const {setChangeFunction, patternId} = this.props
         const {value} = data
         setChangeFunction(patternId, value)
@@ -169,17 +151,18 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
         setChangeFunction(patternId, null)
     }
 
-    handleChangeStackSize = (value) => {
+    handleChangeStackSize = (value: number) => {
         const {setStackSize, patternId} = this.props
         setStackSize(patternId, value)
     }
 
-    handleChangeOffset = (data) => {
+    handleChangeOffset = (data: SelectButtonsEventData) => {
         const {setVideoOffset, patternId} = this.props
         const {value, name} = data
+        if (!name) return
         setVideoOffset(patternId, name, value)
     }
-    handleChangeOffsetForm = (name, value) => {
+    handleChangeOffsetForm = (name: string, value: number) => {
         const {setVideoOffset, patternId} = this.props
         setVideoOffset(patternId, name, value)
     }
@@ -198,7 +181,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
     }
     handleCFValueMouseLeave = () => {
         const {setCFTypeHighlights} = this.props
-        setCFTypeHighlights(null)
+        setCFTypeHighlights()
     }
 
     handleCFMouseEnter = (data: SelectButtonsEventData) => {
@@ -207,10 +190,10 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
     }
     handleCFMouseLeave = () => {
         const {setCFHighlights} = this.props
-        setCFHighlights(null)
+        setCFHighlights()
     }
 
-    stackSizeText = (value) => {
+    stackSizeText = (value: number) => {
         return value.toFixed(2) + 'D'
     }
 
@@ -249,19 +232,19 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
     //     return null
     // }
 
-    edgeModeGetValue = id => id
-    edgeModeGetText = (id) => {
+    edgeModeGetValue = (id: EdgeMode) => id
+    edgeModeGetText = (id: EdgeMode) => {
         const {t} = this.props
         return t('pattern.video.edgeMode.' + id)
     }
 
-    cameraAxisGetValue = id => id
-    cameraAxisGetText = (id) => {
+    cameraAxisGetValue = (id: CameraAxis) => id
+    cameraAxisGetText = (id: CameraAxis) => {
         const {t} = this.props
         return t('pattern.video.cameraAxis.' + id)
     }
 
-    stackTypeGetValue = id => id
+    stackTypeGetValue = (id: StackType) => id
 
     cfGetValue = (item: ChangeFunctionState) => item.id
     cfGetText = (item: ChangeFunctionState) => {
@@ -409,14 +392,20 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
     }
 }
 
-const mapStateToProps: MapStateToProps<VideoControlsStateProps, VideoControlsOwnProps, AppState> = (state, {patternId}) => ({
-    changeFunctionsSelectItems: getChangeFunctionsSelectItemsVideo(state),
-    videoParams: state.patterns[patternId]?.video?.params || null,
-    changeFunctionParams: state.changeFunctions.functions[state.patterns[patternId]?.video?.params?.changeFunctionId]?.params || null,
-    videoDisabled: !!state.patterns[patternId]?.room?.value?.connected && !state.patterns[patternId]?.room?.value?.meDrawer,
-    autoblur: state.hotkeys.autoblur,
-    autofocus: state.hotkeys.autofocus,
-})
+const mapStateToProps: MapStateToProps<VideoControlsStateProps, VideoControlsOwnProps, AppState> = (state, {patternId}) => {
+    const changeFunctionId = state.patterns[patternId]?.video?.params?.changeFunctionId
+
+    return {
+        changeFunctionsSelectItems: getChangeFunctionsSelectItemsVideo(state),
+        videoParams: state.patterns[patternId]?.video?.params ?? getVideoState().params,
+        changeFunctionParams: changeFunctionId
+            ? state.changeFunctions.functions[changeFunctionId]?.params || null
+            : null,
+        videoDisabled: !!state.patterns[patternId]?.room?.value?.connected && !state.patterns[patternId]?.room?.value?.meDrawer,
+        autoblur: state.hotkeys.autoblur,
+        autofocus: state.hotkeys.autofocus,
+    }
+}
 
 const mapDispatchToProps: MapDispatchToProps<VideoControlsActionProps, VideoControlsOwnProps> = {
     start,
