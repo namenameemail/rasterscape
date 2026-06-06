@@ -12,11 +12,11 @@ import {buttonNumberHelpWrapper} from "../../tutorial/ButtonNumberHelpWrapper";
 import {ButtonHK} from "../../_shared/buttons/hotkeyed/ButtonHK";
 
 export interface RotationControlsStateProps {
-    rotation: RotationValue
+    rotation: RotationValue | undefined
 }
 
 export interface RotationControlsActionProps {
-    setRotation(id: string, value: RotationValue)
+    setRotation(id: string, value: RotationValue): void
 }
 
 export interface RotationControlsOwnProps {
@@ -31,7 +31,7 @@ export interface RotationControlsState {
 }
 
 const angleRange = [0, 360] as [number, number];
-const angleText = value => value.toFixed(0) + '°';
+const angleText = (value: number) => value.toFixed(0) + '°';
 const angleValueD = ValueD.VerticalLinear(0.2);
 
 const offsetRange = [-1000, 1000] as [number, number];

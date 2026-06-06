@@ -1,45 +1,32 @@
 import * as React from "react";
-import {Canvas, CanvasEvent, CanvasProps} from "../../_shared/Canvas";
+import { CanvasEvent, CanvasProps} from "../../_shared/Canvas";
 import {AppState} from "../../../store";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
-import {BrushState} from "../../../store/brush/reducer";
-import {DrawToolParams, DrawToolType, EToolType} from "../../../store/tool/types";
-import {BrushParams, BrushSelectParams, EBrushType} from "../../../store/brush/types";
-import {LineState} from "../../../store/line/reducer";
+import { EToolType} from "../../../store/tool/types";
+import { EBrushType} from "../../../store/brush/types";
 import {ELineType} from "../../../store/line/types";
 import {startDrawChanging, stopDrawChanging} from "../../../store/changing/actions";
-import {SVG} from "../../_shared/SVG";
 import classNames from "classnames";
 import './draw.scss';
 import {PatternState} from "../../../store/patterns/pattern/types";
-import {brushPattern} from "./tools/brushPattern";
-import {lineSolid} from "./tools/lineSolid";
-import {lineSolidPattern} from "./tools/lineSolidPattern";
-import {lineTrailingPattern} from "./tools/lineTrailingPattern";
-import {toolParamsSelector, toolPatternSelector, toolTypeSelector} from "../../../store/tool/selectors";
 import {DrawToolProps} from "./tools/types";
-import {RepeatingCoordinatesItem} from "../../../store/patterns/repeating/helpers";
 import {setPosition} from "../../../store/position";
-import {brushForm} from "./tools/brushForm";
-import {brushSelect} from "./tools/brushSelect";
-import {bindCanvas} from "../../../store/patterns/pattern/actions";
 import {CanvasLight} from "../../_shared/Canvas/CanvasLight";
+import { RepeatingCoordinatesItem } from "../../../store/patterns/repeating/helpers";
 
 export interface CanvasDrawStateProps {
 
     pattern: PatternState
     activePattern: boolean
     optimization: boolean
-    // coordinates: RepeatingCoordinatesItem[]
 }
 
 export interface CanvasDrawActionProps {
-    startChanging()
+    startChanging(): void
 
-    stopChanging()
+    stopChanging(): void
 
-    setPosition(patternId: string, x: number, y: number)
-
+    setPosition(patternId: string, x: number, y: number): void
 
 }
 
@@ -54,16 +41,14 @@ export interface CanvasDrawOwnProps extends CanvasProps {
 export interface CanvasDrawProps extends CanvasDrawStateProps, CanvasDrawActionProps, CanvasDrawOwnProps {
 }
 
-export interface CanvasDrawState {
-    coords
-}
-
 export type ToolHandlers = (drawToolProps: DrawToolProps) => {
     draw: (e: CanvasEvent) => void,
     down?: (e: CanvasEvent) => void,
     click?: (e: CanvasEvent) => void,
     release?: (e?: CanvasEvent) => void,
-    cursors: ({x, y, outer}, index) => void
+    cursors: (
+      {x, y, outer}: RepeatingCoordinatesItem, 
+      index: number) => void
 };
 
 export type ToolsDrawHandlers = {

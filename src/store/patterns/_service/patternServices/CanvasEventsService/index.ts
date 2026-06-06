@@ -1,6 +1,8 @@
 import {getOffset} from "../../../../../utils/offset";
 import {rotate} from "../../../../../utils/draw";
 import {CanvasServiceEvent} from "./types";
+import { PatternStoreService } from "../PatternStoreService";
+import { coordHelper, coordHelper2, coordHelper3 } from "../../../../../components/Area/canvasPosition.servise";
 
 export interface CanvasEventHandlers {
     onPushPosition?: (e: MouseEvent) => void
@@ -16,25 +18,27 @@ export interface CanvasEventHandlers {
 
 export class CanvasEventsService {
     handlers: CanvasEventHandlers;
+    storeService: PatternStoreService;
 
-    canvas: HTMLCanvasElement;
-    context: CanvasRenderingContext2D;
+    canvas: HTMLCanvasElement | null = null;
+    context: CanvasRenderingContext2D | null = null;
 
     pointerLock: boolean = false;
     drawOnMove: boolean = false;
     rotationAngle: number = 0;
     rotationView: boolean = true;
 
-    requestFrameID: number;
+    requestFrameID: number | null = null;
 
     drawing: boolean = false;
-    startFrameRelatedEvent: MouseEvent;
+    startFrameRelatedEvent: MouseEvent | null = null;
 
     documentDragEvents: (MouseEvent | null)[] = (new Array(2)).fill(null); // pageX
     frameRelatedEvents: (MouseEvent | null)[] = (new Array(2)).fill(null); // offsetX
 
-    constructor(handlers: CanvasEventHandlers) {
+    constructor(handlers: CanvasEventHandlers, storeService: PatternStoreService) {
         this.handlers = handlers;
+        this.storeService = storeService;
     }
 
     bindCanvas = (canvas: HTMLCanvasElement) => {
@@ -53,14 +57,14 @@ export class CanvasEventsService {
          */
     };
     unbindCanvas = () => {
-        this.canvas.removeEventListener("mousedown", this.mouseDownHandler);
-        this.canvas.removeEventListener("mousemove", this.canvasMouseMoveHandler);
+        this.canvas?.removeEventListener("mousedown", this.mouseDownHandler);
+        this.canvas?.removeEventListener("mousemove", this.canvasMouseMoveHandler);
         this.canvas = null;
         this.context = null;
     };
 
     pushFrameRelatedEvent = (e: MouseEvent) => {
-        this.handlers.onPushPosition(e);
+        this.handlers.onPushPosition?.(e);
 
         this.frameRelatedEvents.unshift(e);
         this.frameRelatedEvents.pop();
@@ -70,8 +74,8 @@ export class CanvasEventsService {
         if (this.pointerLock) {
             this.documentDragEvents.unshift({
                 ...e,
-                pageX: this.documentDragEvents[1].pageX + e.movementX,
-                pageY: this.documentDragEvents[1].pageY + e.movementY,
+                pageX: this.documentDragEvents[1]?.pageX + e.movementX,
+                pageY: this.documentDragEvents[1]?.pageY + e.movementY,
             });
             this.documentDragEvents.pop();
         } else {
@@ -163,6 +167,8 @@ export class CanvasEventsService {
     };
 
     getCanvasRelatedEvent = (e: MouseEvent) => {
+
+
         const offset = getOffset(this.canvas);
 
         if (!offset) return;
@@ -172,10 +178,14 @@ export class CanvasEventsService {
             x: left + box.width / 2,
             y: top + box.height / 2
         };
+
+        const rotation = this.storeService.getPatternState()?.rotation?.value;
+        const { angle: rotationAngle, rotateDrawAreaElement: rotationView } = rotation || {};
+        
         const rotatedE = rotate(
             canvasCenter.x, canvasCenter.y,
             e.pageX, e.pageY,
-            this.rotationView ? this.rotationAngle : 0
+            rotationView ? rotationAngle : 0
         );
 
         return {
@@ -190,18 +200,18 @@ export class CanvasEventsService {
         if (this.requestFrameID) return;
 
         let prevTime = 0;
-        // let minTime = 1000;
-        // let maxTime = 0;
+        let minTime = 1000;
+        let maxTime = 0;
         const changing = (time) => {
 
 
             // DRAW SPEED
             const interval = time - prevTime;
-            // minTime = Math.min(minTime, interval)
-            // if(prevTime) maxTime = Math.max(maxTime, interval)
-            // coordHelper.setText(interval);
-            // coordHelper2.setText(minTime);
-            // coordHelper3.setText(maxTime);
+            minTime = Math.min(minTime, interval)
+            if(prevTime) maxTime = Math.max(maxTime, interval)
+            coordHelper.setText(interval);
+            coordHelper2.setText(minTime);
+            coordHelper3.setText(maxTime);
             prevTime = time;
 
             this.onFrame();

@@ -32,17 +32,17 @@ export interface AreaOwnProps {
     selectionValue: Segments
     selectionParams: SelectionParams
 
-    onImageChange(imageData: ImageData)
+    onImageChange(imageData: ImageData): void
 
-    onSelectionChange(selectionValue: SelectionValue, bBox: SVGRect)
+    onSelectionChange(selectionValue: SelectionValue, bBox: SVGRect): void
 
     demonstration?: boolean
 
-    onDemonstrationUnload?()
+    onDemonstrationUnload?(): void
 
-    onEnterDraw?(e?)
+    onEnterDraw?(e?: any): void
 
-    onLeaveDraw?(e?)
+    onLeaveDraw?(e?: any): void
 
     onCanvasRef?(canvas: HTMLCanvasElement): void
 }

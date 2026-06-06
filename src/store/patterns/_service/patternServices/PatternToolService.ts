@@ -39,8 +39,8 @@ export class PatternToolService {
         this.patternService = patternService;
 
 
-        this.canvasEventsService = new CanvasEventsService(this.canvasEventHandlers);
-        this.maskCanvasEventsService = new CanvasEventsService(this.maskCanvasEventHandlers);
+        this.canvasEventsService = new CanvasEventsService(this.canvasEventHandlers, this.patternService.storeService);
+        this.maskCanvasEventsService = new CanvasEventsService(this.maskCanvasEventHandlers, this.patternService.storeService);
 
     }
 

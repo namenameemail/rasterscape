@@ -1,0 +1,11 @@
+{
+  "bbuutoonnss": {
+    "path": "../bbuutoonnss",
+    "repo": "https://github.com/normalblending/bbuutoonnss.git",
+    "branch": "master",
+    "cloneIfMissing": true
+  },
+  "devServer": {
+    "port": 5173
+  }
+}

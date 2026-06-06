@@ -1,4 +1,4 @@
-import * as io from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import {base64ToImageData, imageDataToBase64} from "../../../utils/canvas/helpers/imageData";
 import {updateImage} from "../pattern/actions";
 import {receiveDrawer, receiveMembers, receiveMessage} from "./actions";
@@ -26,10 +26,10 @@ export interface RoomSocketHandlers {
 
 export class RoomSocket {
 
-    socket;
-    token;
+    socket: Socket;
+    token?: string;
 
-    constructor(socket, handlers) {
+    constructor(socket: Socket, handlers: RoomSocketHandlers) {
         this.socket = socket;
 
         const {
@@ -56,7 +56,7 @@ export class RoomSocket {
     }
 
     leave = () => {
-        this.socket.close();
+        this.socket.disconnect();
     }
 
     image = (imageBase64: string) => {

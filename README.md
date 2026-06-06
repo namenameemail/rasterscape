@@ -8,7 +8,7 @@ then:
 </br>
 `npm i`
 </br>
-`npm link bbuutoonnss`
+`npm run run`
 </br>
-`npm start`
+(or manually: `npm run link:bbuutoonnss` then `npm start`)
 
