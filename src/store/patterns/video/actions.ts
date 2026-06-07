@@ -123,6 +123,7 @@ export const stop = (id: string) => (dispatch, getState: () => AppState) => {
     patternsService.pattern[id].videoService.stop();
 
     patternsService.pattern[id].previewService.autoUpdate(false);
+    patternsService.pattern[id].valuesService.update();
     
 };
 

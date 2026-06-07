@@ -1,12 +1,16 @@
 import {createMaskedImageFromImageData, imageDataToCanvas} from "../../../../utils/canvas/helpers/imageData";
 import {PatternService} from "../PatternService";
-import {coordHelper2, imageDataDebug} from "../../../../components/Area/canvasPosition.servise";
+import {performanceSettings} from "../../../../config/performanceSettings";
+import {hasMaskedConsumers} from "./valuesServiceHelpers";
 
 export class PatternValuesService {
     patternService: PatternService;
 
     masked?: HTMLCanvasElement;
     selected?: HTMLCanvasElement;
+
+    private lastMaskedUpdateTime = 0;
+    private lastSelectedUpdateTime = 0;
 
     constructor(patternService: PatternService) {
         this.patternService = patternService;
@@ -15,6 +19,64 @@ export class PatternValuesService {
     update = (): PatternService => {
         this.updateMasked();
         this.updateSelected();
+
+        return this.patternService;
+    };
+
+    syncMaskedReference = (): PatternService => {
+        const canvas = this.patternService.canvasService.canvas;
+
+        if (canvas) {
+            this.masked = canvas;
+        }
+
+        return this.patternService;
+    };
+
+    updateMaskedIfNeeded = (force = false): PatternService => {
+        const state = this.patternService.storeService.getState();
+        const maskEnabled = this.patternService.maskService.isMaskEnabled;
+
+        if (!maskEnabled && !hasMaskedConsumers(this.patternService, state)) {
+            return this.syncMaskedReference();
+        }
+
+        if (!force && !this.isThrottleDue(this.lastMaskedUpdateTime)) {
+            if (!maskEnabled) {
+                return this.syncMaskedReference();
+            }
+
+            return this.patternService;
+        }
+
+        this.updateMasked();
+        this.lastMaskedUpdateTime = performance.now();
+
+        return this.patternService;
+    };
+
+    updateSelectedIfNeeded = (force = false): PatternService => {
+        if (!this.patternService.selectionService.mask) {
+            this.selected = null;
+            return this.patternService;
+        }
+
+        if (!force && !this.isThrottleDue(this.lastSelectedUpdateTime)) {
+            return this.patternService;
+        }
+
+        this.updateSelected();
+        this.lastSelectedUpdateTime = performance.now();
+
+        return this.patternService;
+    };
+
+    updateForVideoFrame = (): PatternService => {
+        this.updateMaskedIfNeeded();
+
+        if (this.patternService.selectionService.mask) {
+            this.updateSelectedIfNeeded();
+        }
 
         return this.patternService;
     };
@@ -48,5 +110,13 @@ export class PatternValuesService {
         this.selected = null;
     };
 
-}
+    private isThrottleDue = (lastTime: number): boolean => {
+        const {throttleEnabled, throttleDelayMs} = performanceSettings.valuesService;
 
+        if (!throttleEnabled) {
+            return true;
+        }
+
+        return performance.now() - lastTime >= throttleDelayMs;
+    };
+}

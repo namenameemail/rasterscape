@@ -259,7 +259,7 @@ export class PatternVideoService {
         }
 
         profileLogger.time('video.valuesService', () => {
-            this.patternService.valuesService.update()
+            this.patternService.valuesService.updateForVideoFrame()
         })
     }
 

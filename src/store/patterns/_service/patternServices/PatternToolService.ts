@@ -11,6 +11,8 @@ import {BrushSelect} from "./CanvasEventsService/ToolsServices/brushSelect";
 import {LineSolidPattern} from "./CanvasEventsService/ToolsServices/lineSolidPattern";
 import {LineTrailingPattern} from "./CanvasEventsService/ToolsServices/lineTrailingPattern";
 import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
+import {patternsService} from "../../../index";
+import {getActiveToolSourcePatternIds} from "./valuesServiceHelpers";
 
 
 export const BrushServiceByType = {
@@ -52,6 +54,14 @@ export class PatternToolService {
         this.patternService.storeService.dispatchResetPosition();
     }
 
+    syncActiveToolSourceValues = () => {
+        const state = this.patternService.storeService.getState();
+
+        for (const patternId of getActiveToolSourcePatternIds(state)) {
+            patternsService.pattern[patternId]?.valuesService.updateMaskedIfNeeded();
+        }
+    }
+
     canvasEventHandlers: CanvasEventHandlers = {
         onClick: (...args) => {
             this.canvasToolService?.handlers.onClick?.(...args)
@@ -60,15 +70,17 @@ export class PatternToolService {
             this.canvasToolService?.handlers.onDown?.(...args)
         },
         onDraw: (...args) => {
+            this.syncActiveToolSourceValues();
             profileLogger.time('draw.tool', () => {
                 this.canvasToolService?.handlers.onDraw?.(...args);
             });
             profileLogger.time('draw.valuesMasked', () => {
-                this.patternService.valuesService.updateMasked();
+                this.patternService.valuesService.updateMaskedIfNeeded();
             });
         },
         onRelease: (...args) => {
-            this.canvasToolService?.handlers.onRelease?.(...args)
+            this.canvasToolService?.handlers.onRelease?.(...args);
+            this.patternService.valuesService.update();
         },
         onPushPosition: this.pushPositionToStore,
         onResetPosition: this.resetPositionToStore,
@@ -86,11 +98,12 @@ export class PatternToolService {
                 this.maskToolService?.handlers.onDraw?.(...args);
             });
             profileLogger.time('draw.mask.valuesMasked', () => {
-                this.patternService.valuesService.updateMasked();
+                this.patternService.valuesService.updateMaskedIfNeeded();
             });
         },
         onRelease: (...args) => {
-            this.maskToolService?.handlers.onRelease?.(...args)
+            this.maskToolService?.handlers.onRelease?.(...args);
+            this.patternService.valuesService.update();
         },
         onPushPosition: this.pushPositionToStore,
         onResetPosition: this.resetPositionToStore,
