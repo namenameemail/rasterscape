@@ -14,4 +14,6 @@ export enum EVideoAction {
     STOP_CAMERA = 'pattern/video/stop-camera',
     START_UPDATING = 'pattern/video/start-updating',
     STOP_UPDATING = 'pattern/video/stop-updating',
+    SET_VIDEO_SOURCE_TYPE = 'pattern/video/set-video-source-type',
+    SET_VIDEO_SOURCE_PATTERN = 'pattern/video/set-video-source-pattern',
 }

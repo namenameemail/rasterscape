@@ -3,11 +3,10 @@
 
   background: lightgrey;
 
-  overflow-y: auto;
   display: flex;
   flex-direction: column-reverse;
   overflow-x: scroll;
-  overflow-y: hidden;
+  overflow-y: auto;
 
   height: 100vh;
 
@@ -17,6 +16,7 @@
     display: flex;
     align-items: flex-end;
     justify-content: flex-start;
+    min-height: 100%;
 
     .tools-panel {
       z-index: 1;
@@ -42,7 +42,7 @@
 
     .windows {
       //z-index: 1;
-      height: 100%;
+      min-height: 100%;
       white-space: nowrap;
       padding-left: 23vw;
       display: flex;

@@ -2,14 +2,19 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path';
 import rawPlugin from 'vite-raw-plugin'
+import { profilingSavePlugin } from './scripts/viteProfilingPlugin'
 
 const bbuutoonnssPath = path.resolve(__dirname, '../bbuutoonnss')
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), rawPlugin({
-    fileRegex: /\.glsl$/
-  })],
+  plugins: [
+    react(),
+    rawPlugin({
+      fileRegex: /\.glsl$/
+    }),
+    profilingSavePlugin(),
+  ],
   resolve: {
     preserveSymlinks: true,
     alias: {

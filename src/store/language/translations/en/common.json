@@ -395,6 +395,10 @@
         "t": "t",
         "y": "y",
         "x": "x"
+      },
+      "sourceType": {
+        "camera": "camera",
+        "pattern": "pattern"
       }
     },
     "hotkeysDescription": {
@@ -460,7 +464,8 @@
           "x": "pattern{{data1}} | video | axis | x"
         },
         "stackType": "pattern{{data1}} | video | stack type",
-        "cutFunction": "pattern{{data1}} | video | cut function"
+        "cutFunction": "pattern{{data1}} | video | cut function",
+        "sourceType": "pattern{{data1}} | video | source type"
       }
     }
   },

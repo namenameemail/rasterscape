@@ -3,5 +3,18 @@
     "brush": "brush",
     "line": "line",
     "select": "select"
+  },
+  "pattern": {
+    "video": {
+      "sourceType": {
+        "camera": "camera",
+        "pattern": "pattern"
+      }
+    },
+    "hotkeysDescription": {
+      "video": {
+        "sourceType": "pattern{{data1}} | video | source type"
+      }
+    }
   }
 }

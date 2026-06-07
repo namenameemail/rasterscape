@@ -28,6 +28,8 @@ export interface PatternsSelectOwnProps {
     hkLabel?: string
 
     blurOnClick?: boolean
+
+    excludePatternId?: string
 }
 
 export interface PatternsSelectProps extends PatternsSelectStateProps, PatternsSelectActionProps, PatternsSelectOwnProps {
@@ -45,7 +47,12 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
         path,
         nullable,
         blurOnClick,
+        excludePatternId,
     } = props;
+
+    const items = excludePatternId
+        ? patternsSelectItems.filter(({id}) => id !== excludePatternId)
+        : patternsSelectItems;
 
     const action = React.useCallback((id) => {
         const selected = Array.isArray(value) ? value?.includes(id) : (id === value);
@@ -74,7 +81,7 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
 
     return (
         <div className={'pattern-select'}>
-            {patternsSelectItems.map(({width, height, id}, i) => {
+            {items.map(({width, height, id}, i) => {
                 return (
                     <PatternSelectItem
                         index={i}

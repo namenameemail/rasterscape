@@ -2,6 +2,25 @@
   display: flex;
   flex-wrap: wrap;
 
+  .video-controls-source {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .video-source-type {
+    .select-drop-value {
+      background-color: #ebebeb;
+    }
+  }
+
+  .video-pattern-select {
+    .pattern-select-button:not(.button-select-selected) {
+      background-color: #ebebeb;
+    }
+  }
+
   .select-device {
     width: 140px;
     &, .bbuutoonn-select-drop__items {
@@ -405,9 +424,6 @@
 }
 
 
-.video-controls-source {
-  display: flex;
-}
 
 
 .video-controls-cube-params {

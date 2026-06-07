@@ -1,5 +1,6 @@
 import {PatternAction} from "../pattern/types";
-import {VideoParams} from "./types";
+import {VideoParams, VideoSourceType} from "./types";
+import {getVideoState} from "./helpers";
 import {AppState, patternsService} from "../../index";
 import 'p5/lib/addons/p5.dom';
 import {updateImage} from "../pattern/actions";
@@ -31,6 +32,8 @@ export type SetCFAction = PatternAction & { value: string };
 export type SetStackSizeAction = PatternAction & { value: number };
 export type SetCutOffsetAction = PatternAction & { value: number };
 export type SetDepthAction = PatternAction & { value: number };
+export type SetVideoSourceTypeAction = PatternAction & { value: VideoSourceType };
+export type SetVideoSourcePatternAction = PatternAction & { value: string | null };
 
 export const setDevice = (id: string, device: MediaDeviceInfo) => (dispatch, getState: () => AppState) => {
     dispatch({
@@ -77,6 +80,8 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
         mirrorMode,
         stackSize,
         offset,
+        sourceType,
+        sourcePatternId,
     } = pattern?.video?.params || {};
 
     dispatch(updateImage({
@@ -99,6 +104,8 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
             mirrorMode,
             offset
         }))
+        .setSourceType(sourceType ?? getVideoState().params.sourceType)
+        .setSourcePatternId(sourcePatternId ?? getVideoState().params.sourcePatternId)
         .start();
 
 };
@@ -203,4 +210,37 @@ export const setVideoOffset = (id: string, paramName: string, value: any): Thunk
     });
 
     patternsService.pattern[id].videoService.setOffset(paramName, value);
+};
+
+export const setVideoSourceType = (id: string, value: VideoSourceType) => (dispatch, getState: () => AppState) => {
+    const pattern = getState().patterns[id];
+    const videoParams = pattern?.video?.params ?? getVideoState().params;
+
+    if (value === VideoSourceType.Pattern && videoParams.cameraOn) {
+        dispatch(stopCamera(id));
+    }
+
+    dispatch({
+        type: EVideoAction.SET_VIDEO_SOURCE_TYPE,
+        id,
+        value,
+    });
+
+    patternsService.pattern[id].videoService
+        .setSourceType(value)
+        .setSourcePatternId(value === VideoSourceType.Camera ? null : videoParams.sourcePatternId);
+};
+
+export const setVideoSourcePattern = (id: string, sourcePatternId: string | null) => (dispatch, getState: () => AppState) => {
+    if (sourcePatternId === id) {
+        return;
+    }
+
+    dispatch({
+        type: EVideoAction.SET_VIDEO_SOURCE_PATTERN,
+        id,
+        value: sourcePatternId,
+    });
+
+    patternsService.pattern[id].videoService.setSourcePatternId(sourcePatternId);
 };

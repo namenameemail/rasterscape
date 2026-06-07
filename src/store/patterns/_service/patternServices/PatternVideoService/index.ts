@@ -3,11 +3,15 @@ import { CameraService, CameraServiceInitParams } from 'bbuutoonnss'
 import { EdgeMode, MirrorMode, ShaderVideoModule, CameraAxis, StackType } from './ShaderVideoModule'
 import { FxyParams } from '../../../../changeFunctions/functions/fxy'
 import { getFxyFunctionType } from './utils'
-import { setStackSize } from '../../../video/actions'
 import { VideoOffset } from './ShaderVideoModule/types'
 import { ECFType } from '../../../../changeFunctions/types'
 import { CfDepthParams } from '../../../../changeFunctions/functions/depth'
-import * as StackBlur from 'stackblur-canvas';
+import * as StackBlur from 'stackblur-canvas'
+import { VideoSourceType } from '../../../video/types'
+import { patternsService } from '../../../../index'
+import { resizeImageData } from '../../../../../utils/canvas/helpers/imageData'
+import { profileLogger } from '../../../../../utils/profiling/ProfileLogger'
+import { coordHelper, coordHelper2, coordHelper3 } from '../../../../../components/Area/canvasPosition.servise'
 
 export const CameraAxisDirectionMap = {
     [CameraAxis.T]: 0,
@@ -43,10 +47,6 @@ export interface VideoServiceInitParams {
     mirrorMode: MirrorMode
 }
 
-export interface FrameSource {
-
-}
-
 export class PatternVideoService {
     patternService: PatternService
 
@@ -72,7 +72,8 @@ export class PatternVideoService {
 
     changeFunctionId: string
 
-    source: FrameSource
+    sourceType: VideoSourceType = VideoSourceType.Camera
+    sourcePatternId: string | null = null
     device: MediaDeviceInfo
     cameraService: CameraService = new CameraService()
 
@@ -152,36 +153,67 @@ export class PatternVideoService {
 
     frameHandler = (time) => {
 
-        // coordHelper5.setText('CHANG', time);
-        // DRAW SPEED
         const interval = time - this.prevTime
         this.times.push(interval)
         this.times.shift()
 
         this.minTime = Math.min(this.minTime, interval)
 
-        if (this.prevTime) this.maxTime = Math.max(this.maxTime, interval)
-        // coordHelper2.setText(interval)
-        // coordHelper3.setText(this.minTime)
-        // coordHelper4.setText(this.maxTime)
+        if (this.prevTime) {
+            this.maxTime = Math.max(this.maxTime, interval)
+            profileLogger.value('video.frameInterval', interval)
+        }
+
+        coordHelper.setText(interval.toFixed(1))
+        coordHelper2.setText(this.minTime.toFixed(1))
+        coordHelper3.setText(this.maxTime.toFixed(1))
         this.prevTime = time
 
+        profileLogger.beginFrame()
         this.onFrame()
 
         this.requestFrameID = requestAnimationFrame(this.frameHandler)
     }
 
+    getFrameData = (): Uint8ClampedArray | undefined => {
+        if (this.sourceType === VideoSourceType.Camera) {
+            return this.cameraService.receiveImageData()?.data
+        }
+
+        if (!this.sourcePatternId) {
+            return undefined
+        }
+
+        const sourcePattern = patternsService.pattern[this.sourcePatternId]
+        const imageData = sourcePattern?.canvasService.getImageData()
+
+        if (!imageData) {
+            return undefined
+        }
+
+        if (imageData.width !== this.width || imageData.height !== this.height) {
+            return resizeImageData(imageData, this.width, this.height).data
+        }
+
+        return imageData.data
+    }
+
     onFrame = () => {
 
-        const newCameraFrameData = this.cameraService.receiveImageData()?.data
+        const newFrameData = profileLogger.time('video.getFrameData', () => this.getFrameData())
 
-        if (newCameraFrameData) {
-            this.shaderVideoModule.pushNewFrame(newCameraFrameData)
+        if (newFrameData) {
+            profileLogger.time('video.pushNewFrame', () => {
+                this.shaderVideoModule.pushNewFrame(newFrameData)
+            })
         }
-        const state = this.patternService.storeService.getState()
 
-        if (this.changeFunctionId) {
+        profileLogger.time('video.updateFuncParams', () => {
+            if (!this.changeFunctionId) {
+                return
+            }
 
+            const state = this.patternService.storeService.getState()
             const changeFunctionState = state.changeFunctions.functions[this.changeFunctionId]
 
             if (changeFunctionState.type === ECFType.FXY) {
@@ -195,37 +227,40 @@ export class PatternVideoService {
 
                 this.shaderVideoModule.updateFuncParams(changeFunctionState.type, changeFunctionParams, state)
             }
+        })
 
+        profileLogger.time('video.updateOffsets', () => {
+            const state = this.patternService.storeService.getState()
+            const patternVideoOffset = state.patterns[this.patternService.patternId].video.params.offset
+            this.shaderVideoModule.updateOffsets(patternVideoOffset)
+        })
+
+        const newFrameCanvas = profileLogger.time('video.shaderDraw', () => this.shaderVideoModule.updateImage())
+
+        if (newFrameCanvas) {
+            profileLogger.time('video.drawImage', () => {
+                this.patternService.canvasService.context.drawImage(newFrameCanvas, 0, 0)
+            })
         }
 
-        const patternVideoOffset = state.patterns[this.patternService.patternId].video.params.offset
-        this.shaderVideoModule.updateOffsets(patternVideoOffset)
+        const pattern = this.patternService.storeService.getState().patterns[this.patternService.patternId]
+        const radius = Math.round(pattern.blur?.value?.radius)
 
-        const newFrameCanvas: HTMLCanvasElement = this.shaderVideoModule.updateImage()
-
-
-       
-
-        newFrameCanvas && this.patternService.canvasService.context.drawImage(newFrameCanvas, 0, 0) // можно заменять сразу все изображение?
-
-
-        // blur start
-        const pattern = this.patternService.storeService.getState().patterns[this.patternService.patternId];
-       
-        const radius = Math.round(pattern.blur?.value?.radius);
-    
         if (radius > 0) {
-            this.patternService.canvasService.setImageData(
-                StackBlur.imageDataRGBA(
-                    this.patternService.canvasService.getImageData(),
-                    0, 0, 
-                    this.width, this.height, radius
+            profileLogger.time('video.blur', () => {
+                this.patternService.canvasService.setImageData(
+                    StackBlur.imageDataRGBA(
+                        this.patternService.canvasService.getImageData(),
+                        0, 0,
+                        this.width, this.height, radius
+                    )
                 )
-            )
+            })
         }
-        // blur eend
 
-        this.patternService.valuesService.update()
+        profileLogger.time('video.valuesService', () => {
+            this.patternService.valuesService.update()
+        })
     }
 
     setStackType = (type: StackType): PatternVideoService => {
@@ -282,6 +317,16 @@ export class PatternVideoService {
 
         this.shaderVideoModule.updateOffset(param, value)
 
+        return this
+    }
+
+    setSourceType = (sourceType: VideoSourceType): PatternVideoService => {
+        this.sourceType = sourceType
+        return this
+    }
+
+    setSourcePatternId = (sourcePatternId: string | null): PatternVideoService => {
+        this.sourcePatternId = sourcePatternId
         return this
     }
 }

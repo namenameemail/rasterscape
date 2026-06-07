@@ -3,6 +3,7 @@ import {rotate} from "../../../../../utils/draw";
 import {CanvasServiceEvent} from "./types";
 import { PatternStoreService } from "../PatternStoreService";
 import { coordHelper, coordHelper2, coordHelper3 } from "../../../../../components/Area/canvasPosition.servise";
+import { profileLogger } from "../../../../../utils/profiling/ProfileLogger";
 
 export interface CanvasEventHandlers {
     onPushPosition?: (e: MouseEvent) => void
@@ -129,10 +130,12 @@ export class CanvasEventsService {
      * */
 
     onNewDrawEvent = () => {
-        this.handlers.onDraw?.({
-            events: this.frameRelatedEvents,
-            context: this.context,
-            canvas: this.canvas,
+        profileLogger.time('draw.onDraw', () => {
+            this.handlers.onDraw?.({
+                events: this.frameRelatedEvents,
+                context: this.context,
+                canvas: this.canvas,
+            });
         });
     };
 
@@ -151,19 +154,22 @@ export class CanvasEventsService {
 
     onFrame = () => {
         const prevFrameRelatedEvent = this.frameRelatedEvents[1];
-        const newFrameRelatedEvent = this.documentDragEvents[0]
-            ? this.getCanvasRelatedEvent(this.documentDragEvents[0])
-            : this.frameRelatedEvents[0];
+        const newFrameRelatedEvent = profileLogger.time('draw.resolveEvent', () =>
+            this.documentDragEvents[0]
+                ? this.getCanvasRelatedEvent(this.documentDragEvents[0])
+                : this.frameRelatedEvents[0]
+        );
 
         if (
             !this.drawOnMove ||
-            (!this.isEqualOffset(prevFrameRelatedEvent, newFrameRelatedEvent)) // это нужно чтобы срабатывало событие рисования если мышь не двигается а двигается канвавс
+            (!this.isEqualOffset(prevFrameRelatedEvent, newFrameRelatedEvent))
         ) {
             this.onNewDrawEvent();
         }
 
-        this.pushFrameRelatedEvent(newFrameRelatedEvent);
-
+        profileLogger.time('draw.pushFrameRelatedEvent', () => {
+            this.pushFrameRelatedEvent(newFrameRelatedEvent);
+        });
     };
 
     getCanvasRelatedEvent = (e: MouseEvent) => {
@@ -203,17 +209,20 @@ export class CanvasEventsService {
         let minTime = 1000;
         let maxTime = 0;
         const changing = (time) => {
-
-
-            // DRAW SPEED
             const interval = time - prevTime;
             minTime = Math.min(minTime, interval)
-            if(prevTime) maxTime = Math.max(maxTime, interval)
-            coordHelper.setText(interval);
-            coordHelper2.setText(minTime);
-            coordHelper3.setText(maxTime);
+
+            if (prevTime) {
+                maxTime = Math.max(maxTime, interval)
+                profileLogger.value('draw.frameInterval', interval)
+            }
+
+            coordHelper.setText(interval.toFixed(1));
+            coordHelper2.setText(minTime.toFixed(1));
+            coordHelper3.setText(maxTime.toFixed(1));
             prevTime = time;
 
+            profileLogger.beginFrame();
             this.onFrame();
 
             this.requestFrameID = requestAnimationFrame(changing);

@@ -11,6 +11,11 @@ import {
 } from '../_service/patternServices/PatternVideoService/ShaderVideoModule'
 import { VideoOffset } from '../_service/patternServices/PatternVideoService/ShaderVideoModule/types'
 
+export enum VideoSourceType {
+    Camera = 'camera',
+    Pattern = 'pattern',
+}
+
 export interface VideoParams {
     cameraOn: boolean
     updatingOn: boolean
@@ -22,6 +27,8 @@ export interface VideoParams {
     stackType: StackType
     mirrorMode: MirrorMode
     device: MediaDeviceInfo
+    sourceType: VideoSourceType
+    sourcePatternId: string | null
 }
 
 export interface VideoValue {

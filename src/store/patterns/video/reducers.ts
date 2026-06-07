@@ -6,9 +6,11 @@ import {
     SetSlitModeAction, SetStackSizeAction,
     SetStackTypeAction, SetVideoParamAction,
     SetVideoParamsAction,
+    SetVideoSourcePatternAction, SetVideoSourceTypeAction,
 } from './actions'
 import {act} from "react-dom/test-utils";
 import {EVideoAction} from "./consts";
+import {VideoSourceType} from "./types";
 
 export const videoReducers = {
 
@@ -180,6 +182,30 @@ export const videoReducers = {
                 params: {
                     ...pattern.video.params,
                     cutOffset: action.value
+                }
+            }
+        })),
+    [EVideoAction.SET_VIDEO_SOURCE_TYPE]: reducePattern<SetVideoSourceTypeAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    sourceType: action.value,
+                    sourcePatternId: action.value === VideoSourceType.Camera ? null : pattern.video.params.sourcePatternId,
+                    cameraOn: action.value === VideoSourceType.Pattern ? false : pattern.video.params.cameraOn,
+                }
+            }
+        })),
+    [EVideoAction.SET_VIDEO_SOURCE_PATTERN]: reducePattern<SetVideoSourcePatternAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    sourcePatternId: action.value,
                 }
             }
         })),

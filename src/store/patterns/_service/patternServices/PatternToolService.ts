@@ -10,6 +10,7 @@ import {LineSolid} from "./CanvasEventsService/ToolsServices/lineSolid";
 import {BrushSelect} from "./CanvasEventsService/ToolsServices/brushSelect";
 import {LineSolidPattern} from "./CanvasEventsService/ToolsServices/lineSolidPattern";
 import {LineTrailingPattern} from "./CanvasEventsService/ToolsServices/lineTrailingPattern";
+import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
 
 
 export const BrushServiceByType = {
@@ -59,8 +60,12 @@ export class PatternToolService {
             this.canvasToolService?.handlers.onDown?.(...args)
         },
         onDraw: (...args) => {
-            this.canvasToolService?.handlers.onDraw?.(...args);
-            this.patternService.valuesService.updateMasked(); // это обновление можно сделать опциональным
+            profileLogger.time('draw.tool', () => {
+                this.canvasToolService?.handlers.onDraw?.(...args);
+            });
+            profileLogger.time('draw.valuesMasked', () => {
+                this.patternService.valuesService.updateMasked();
+            });
         },
         onRelease: (...args) => {
             this.canvasToolService?.handlers.onRelease?.(...args)
@@ -77,8 +82,12 @@ export class PatternToolService {
             this.maskToolService?.handlers.onDown?.(...args)
         },
         onDraw: (...args) => {
-            this.maskToolService?.handlers.onDraw?.(...args);
-            this.patternService.valuesService.updateMasked();
+            profileLogger.time('draw.mask.tool', () => {
+                this.maskToolService?.handlers.onDraw?.(...args);
+            });
+            profileLogger.time('draw.mask.valuesMasked', () => {
+                this.patternService.valuesService.updateMasked();
+            });
         },
         onRelease: (...args) => {
             this.maskToolService?.handlers.onRelease?.(...args)

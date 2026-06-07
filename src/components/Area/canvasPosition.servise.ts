@@ -16,6 +16,9 @@ export class TextHelper {
     write;
     writeln;
     clear;
+    readonly elem: HTMLDivElement;
+    private constantText: HTMLSpanElement;
+
     constructor(x, y, text?: string) {
         const elem = document.createElement('div');
         const constantText = document.createElement('span');
@@ -24,6 +27,8 @@ export class TextHelper {
         elem.appendChild(constantText);
 
         constantText.innerText = text;
+        this.elem = elem;
+        this.constantText = constantText;
 
         document.body.appendChild(elem);
 
@@ -52,6 +57,12 @@ export class TextHelper {
         elem.addEventListener('mouseup', () => {
             this.setText('');
         })
+    }
+
+    attachToPanel(parent: HTMLElement): void {
+        parent.appendChild(this.elem);
+        this.elem.style.cssText = '';
+        this.constantText.style.display = 'none';
     }
 }
 

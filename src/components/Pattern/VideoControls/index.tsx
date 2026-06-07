@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {VideoParams} from '../../../store/patterns/video/types'
+import {VideoParams, VideoSourceType} from '../../../store/patterns/video/types'
 import {SelectDrop} from '../../_shared/buttons/complex/SelectDrop'
 import {connect, MapDispatchToProps, MapStateToProps} from 'react-redux'
 import {AppState} from '../../../store'
@@ -18,8 +18,11 @@ import {
     start,
     stop,
     setVideoOffset,
+    setVideoSourceType,
+    setVideoSourcePattern,
 } from '../../../store/patterns/video/actions'
 import {getChangeFunctionsSelectItemsVideo} from '../../../store/changeFunctions/selectors'
+import {PatternsSelect} from '../../PatternsSelect'
 import './videoControls.scss'
 import {setCFHighlights, setCFTypeHighlights} from '../../../store/changeFunctionsHighlights'
 import {SelectButtonsEventData} from '../../_shared/buttons/complex/SelectButtons'
@@ -74,6 +77,10 @@ export interface VideoControlsActionProps {
     setStackSize(id: string, value: number): void
 
     setVideoOffset(id: string, name: string, value: number): void
+
+    setVideoSourceType(id: string, value: VideoSourceType): void
+
+    setVideoSourcePattern(id: string, value: string | null): void
 }
 
 export interface VideoControlsOwnProps {
@@ -89,6 +96,7 @@ export interface VideoControlsState {
 }
 
 const availableCFTypes = [ECFType.FXY, ECFType.DEPTH]
+const sourceTypeItems = Object.values(VideoSourceType)
 
 const inputNumberProps: Pick<InputNumberProps, 'min' | 'max' | 'step' | 'delay' | 'notZero'> = {
     min: 0,
@@ -257,6 +265,22 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
 
     }
 
+    handleChangeSourceType = (data: SelectButtonsEventData) => {
+        const {setVideoSourceType, patternId} = this.props
+        setVideoSourceType(patternId, data.value)
+    }
+
+    handleSelectSourcePattern = (value: string | string[], _added: string, _removed: string) => {
+        const {setVideoSourcePattern, patternId} = this.props
+        setVideoSourcePattern(patternId, Array.isArray(value) ? value[0] ?? null : value)
+    }
+
+    sourceTypeGetValue = (id: VideoSourceType) => id
+    sourceTypeGetText = (id: VideoSourceType) => {
+        const {t} = this.props
+        return t('pattern.video.sourceType.' + id)
+    }
+
     render() {
         const {
             changeFunctionsSelectItems,
@@ -267,31 +291,59 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
             autoblur,
             autofocus,
         } = this.props
-        const {cameraOn, updatingOn} = params
+        const {cameraOn, updatingOn, sourceType, sourcePatternId} = params
+        const isCameraSource = sourceType === VideoSourceType.Camera
+        const isPatternSource = sourceType === VideoSourceType.Pattern
 
         return (
             <div className={'video-controls'}>
 
                 <div className={'video-controls-source'}>
-                    <SelectVideoDevice
-                        className={'select-device'}
-                        value={params.device?.deviceId}
-                        onSelect={this.handleDeviceSelect}
-                        
-                    />
-                    <ButtonHK
-                        hkLabel={'pattern.hotkeysDescription.video.cameraOn'}
+                    <SelectDrop
+                        hkByValue={false}
+                        hkLabel={'pattern.hotkeysDescription.video.sourceType'}
                         hkData1={patternId}
-                        path={`pattern.${patternId}.video.cameraOn`}
-                        className={'video-toggle'}
-                        selected={cameraOn}
-                        name={'cameraOn'}
-                        disabled={videoDisabled || !params.device?.deviceId}
-                        onClick={this.handleChangeCameraOnParam}
-                    >
-                        {/* {cameraOn ? t('pattern.video.stop') : t('pattern.video.camera')} */}
-                        {t('pattern.video.camera')}
-                    </ButtonHK>
+                        className={'video-source-type'}
+                        name={'sourceType'}
+                        value={sourceType}
+                        getValue={this.sourceTypeGetValue}
+                        getText={this.sourceTypeGetText}
+                        items={sourceTypeItems}
+                        onChange={this.handleChangeSourceType}
+                    />
+                    {isCameraSource && (
+                        <>
+                            <SelectVideoDevice
+                                className={'select-device'}
+                                value={params.device?.deviceId}
+                                onSelect={this.handleDeviceSelect}
+                            />
+                            <ButtonHK
+                                hkLabel={'pattern.hotkeysDescription.video.cameraOn'}
+                                hkData1={patternId}
+                                path={`pattern.${patternId}.video.cameraOn`}
+                                className={'video-toggle'}
+                                selected={cameraOn}
+                                name={'cameraOn'}
+                                disabled={videoDisabled || !params.device?.deviceId}
+                                onClick={this.handleChangeCameraOnParam}
+                            >
+                                {t('pattern.video.camera')}
+                            </ButtonHK>
+                        </>
+                    )}
+                    {isPatternSource && (
+                        <div className={'video-pattern-select'}>
+                            <PatternsSelect
+                                HK={false}
+                                blurOnClick
+                                nullable
+                                excludePatternId={patternId}
+                                value={sourcePatternId ?? undefined}
+                                onChange={this.handleSelectSourcePattern}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <div className={'video-controls-cube-params'}>
@@ -313,7 +365,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                         className={'video-toggle'}
                         selected={updatingOn}
                         name={'updatingOn'}
-                        disabled={videoDisabled}
+                        disabled={videoDisabled || (isPatternSource && !sourcePatternId)}
                         onClick={this.handleChangeUpdatingOnParam}
                     >
                         {/* {updatingOn ? t('pattern.video.stop') : t('pattern.video.update')} */}
@@ -424,6 +476,9 @@ const mapDispatchToProps: MapDispatchToProps<VideoControlsActionProps, VideoCont
 
     setCFHighlights,
     setCFTypeHighlights,
+
+    setVideoSourceType,
+    setVideoSourcePattern,
 }
 
 export const VideoControls = connect<VideoControlsStateProps, VideoControlsActionProps, VideoControlsOwnProps, AppState>(

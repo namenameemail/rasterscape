@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Profiling sessions (written by dev server Save button)
+profiling/sessions/*.json
+profiling/latest.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
