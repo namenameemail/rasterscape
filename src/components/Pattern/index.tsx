@@ -22,6 +22,7 @@ import {bindCanvas, doublePattern, editConfig, updateImage} from "../../store/pa
 import {setImportParams} from "../../store/patterns/import/actions";
 import {RoomControls} from "./Room/RoomControls";
 import {BlurControls} from "./Blur/BlurControls";
+import {PlatformerControls} from "./Platformer/PlatformerControls";
 import '../../styles/inputNumber.scss';
 import {createPatternFromSelection, cutPatternBySelection} from "../../store/patterns/selection/actions";
 import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
@@ -256,6 +257,9 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                             {config.blur &&
                             <BlurControls patternId={id}/>}
 
+                            {config.platformer &&
+                            <PlatformerControls patternId={id}/>}
+
                             {config.rotation &&
                             <RotationControls patternId={id}/>}
 
@@ -318,6 +322,15 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                                     onClick={this.handleConfigToggle}
                                 >
                                     {t('plugins.blur')}</ButtonHK>
+                                <ButtonHK
+                                    path={`pattern.${id}.platformer`}
+                                    name={"platformer"}
+                                    hkLabel={'pattern.hotkeysDescription.config.platformer'}
+                                    hkData1={id}
+                                    selected={config.platformer}
+                                    onClick={this.handleConfigToggle}
+                                >
+                                    {t('plugins.platformer')}</ButtonHK>
                             </div>
 
                         </div>

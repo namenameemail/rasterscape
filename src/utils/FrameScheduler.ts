@@ -4,7 +4,8 @@ import { profileLogger } from './profiling/ProfileLogger'
 export enum FramePriority {
     Video = 0,
     Draw = 1,
-    Changing = 2,
+    Platformer = 2,
+    Changing = 3,
 }
 
 type FrameSubscriber = {

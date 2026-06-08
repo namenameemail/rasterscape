@@ -73,6 +73,9 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
     if (pattern.room?.value?.connected && !pattern.room?.value?.meDrawer)
         return;
 
+    if (pattern.platformer?.params?.playingOn)
+        return;
+
     const {
         edgeMode,
         cameraAxis,

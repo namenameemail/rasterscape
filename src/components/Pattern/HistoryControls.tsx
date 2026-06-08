@@ -11,6 +11,7 @@ import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 export interface HistoryControlsStateProps {
     history: HistoryValue
     isVideoPlaying: boolean
+    isPlatformerPlaying: boolean
     meDrawer: boolean
 }
 
@@ -39,8 +40,11 @@ export const HistoryControlsComponent: React.FC<HistoryControlsProps> = (props) 
         redo,
         history,
         isVideoPlaying,
+        isPlatformerPlaying,
         patternId,
     } = props;
+
+    const isPlaybackActive = isVideoPlaying || isPlatformerPlaying;
 
     const onUndo = React.useCallback(() => {
         undo(patternId);
@@ -55,13 +59,13 @@ export const HistoryControlsComponent: React.FC<HistoryControlsProps> = (props) 
         <div className={'flex-col history-controls'}>
             <ButtonHK
                 onClick={onUndo}
-                disabled={!history.before.length || isVideoPlaying || !meDrawer}
+                disabled={!history.before.length || isPlaybackActive || !meDrawer}
                 width={70}>
                 <span>{t('patternControls.undo')}</span> <small>{history.before.length ? `(${history.before.length})` : ""}</small>
             </ButtonHK>
             <ButtonHK
                 onClick={onRedo}
-                disabled={!history.after.length || isVideoPlaying || !meDrawer}
+                disabled={!history.after.length || isPlaybackActive || !meDrawer}
                 width={70}>
                 <span>{t('patternControls.redo')}</span> <small>{history.after.length ? `(${history.after.length})` : ""}</small>
             </ButtonHK>
@@ -72,6 +76,7 @@ export const HistoryControlsComponent: React.FC<HistoryControlsProps> = (props) 
 const mapStateToProps: MapStateToProps<HistoryControlsStateProps, HistoryControlsOwnProps, AppState> = (state, {patternId}) => ({
     history: state.patterns[patternId]?.history.value,
     isVideoPlaying: state.patterns[patternId]?.video?.params.updatingOn,// && !state.patterns[patternId]?.video?.params.pause,
+    isPlatformerPlaying: state.patterns[patternId]?.platformer?.params.playingOn,
     meDrawer: isMeDrawer(state.patterns[patternId].room?.value)
 });
 

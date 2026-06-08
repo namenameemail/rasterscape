@@ -453,7 +453,9 @@ const mapStateToProps: MapStateToProps<VideoControlsStateProps, VideoControlsOwn
         changeFunctionParams: changeFunctionId
             ? state.changeFunctions.functions[changeFunctionId]?.params || null
             : null,
-        videoDisabled: !!state.patterns[patternId]?.room?.value?.connected && !state.patterns[patternId]?.room?.value?.meDrawer,
+        videoDisabled:
+            (!!state.patterns[patternId]?.room?.value?.connected && !state.patterns[patternId]?.room?.value?.meDrawer)
+            || !!state.patterns[patternId]?.platformer?.params?.playingOn,
         autoblur: state.hotkeys.autoblur,
         autofocus: state.hotkeys.autofocus,
     }

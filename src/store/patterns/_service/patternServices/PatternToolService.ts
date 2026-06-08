@@ -74,12 +74,20 @@ export class PatternToolService {
             profileLogger.time('draw.tool', () => {
                 this.canvasToolService?.handlers.onDraw?.(...args);
             });
+            if (this.patternService.platformerService.isPlaying) {
+                this.patternService.platformerService.markWorldDirty('tool.onDraw');
+                this.patternService.platformerService.refreshDisplay();
+            }
             profileLogger.time('draw.valuesMasked', () => {
                 this.patternService.valuesService.updateMaskedIfNeeded();
             });
         },
         onRelease: (...args) => {
             this.canvasToolService?.handlers.onRelease?.(...args);
+            if (this.patternService.platformerService.isPlaying) {
+                this.patternService.platformerService.markWorldDirty('tool.onRelease');
+                this.patternService.platformerService.refreshDisplay();
+            }
             this.patternService.valuesService.update();
         },
         onPushPosition: this.pushPositionToStore,

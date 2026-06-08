@@ -3,6 +3,10 @@ import {rotate} from "../../../../../utils/draw";
 import {CanvasServiceEvent} from "./types";
 import { PatternStoreService } from "../PatternStoreService";
 import { profileLogger } from "../../../../../utils/profiling/ProfileLogger";
+import {
+    platformerProfiler,
+    PlatformerCanvasEventPhase,
+} from "../PatternPlatformerService/PlatformerProfiler";
 import { frameScheduler, FramePriority } from "../../../../../utils/FrameScheduler";
 
 export interface CanvasEventHandlers {
@@ -106,22 +110,16 @@ export class CanvasEventsService {
 
         this.pushFrameRelatedEvent(e);
 
-        this.handlers.onDown?.({
-            events: this.frameRelatedEvents,
-            context: this.context,
-            canvas: this.canvas,
-        });
+        this.handlers.onDown?.(this.buildToolEvent());
+        this.logPlatformerCanvasEvent('down');
 
         this.start();
 
         // клик возможно не нужен вообще когда есть onDraw
         // или все же нужен клик с задержкой потому что значения не успевают вычислиться
         setTimeout(() => {
-            !this.drawing && this.handlers.onClick?.({
-                events: this.frameRelatedEvents,
-                context: this.context,
-                canvas: this.canvas,
-            });
+            !this.drawing && this.handlers.onClick?.(this.buildToolEvent());
+            !this.drawing && this.logPlatformerCanvasEvent('click');
         }, 10)
 
     };
@@ -131,13 +129,46 @@ export class CanvasEventsService {
      CYCLE ANIMATION CYCLE ANIMATION CYCLE ANIMATION CYCLE ANIMATION CYCLE ANIMATION CYCLE ANIMATION CYCLE ANIMATION CYCLE ANIMATION CYCLE
      * */
 
+    private logPlatformerCanvasEvent = (phase: PlatformerCanvasEventPhase): void => {
+        const platformer = this.storeService.patternService.platformerService
+
+        if (!platformer.isPlaying) {
+            return
+        }
+
+        const event = this.frameRelatedEvents[0]
+
+        platformerProfiler.logCanvasEvent(this.storeService.patternService.patternId, {
+            phase,
+            offsetX: event?.offsetX ?? -1,
+            offsetY: event?.offsetY ?? -1,
+            target: 'world',
+            drawing: this.drawing,
+        })
+    }
+
+    private buildToolEvent = (): CanvasServiceEvent => {
+        const platformer = this.storeService.patternService.platformerService
+
+        if (platformer.isPlaying) {
+            return {
+                events: this.frameRelatedEvents,
+                context: platformer.getWorldContext(),
+                canvas: platformer.getWorldCanvas(),
+            }
+        }
+
+        return {
+            events: this.frameRelatedEvents,
+            context: this.context,
+            canvas: this.canvas,
+        }
+    }
+
     onNewDrawEvent = () => {
         profileLogger.time('draw.onDraw', () => {
-            this.handlers.onDraw?.({
-                events: this.frameRelatedEvents,
-                context: this.context,
-                canvas: this.canvas,
-            });
+            this.handlers.onDraw?.(this.buildToolEvent());
+            this.logPlatformerCanvasEvent('draw');
         });
     };
 
@@ -269,11 +300,8 @@ export class CanvasEventsService {
         this.drawing = false;
         this.startFrameRelatedEvent = null;
 
-        this.handlers.onRelease?.({
-            events: this.frameRelatedEvents,
-            context: this.context,
-            canvas: this.canvas,
-        });
+        this.handlers.onRelease?.(this.buildToolEvent());
+        this.logPlatformerCanvasEvent('release');
 
 
         if (this.pointerLock) {

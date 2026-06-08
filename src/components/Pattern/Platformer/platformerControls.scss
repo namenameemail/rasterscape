@@ -1,0 +1,28 @@
+.platformer-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 8px;
+
+    &-row {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    &-label {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    &-params {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    &-hint {
+        font-size: 11px;
+        opacity: 0.7;
+    }
+}

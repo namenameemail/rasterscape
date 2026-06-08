@@ -359,7 +359,8 @@
     "video": "video",
     "mask": "mask",
     "room": "room",
-    "blur": "blur"
+    "blur": "blur",
+    "platformer": "platformer"
   },
   "pattern": {
     "mask": {
@@ -411,7 +412,8 @@
         "rotation": "pattern{{data1}} | rotation",
         "blur": "pattern{{data1}} | blur",
         "room": "pattern{{data1}} | room",
-        "video": "pattern{{data1}} | video"
+        "video": "pattern{{data1}} | video",
+        "platformer": "pattern{{data1}} | platformer"
       },
       "mask": {
         "inverse": "pattern{{data1}} | mask | inverse"
@@ -466,6 +468,27 @@
         "stackType": "pattern{{data1}} | video | stack type",
         "cutFunction": "pattern{{data1}} | video | cut function",
         "sourceType": "pattern{{data1}} | video | source type"
+      },
+      "platformer": {
+        "playingOn": "pattern{{data1}} | platformer | play/stop",
+        "playerWidth": "pattern{{data1}} | platformer | player width",
+        "playerHeight": "pattern{{data1}} | platformer | player height",
+        "gravity": "pattern{{data1}} | platformer | gravity",
+        "jumpForce": "pattern{{data1}} | platformer | jump force",
+        "moveSpeed": "pattern{{data1}} | platformer | move speed",
+        "collisionAlphaThreshold": "pattern{{data1}} | platformer | collision threshold",
+        "backgroundFit": "pattern{{data1}} | platformer | background fit"
+      }
+    },
+    "platformer": {
+      "play": "play",
+      "player": "player",
+      "background": "background",
+      "controlsHint": "A/D or arrows — move, Space — jump",
+      "backgroundFit": {
+        "stretch": "stretch",
+        "contain": "contain",
+        "cover": "cover"
       }
     }
   },

@@ -12,6 +12,7 @@ import {ImportParams, ImportState} from "../import/types";
 import {RoomParams, RoomState} from "../room/types";
 import {BlurParams, BlurState} from "../blur/types";
 import {DemonstrationParams, DemonstrationState} from "../demonstration/types";
+import {PlatformerParams, PlatformerState} from "../platformer/types";
 
 
 // PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN
@@ -39,6 +40,8 @@ export interface PatternParams {
     blur?: BlurParams
 
     demonstration?: DemonstrationParams
+
+    platformer?: PlatformerParams
 }
 
 // конфиг создания нового патерна для ручного заполнения или для формирования на основе друго патерна
@@ -67,6 +70,8 @@ export interface PatternConfig {
     room?: boolean
 
     blur?: boolean
+
+    platformer?: boolean
 }
 
 
@@ -89,6 +94,7 @@ export interface PatternState {
     room?: RoomState
     blur?: BlurState
     demonstration?: DemonstrationState
+    platformer?: PlatformerState
 }
 
 // ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS

@@ -8,6 +8,7 @@ import {AppState} from "../../index";
 import {PatternStoreService} from "./patternServices/PatternStoreService";
 import {PatternPreviewService} from "./patternServices/PatternPreviewService";
 import {PatternVideoService} from "./patternServices/PatternVideoService";
+import {PatternPlatformerService} from "./patternServices/PatternPlatformerService";
 
 export class PatternService {
     patternId: string;
@@ -20,6 +21,7 @@ export class PatternService {
     valuesService: PatternValuesService;
     patternToolService: PatternToolService;
     videoService: PatternVideoService;
+    platformerService: PatternPlatformerService;
 
     constructor(patternId: string, store: Store<AppState>) {
         this.patternId = patternId;
@@ -32,6 +34,7 @@ export class PatternService {
         this.patternToolService = new PatternToolService(this);
         this.previewService = new PatternPreviewService(this);
         this.videoService = new PatternVideoService(this);
+        this.platformerService = new PatternPlatformerService(this);
     }
 
     stop = () => {
@@ -40,12 +43,17 @@ export class PatternService {
         this.previewService.unbindAll();
         this.videoService.stop();
         this.videoService.stopCamera();
+        this.platformerService.stop();
     };
 
     setWidth = (width: number, noStretch?: boolean): PatternService => {
         this.canvasService.setWidth(width, noStretch);
         this.maskService.setWidth(width, noStretch);
-        this.patternToolService.setToolSize?.(width, this.canvasService.canvas.height);
+
+        const height = this.canvasService.canvas?.height ?? 0;
+
+        this.patternToolService.setToolSize?.(width, height);
+        this.platformerService.resize(width, height, noStretch);
 
         this.valuesService.update();
         this.previewService.update();
@@ -55,7 +63,11 @@ export class PatternService {
     setHeight = (height: number, noStretch?: boolean): PatternService => {
         this.canvasService.setHeight(height, noStretch);
         this.maskService.setHeight(height, noStretch);
-        this.patternToolService.setToolSize?.(this.canvasService.canvas.width, height);
+
+        const width = this.canvasService.canvas?.width ?? 0;
+
+        this.patternToolService.setToolSize?.(width, height);
+        this.platformerService.resize(width, height, noStretch);
 
         this.valuesService.update();
         this.previewService.update();
@@ -67,6 +79,7 @@ export class PatternService {
         this.canvasService.setImageData(canvasImageData, true, true);
         this.maskService.setImageData(maskImageData, true, true);
         this.patternToolService.setToolSize?.(canvasImageData.width, canvasImageData.height);
+        this.platformerService.reloadWorldFromCanvas();
 
         this.valuesService.update();
         this.previewService.update();
@@ -80,6 +93,7 @@ export class PatternService {
         this.canvasService.setImageData(canvasImageData, true, true);
 
         this.patternToolService.setToolSize?.(canvasImageData.width, canvasImageData.height);
+        this.platformerService.reloadWorldFromCanvas(noStretch);
 
         this.valuesService.update();
         this.previewService.update();

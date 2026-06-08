@@ -44,6 +44,8 @@ export const getPatternParams = (pattern: PatternState): PatternParams => {
 
         import: pattern.import && pattern.import.params,
 
-        room: pattern.room && pattern.room.params
+        room: pattern.room && pattern.room.params,
+
+        platformer: pattern.platformer && pattern.platformer.params,
     }
 };

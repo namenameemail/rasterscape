@@ -14,6 +14,7 @@ import {videoReducers} from "./video/reducers";
 import {roomReducers} from "./room/reducers";
 import {blurReducers} from "./blur/reducers";
 import {demonstrationReducers} from "./demonstration/reducers";
+import {platformerReducers} from "./platformer/reducers";
 import {EPatternsAction} from "./consts";
 import {omit} from "lodash";
 
@@ -39,6 +40,7 @@ export const patternsReducer = handleActions<PatternsState>({
     ...storeReducers,
     ...roomReducers,
     ...blurReducers,
+    ...platformerReducers,
 }, {});
 
 

@@ -14,6 +14,7 @@ import {getRoomState} from "./room/helpers";
 import {getBlurState} from "./blur/helpers";
 import {patternValues} from "./values";
 import {getDemonstrationState} from "./demonstration/helpers";
+import {getPlatformerState} from "./platformer/helpers";
 
 export const patternId = (idsArray: string[]): string =>
     (idsArray.length
@@ -39,6 +40,7 @@ export const createPatternInitialState = (id: string, config?: PatternConfig, pa
         room: getRoomState( undefined, params?.room),
         blur: getBlurState( undefined, params?.blur),
         demonstration: getDemonstrationState( undefined, params?.demonstration),
+        platformer: getPlatformerState(undefined, params?.platformer),
     }
 
     return patternState;
@@ -67,5 +69,6 @@ export const updatePatternState = (state: PatternState, config: PatternConfig, p
         room: getRoomState(state.room, params.room),
         blur: getBlurState(state.blur, params.blur),
         demonstration: getDemonstrationState(state.demonstration, params.demonstration),
+        platformer: getPlatformerState(state.platformer, params.platformer),
     }
 };
