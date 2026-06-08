@@ -11,7 +11,7 @@ import { VideoSourceType } from '../../../video/types'
 import { patternsService } from '../../../../index'
 import { resizeImageData } from '../../../../../utils/canvas/helpers/imageData'
 import { profileLogger } from '../../../../../utils/profiling/ProfileLogger'
-import { coordHelper, coordHelper2, coordHelper3 } from '../../../../../components/Area/canvasPosition.servise'
+import { frameScheduler, FramePriority } from '../../../../../utils/FrameScheduler'
 
 export const CameraAxisDirectionMap = {
     [CameraAxis.T]: 0,
@@ -77,7 +77,7 @@ export class PatternVideoService {
     device: MediaDeviceInfo
     cameraService: CameraService = new CameraService()
 
-    requestFrameID: number
+    private unsubscribeFrame: (() => void) | null = null
 
     shaderVideoModule: ShaderVideoModule
 
@@ -137,42 +137,22 @@ export class PatternVideoService {
 
     }
 
-    prevTime = 0
-    minTime = 1000
-    maxTime = 0
-    times = new Array(50)
     start = () => {
-
-        this.requestFrameID = requestAnimationFrame(this.frameHandler)
+        this.unsubscribeFrame?.()
+        this.unsubscribeFrame = frameScheduler.subscribe(
+            `video:${this.patternService.patternId}`,
+            this.onFrameTick,
+            FramePriority.Video,
+        )
     }
+
     stop = () => {
-
-        this.requestFrameID && cancelAnimationFrame(this.requestFrameID)
-        this.requestFrameID = null
+        this.unsubscribeFrame?.()
+        this.unsubscribeFrame = null
     }
 
-    frameHandler = (time) => {
-
-        const interval = time - this.prevTime
-        this.times.push(interval)
-        this.times.shift()
-
-        this.minTime = Math.min(this.minTime, interval)
-
-        if (this.prevTime) {
-            this.maxTime = Math.max(this.maxTime, interval)
-            profileLogger.value('video.frameInterval', interval)
-        }
-
-        coordHelper.setText(interval.toFixed(1))
-        coordHelper2.setText(this.minTime.toFixed(1))
-        coordHelper3.setText(this.maxTime.toFixed(1))
-        this.prevTime = time
-
-        profileLogger.beginFrame()
+    onFrameTick = () => {
         this.onFrame()
-
-        this.requestFrameID = requestAnimationFrame(this.frameHandler)
     }
 
     getFrameData = (): Uint8ClampedArray | undefined => {

@@ -2,8 +2,8 @@ import {getOffset} from "../../../../../utils/offset";
 import {rotate} from "../../../../../utils/draw";
 import {CanvasServiceEvent} from "./types";
 import { PatternStoreService } from "../PatternStoreService";
-import { coordHelper, coordHelper2, coordHelper3 } from "../../../../../components/Area/canvasPosition.servise";
 import { profileLogger } from "../../../../../utils/profiling/ProfileLogger";
+import { frameScheduler, FramePriority } from "../../../../../utils/FrameScheduler";
 
 export interface CanvasEventHandlers {
     onPushPosition?: (e: MouseEvent) => void
@@ -29,7 +29,8 @@ export class CanvasEventsService {
     rotationAngle: number = 0;
     rotationView: boolean = true;
 
-    requestFrameID: number | null = null;
+    private unsubscribeFrame: (() => void) | null = null;
+    private readonly frameSubscriberId: string;
 
     drawing: boolean = false;
     startFrameRelatedEvent: MouseEvent | null = null;
@@ -37,9 +38,10 @@ export class CanvasEventsService {
     documentDragEvents: (MouseEvent | null)[] = (new Array(2)).fill(null); // pageX
     frameRelatedEvents: (MouseEvent | null)[] = (new Array(2)).fill(null); // offsetX
 
-    constructor(handlers: CanvasEventHandlers, storeService: PatternStoreService) {
+    constructor(handlers: CanvasEventHandlers, storeService: PatternStoreService, frameSubscriberSuffix = 'canvas') {
         this.handlers = handlers;
         this.storeService = storeService;
+        this.frameSubscriberId = `draw:${storeService.patternService.patternId}:${frameSubscriberSuffix}`;
     }
 
     bindCanvas = (canvas: HTMLCanvasElement) => {
@@ -202,38 +204,22 @@ export class CanvasEventsService {
     };
 
     start = () => {
+        if (this.unsubscribeFrame) return;
 
-        if (this.requestFrameID) return;
+        this.unsubscribeFrame = frameScheduler.subscribe(
+            this.frameSubscriberId,
+            this.onFrameTick,
+            FramePriority.Draw,
+        );
+    };
 
-        let prevTime = 0;
-        let minTime = 1000;
-        let maxTime = 0;
-        const changing = (time) => {
-            const interval = time - prevTime;
-            minTime = Math.min(minTime, interval)
-
-            if (prevTime) {
-                maxTime = Math.max(maxTime, interval)
-                profileLogger.value('draw.frameInterval', interval)
-            }
-
-            coordHelper.setText(interval.toFixed(1));
-            coordHelper2.setText(minTime.toFixed(1));
-            coordHelper3.setText(maxTime.toFixed(1));
-            prevTime = time;
-
-            profileLogger.beginFrame();
-            this.onFrame();
-
-            this.requestFrameID = requestAnimationFrame(changing);
-        };
-        this.requestFrameID = requestAnimationFrame(changing);
-
+    onFrameTick = () => {
+        this.onFrame();
     };
 
     stop = () => {
-        this.requestFrameID && cancelAnimationFrame(this.requestFrameID);
-        this.requestFrameID = null;
+        this.unsubscribeFrame?.();
+        this.unsubscribeFrame = null;
     };
 
     /**
