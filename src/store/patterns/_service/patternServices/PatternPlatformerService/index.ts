@@ -225,7 +225,7 @@ export class PatternPlatformerService {
             collision: this.collision.getStats(),
         })
 
-        void platformerProfiler.endSession(patternId)
+        platformerProfiler.endSession(patternId)
 
         this.playing = false
         this.unsubscribeFrame?.()

@@ -18,11 +18,13 @@ import {
 } from "../../../store/patterns/selection/actions";
 import {PatternConfig} from "../../../store/patterns/pattern/types";
 import {addPattern} from "../../../store/patterns/actions";
+import {setActivePattern} from "../../../store/activePattern";
 import {imageToImageData} from "../../../utils/canvas/helpers/imageData";
 import {Segments} from "../../../store/patterns/selection/types";
 
 export interface GlobalHotkeysStateProps {
-    activePatternId: string
+    activePatternId: string | null
+    patternIds: string[]
     isSettingMode: boolean
     full: boolean
     optimization: boolean
@@ -50,6 +52,7 @@ export interface GlobalHotkeysActionProps {
     save: typeof save
     doublePattern: (id: string) => void
     copyToClipboard
+    setActivePattern: typeof setActivePattern
 }
 
 export interface GlobalHotkeysOwnProps {
@@ -64,6 +67,7 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
 
     const {
         activePatternId,
+        patternIds,
         undo,
         redo,
         isSettingMode,
@@ -84,6 +88,7 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
         addPattern,
         copyToClipboard,
         selectAll,
+        setActivePattern,
     } = props;
 
     const receiveImageFromClipboard = React.useCallback((event) => {
@@ -195,15 +200,14 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
         activePatternId && selectAll(activePatternId);
     }, [selectAll, activePatternId]);
 
-    const handleScrollToPattern = React.useCallback((e) => {
+    const handleSwitchToPattern = React.useCallback((e) => {
         e.preventDefault();
-
-        window.location.hash = '#pattern' + e.key;
-        // window.scrollTo(0, -100);//document.getElementsByClassName('pattern')[+e.key - 1]?.getBoundingClientRect().left + window.scrollX);
-        // console.log(e, document.getElementsByClassName('pattern')[+e.key - 1]?.getBoundingClientRect().left + window.scrollX);
-
-
-    }, []);
+        const index = +e.key - 1;
+        const patternId = patternIds[index];
+        if (patternId) {
+            setActivePattern(patternId);
+        }
+    }, [patternIds, setActivePattern]);
 
     return (
         <>
@@ -252,19 +256,20 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
                 keys={['option + c', 'alt + c']}
                 onPress={handleCopy}
             />
-            {/*<AppHotkeyTrigger*/}
-            {/*    buttons={[*/}
-            {/*        ...'123456789'.split('').map(n => 'option + ' + n),*/}
-            {/*        ...'123456789'.split('').map(n => 'alt + ' + n),*/}
-            {/*    ]}*/}
-            {/*    onPress={handleScrollToPattern}*/}
-            {/*/>*/}
+            <AppHotkeyTrigger
+                keys={[
+                    ...'123456789'.split('').map(n => 'option + ' + n),
+                    ...'123456789'.split('').map(n => 'alt + ' + n),
+                ]}
+                onPress={handleSwitchToPattern}
+            />
         </>
     );
 };
 
 const mapStateToProps: MapStateToProps<GlobalHotkeysStateProps, GlobalHotkeysOwnProps, AppState> = state => ({
     activePatternId: state.activePattern.patternId,
+    patternIds: Object.keys(state.patterns),
     isSettingMode: state.hotkeys.setting,
     full: state.fullScreen,
     optimization: state.optimization.on,
@@ -287,6 +292,7 @@ const mapDispatchToProps: MapDispatchToProps<GlobalHotkeysActionProps, GlobalHot
     selectAll,
     save,
     doublePattern,
+    setActivePattern,
 };
 
 export const GlobalHotkeysTriggers = connect<GlobalHotkeysStateProps,

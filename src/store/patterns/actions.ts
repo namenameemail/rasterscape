@@ -7,6 +7,7 @@ import {patternId} from "./helpers";
 import {initHistory} from "./history/actions";
 import {EToolType} from "../tool/types";
 import {imageDataDebug} from "../../components/Area/canvasPosition.servise";
+import {setActivePattern} from "../activePattern";
 
 // TODO типы
 
@@ -54,9 +55,14 @@ export const addPattern = (config?: PatternConfig, params?: PatternParams) => (d
 
     dispatch(initHistory(id))
     console.log(1);
+
+    dispatch(setActivePattern(id));
 }
 
 export const removePattern = (id: string) => (dispatch, getState) => {
+    const state = getState();
+    const patternIds = Object.keys(state.patterns);
+    const activePatternId = state.activePattern.patternId;
 
     console.log(1)
     dispatch(leaveRoom(id));
@@ -68,5 +74,10 @@ export const removePattern = (id: string) => (dispatch, getState) => {
     patternsService.deletePattern(id);
 
     console.log(4)
+
+    if (activePatternId === id) {
+        const remainingIds = patternIds.filter(patternId => patternId !== id);
+        dispatch(setActivePattern(remainingIds[0] ?? null));
+    }
 }
 

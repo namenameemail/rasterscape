@@ -19,7 +19,7 @@ export class TextHelper {
     readonly elem: HTMLDivElement;
     private constantText: HTMLSpanElement;
 
-    constructor(x, y, text?: string) {
+    constructor(_x?: number, _y?: number, text?: string) {
         const elem = document.createElement('div');
         const constantText = document.createElement('span');
         const settableText = document.createElement('span');
@@ -29,10 +29,6 @@ export class TextHelper {
         constantText.innerText = text;
         this.elem = elem;
         this.constantText = constantText;
-
-        document.body.appendChild(elem);
-
-        elem.style.cssText = `position:absolute;bottom:${y}px;right:${x}px;opacity:1;z-index:100;font-family: monospace;}`;
 
         this.setText = (...string) => {
             settableText.innerText = string.join(' ');
@@ -60,6 +56,10 @@ export class TextHelper {
     }
 
     attachToPanel(parent: HTMLElement): void {
+        if (this.elem.parentElement === parent) {
+            return
+        }
+
         parent.appendChild(this.elem);
         this.elem.style.cssText = '';
         this.constantText.style.display = 'none';
@@ -69,12 +69,11 @@ export class TextHelper {
 
 export class ImageDataHelper {
     setImageData;
+    readonly elem: HTMLCanvasElement;
 
-    constructor(x, y) {
+    constructor(_x?: number, _y?: number) {
         const elem: HTMLCanvasElement = document.createElement('canvas');
-        document.body.appendChild(elem);
-
-        elem.style.cssText = `position:absolute;bottom:${y}px;right:${x}px;opacity:1;z-index:100;font-family: monospace;}`;
+        this.elem = elem;
 
         this.setImageData = (imageData: ImageData | null) => {
             if (imageData) {
@@ -98,12 +97,11 @@ export class ImageDataHelper {
 
 export class ImageHelper {
     setImage;
+    readonly elem: HTMLCanvasElement;
 
-    constructor(x, y) {
+    constructor(_x?: number, _y?: number) {
         const elem: HTMLCanvasElement = document.createElement('canvas');
-        document.body.appendChild(elem);
-
-        elem.style.cssText = `position:absolute;bottom:${y}px;right:${x}px;opacity:1;z-index:100;font-family: monospace;}`;
+        this.elem = elem;
 
         this.setImage = (image: HTMLCanvasElement | null) => {
             if (image) {

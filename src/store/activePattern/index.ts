@@ -7,7 +7,7 @@ export enum EActivePatternAction {
 }
 
 export interface ActivePatternState {
-    patternId: string
+    patternId: string | null
 }
 
 export const activePatternReducer = handleActions<ActivePatternState>({
@@ -17,15 +17,25 @@ export const activePatternReducer = handleActions<ActivePatternState>({
             patternId: action.patternId,
         }
     },
+    [EActivePatternAction.RESET]: (state) => {
+        return {
+            ...state,
+            patternId: null,
+        }
+    },
 }, {
     patternId: null
 });
 
 
 export interface SetActivePatternAction extends Action {
-    patternId: string
+    patternId: string | null
 }
 
-export const setActivePattern = (patternId: string): SetActivePatternAction => ({
+export const setActivePattern = (patternId: string | null): SetActivePatternAction => ({
     type: EActivePatternAction.SET, patternId
+});
+
+export const resetActivePattern = (): SetActivePatternAction => ({
+    type: EActivePatternAction.RESET, patternId: null
 });

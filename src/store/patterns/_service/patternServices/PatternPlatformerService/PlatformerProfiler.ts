@@ -21,7 +21,6 @@ export type PlatformerFeetProbe = {
 }
 
 let sessionPatternId: string | null = null
-let startedOwnRecording = false
 
 const getFeetProbe = (
     collision: Collision,
@@ -45,38 +44,16 @@ const getFeetProbe = (
 export const platformerProfiler = {
     beginSession: (patternId: string): void => {
         sessionPatternId = patternId
-        startedOwnRecording = !profileLogger.isRecording
-
-        if (startedOwnRecording) {
-            profileLogger.startRecording(`platformer-${patternId}`)
-        }
-
-        platformerProfiler.log('session.start', {
-            autoRecording: startedOwnRecording,
-            wasAlreadyRecording: !startedOwnRecording,
-        })
+        platformerProfiler.log('session.start', {})
     },
 
-    endSession: async (patternId: string): Promise<void> => {
+    endSession: (patternId: string): void => {
         if (sessionPatternId !== patternId) {
             return
         }
 
         platformerProfiler.log('session.stop', {})
-
-        if (startedOwnRecording) {
-            profileLogger.stopRecording()
-
-            try {
-                const result = await profileLogger.saveToProject(`platformer-${patternId}`)
-                console.info('[platformer profiler] saved', result.path)
-            } catch (error) {
-                console.warn('[platformer profiler] save failed', error)
-            }
-        }
-
         sessionPatternId = null
-        startedOwnRecording = false
     },
 
     isActive: (patternId?: string): boolean => {

@@ -1,0 +1,86 @@
+.pattern-workspace {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  background: lightgrey;
+}
+
+.pattern-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: lightgrey;
+  box-sizing: border-box;
+}
+
+.pattern-slot {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  &--active {
+    visibility: visible;
+    pointer-events: auto;
+    z-index: 1;
+    overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    padding-top: 56px;
+    padding-right: 11px;
+    padding-bottom: 8px;
+    padding-left: calc(11px + 210px + 8px);
+    box-sizing: border-box;
+    background: transparent;
+
+    &:has(.pattern:hover) {
+      z-index: 4;
+    }
+
+    .drag-n-drop {
+      pointer-events: none;
+      min-height: 100%;
+      height: auto;
+      width: auto;
+      min-width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+    }
+  }
+}
+
+.pattern-canvas-scroll-content {
+  min-height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  width: max-content;
+  min-width: 100%;
+  pointer-events: none;
+}
+
+.pattern-stage-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 24px;
+  color: rgba(0, 0, 0, 0.35);
+  font-size: 14px;
+}

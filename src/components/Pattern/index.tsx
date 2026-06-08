@@ -32,6 +32,7 @@ import {DragAndDrop} from "../_shared/File/DragAndDrop/DragAndDrop";
 import {readImageFile} from "../_shared/File/helpers";
 import {setDrawer} from "../../store/patterns/room/actions";
 import {DeleteButton} from "../_shared/buttons/complex/DeleteButton/DeleteButton";
+import {HiddenScroll} from "../_shared/HiddenScroll";
 
 export interface PatternComponentStateProps {
 
@@ -84,10 +85,6 @@ export interface PatternComponentActionProps {
 export interface PatternComponentOwnProps {
     id: string
     index: number
-
-    onMouseEnter?(patternId: string, e?)
-
-    onMouseLeave?(patternId: string, e?)
 }
 
 export interface PatternComponentProps extends PatternComponentStateProps, PatternComponentActionProps, PatternComponentOwnProps, WithTranslation {
@@ -177,18 +174,6 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
         this.props.cutPatternBySelection(this.props.id)
     };
 
-    handleMouseEnter = (e) => {
-        const {onMouseEnter, id} = this.props;
-
-        onMouseEnter?.(id, e);
-    };
-
-    handleMouseLeave = (e) => {
-        const {onMouseLeave, id} = this.props;
-
-        onMouseLeave?.(id, e);
-    };
-
     handleDemonstrationUnload = () => {
 
         const {setDemonstrationEnabled, id} = this.props;
@@ -238,13 +223,13 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
 
         return (
             <DragAndDrop onDrop={this.handleDropFiles}>
+                <div className="pattern-canvas-scroll-content">
                 <div
                     className="pattern"
                     id={'pattern' + id}
-                    onMouseEnter={this.handleMouseEnter}
-                    onMouseLeave={this.handleMouseLeave}
                 >
-                    <div className="left">
+                    <HiddenScroll className="pattern-left">
+                    <div className="pattern-left-inner">
 
                         <div className="flex-col">
 
@@ -388,6 +373,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
 
                         </div>
                     </div>
+                    </HiddenScroll>
 
                     <div className="right">
                         <SelectionControls
@@ -445,6 +431,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                         </div>
                     </div>
 
+                </div>
                 </div>
             </DragAndDrop>
         );

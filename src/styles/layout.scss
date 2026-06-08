@@ -4,22 +4,23 @@
   background: lightgrey;
 
   display: flex;
-  flex-direction: column-reverse;
-  overflow-x: scroll;
-  overflow-y: auto;
+  flex-direction: column;
+  overflow: hidden;
 
   height: 100vh;
+  min-height: 100vh;
 
   .layout {
 
     position: relative;
     display: flex;
-    align-items: flex-end;
-    justify-content: flex-start;
-    min-height: 100%;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
 
     .tools-panel {
-      z-index: 1;
+      z-index: 3;
       position: fixed;
       top: 0;
       left: 0;
@@ -35,22 +36,16 @@
       padding-left: 11px;
 
       &:hover {
-        z-index: 2;
+        z-index: 5;
       }
 
     }
 
     .windows {
-      //z-index: 1;
-      min-height: 100%;
-      white-space: nowrap;
-      padding-left: 23vw;
+      flex: 1;
+      min-height: 0;
       display: flex;
-      align-items: flex-end;
-
-      //&:hover {
-      //  z-index: 2;
-      //}
+      flex-direction: column;
     }
 
     .app-control-button {
@@ -88,7 +83,7 @@
 
     .app-controls {
 
-      z-index: 1;
+      z-index: 3;
       position: fixed;
       top: 7px;
       right: 11px;
@@ -99,7 +94,7 @@
       align-items: center;
 
       &:hover {
-        z-index: 2;
+        z-index: 5;
       }
 
 

@@ -1,7 +1,6 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../store";
-import {Button} from "./_shared/buttons/simple/Button";
 import {
     addPattern,
     removePattern
@@ -15,15 +14,14 @@ import {setHeight, setWidth} from "../store/patterns/pattern/actions";
 import {MaskParams} from "../store/patterns/mask/types";
 import {Segments} from "../store/patterns/selection/types";
 import {withTranslation, WithTranslation} from "react-i18next";
-// import 'react-resizable/css/styles.css'; ???
 import {setActivePattern} from "../store/activePattern";
-import {DragAndDrop} from "./_shared/File/DragAndDrop/DragAndDrop";
-import {readImageFile} from "./_shared/File/helpers";
-import {imageToImageData} from "../utils/canvas/helpers/imageData";
-import {ButtonHK} from "./_shared/buttons/hotkeyed/ButtonHK";
+import {PatternNavigationBar} from "./PatternNavigationBar";
+import cn from "classnames";
+import '../styles/patternWorkspace.scss';
 
 export interface PatternsStateProps {
     patternsIds: string[]
+    activePatternId: string | null
 }
 
 export interface PatternsActionProps {
@@ -62,73 +60,73 @@ export interface PatternsState {
 
 class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState> {
 
-    componentDidUpdate(prevProps: Readonly<PatternsProps>, prevState: Readonly<PatternsState>, snapshot?: any): void {
-        // whyDidYouRender(this.props, prevProps, 'PatternsComponent')
+    componentDidMount(): void {
+        this.ensureActivePattern(this.props);
     }
 
-    handleAddClick = () => this.props.addPattern({history: true, selection: true, repeating: false});
+    componentDidUpdate(prevProps: Readonly<PatternsProps>): void {
+        if (
+            prevProps.patternsIds !== this.props.patternsIds ||
+            prevProps.activePatternId !== this.props.activePatternId
+        ) {
+            this.ensureActivePattern(this.props);
+        }
+    }
 
-    handleCreatePatternFromFile = async (files) => {
-        const {addPattern} = this.props;
-        const image = await readImageFile(files?.[0]);
+    ensureActivePattern = ({patternsIds, activePatternId, setActivePattern}: PatternsProps) => {
+        if (!patternsIds.length) {
+            if (activePatternId !== null) {
+                setActivePattern(null);
+            }
+            return;
+        }
 
-        addPattern?.({
-            startImage: imageToImageData(image),
-            history: true,
-            selection: true,
-            repeating: false
-        });
+        if (!activePatternId || !patternsIds.includes(activePatternId)) {
+            setActivePattern(patternsIds[0]);
+        }
     };
 
-    handleMousePatternEnter = (id) => {
-        this.props.setActivePattern(id);
-    };
-    handleMousePatternLeave = () => {
-        this.props.setActivePattern(null);
-    };
     render() {
         const {
             patternsIds, removePattern,
             updateSelection, setWidth,
             setHeight,
             save, load,
+            activePatternId,
             t,
-            setActivePattern,
         } = this.props;
         return (
-            <>
-                {patternsIds.map((id, index) => {
-                    return (
-                        <Pattern
-                            key={id}
-                            id={id}
-                            index={index}
+            <div className="pattern-workspace">
+                <div className="pattern-stage">
+                    {patternsIds.length === 0 && (
+                        <div className="pattern-stage-empty">{t("add")}</div>
+                    )}
+                    {patternsIds.map((id, index) => {
+                        return (
+                            <div
+                                key={id}
+                                className={cn('pattern-slot', {
+                                    'pattern-slot--active': id === activePatternId,
+                                })}
+                            >
+                                <Pattern
+                                    id={id}
+                                    index={index}
 
-                            onMouseEnter={this.handleMousePatternEnter}
-                            onMouseLeave={this.handleMousePatternLeave}
+                                    onSelectionChange={updateSelection}
+                                    onRemove={removePattern}
+                                    onSetWidth={setWidth}
+                                    onSetHeight={setHeight}
 
-                            onSelectionChange={updateSelection}
-                            onRemove={removePattern}
-                            onSetWidth={setWidth}
-                            onSetHeight={setHeight}
-
-                            onSave={save}
-                            onLoad={load}
-                        />
-                    );
-                })}
-
-                <DragAndDrop
-                    onDrop={this.handleCreatePatternFromFile}
-                    className={'zero-pattern'}
-                >
-                    <ButtonHK
-
-                        hkLabel={'pattern.hotkeysDescription.add'}
-                        path={`pattern.add`}
-                        onClick={this.handleAddClick}>{t("add")}</ButtonHK>
-                </DragAndDrop>
-            </>
+                                    onSave={save}
+                                    onLoad={load}
+                                />
+                            </div>
+                        );
+                    })}
+                </div>
+                <PatternNavigationBar/>
+            </div>
         );
     }
 }
@@ -136,6 +134,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
 
 const mapStateToProps: MapStateToProps<PatternsStateProps, {}, AppState> = state => ({
     patternsIds: Object.keys(state.patterns),
+    activePatternId: state.activePattern.patternId,
 });
 
 const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnProps> = {

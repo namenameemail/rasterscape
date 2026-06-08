@@ -114,11 +114,12 @@ export interface PatternSelectItemProps {
     height: number
     index: number
     selected: boolean
+    rowBreak?: boolean
     onSelect(id: string): void
 }
 
 export const PatternSelectItem: FC<PatternSelectItemProps> = (props) => {
-    const {id, HK, name, hkLabel, width, height, selected, index, onSelect, blurOnClick} = props;
+    const {id, HK, name, hkLabel, width, height, selected, index, onSelect, blurOnClick, rowBreak = true} = props;
 
     const previewId = id + ' ' + name + ' ' + index;
 
@@ -178,7 +179,7 @@ export const PatternSelectItem: FC<PatternSelectItemProps> = (props) => {
                     />
                 )}
             </ButtonHK>
-            {!((index + 1) % 5) ? <br/> : null}
+            {rowBreak && !((index + 1) % 5) ? <br/> : null}
         </>
     )
 };

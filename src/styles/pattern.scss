@@ -1,39 +1,14 @@
 
-.zero-pattern {
-  min-height: 100vh;
-  display: flex;
-  align-items: flex-end;
-  padding-bottom: 80px;
-  box-sizing: border-box;
-  //border-left: 1px solid rgba(0, 0, 0, .07);
-  border-left: 1px solid #dfdede;
-  /* border-right: 1px solid rgb(196 196 196); */
-  box-shadow: -1px 0 0 #b8b8b8, 1px 0 0 #dfdede;
-
-  padding-right: 77vw;
-  & > * {
-    z-index: 1;
-  }
-}
-
 .pattern {
 
   position: relative;
 
-  min-height: 100vh;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
+  width: max-content;
+  max-width: none;
+  pointer-events: none;
+  background: transparent;
 
-  padding-right: 129px;
-  padding-bottom: 80px;
-  padding-top: 270px;
   box-sizing: border-box;
-
-  //border-left: 1px solid rgba(0, 0, 0, .07);
-  border-left: 1px solid #dfdede;
-  /* border-right: 1px solid rgb(196 196 196); */
-  box-shadow: -1px 0 0 #b8b8b8, 1px 0 0 #dfdede;
 
   .areas {
     display: flex;
@@ -71,9 +46,7 @@
     flex-direction: row;
     padding-top: 1px;
     visibility: hidden;
-    //border-top: 1px solid rebeccapurple;
     font-size: 12px;
-    //margin-bottom: 40px;
 
   }
   .save-load-sizes {
@@ -93,7 +66,6 @@
   }
   .history-controls {
     display: flex;
-    //border: 1px solid red;
     & > .button {
       display: flex;
       align-items: center;
@@ -123,25 +95,49 @@
 
 
 
-  & > .left {
+  .pattern-left {
+    position: fixed;
+    left: 11px;
+    top: 7px;
+    bottom: 8px;
+    z-index: 2;
     width: 210px;
-    position: sticky;
-    bottom: 40px;
-    z-index: 1;
+    height: auto;
+    max-height: none;
+    box-sizing: border-box;
+    pointer-events: auto;
+    overflow-x: hidden;
 
     &:hover {
-      z-index: 2;
+      z-index: 5;
     }
   }
 
-  & > .right {
+  .pattern-left-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-top: 56px;
+    min-height: 100%;
+    box-sizing: border-box;
+  }
 
+  & > .right {
+    position: relative;
     z-index: 1;
+    flex: 0 0 auto;
+    overflow: visible;
+    pointer-events: auto;
+    background: transparent;
 
     display: flex;
     flex-direction: column;
-    align-items: baseline;
-    margin: 0 0 0 43px;
+    align-items: flex-start;
+    justify-content: flex-end;
+
+    &:hover {
+      z-index: 3;
+    }
   }
 
   .pattern-delete-button {
@@ -150,8 +146,6 @@
       border: none;
       cursor: pointer;
       color: red;
-      //text-decoration: underline;
     }
   }
 }
-
