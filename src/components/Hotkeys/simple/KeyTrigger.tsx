@@ -5,7 +5,7 @@ import {coordHelper} from "../../Area/canvasPosition.servise";
 
 export interface UserHotkeyTriggerProps {
     keyValue?: string
-    codeValue?: string
+    codeValue?: string | string[]
 
     onPress?(e?: any, name?: any, key?: string, code?: string)
 
@@ -29,6 +29,13 @@ export class KeyTrigger extends React.PureComponent<UserHotkeyTriggerProps> {
     getCode = (props: UserHotkeyTriggerProps) => {
         const { codeValue } = props;
         return codeValue;
+    };
+    getCodes = (props: UserHotkeyTriggerProps): string[] => {
+        const code = this.getCode(props);
+        if (!code) {
+            return [];
+        }
+        return Array.isArray(code) ? code : [code];
     };
     handlePress = e => {
         const { keyValue, codeValue, withInputs } = this.props;
@@ -62,40 +69,40 @@ export class KeyTrigger extends React.PureComponent<UserHotkeyTriggerProps> {
     };
 
     componentDidMount() {
-        const code = this.getCode(this.props);
-        this.props.debug && coordHelper.writeln('mount - code', code)
-        if (code) {
+        const codes = this.getCodes(this.props);
+        this.props.debug && coordHelper.writeln('mount - code', codes)
+        codes.forEach(code => {
             keyboardjs.bind(code, this.handlePress, this.handleRelease)
             this.props.debug && coordHelper.writeln('BIND', code)
-        }
+        });
     }
 
     componentDidUpdate(prevProps) {
-        const {codeValue} = this.props;
-        const prevCode = prevProps.codeValue;
+        const prevCodes = this.getCodes(prevProps);
+        const codes = this.getCodes(this.props);
 
-        this.props.debug && coordHelper.writeln('update - code', codeValue, prevCode !== codeValue)
+        this.props.debug && coordHelper.writeln('update - code', codes, prevCodes.join(',') !== codes.join(','))
 
-        if (prevCode !== codeValue) {
-            if (prevCode) {
-                keyboardjs.unbind(prevCode, this.handlePress, this.handleRelease);
-                this.props.debug && coordHelper.writeln('UNBIND', prevCode)
-            }
+        if (prevCodes.join(',') !== codes.join(',')) {
+            prevCodes.forEach(code => {
+                keyboardjs.unbind(code, this.handlePress, this.handleRelease);
+                this.props.debug && coordHelper.writeln('UNBIND', code)
+            });
 
-            if (codeValue) {
-                keyboardjs.bind(codeValue, this.handlePress, this.handleRelease);
-
-                this.props.debug && coordHelper.writeln('BIND', codeValue)
-            }
+            codes.forEach(code => {
+                keyboardjs.bind(code, this.handlePress, this.handleRelease);
+                this.props.debug && coordHelper.writeln('BIND', code)
+            });
         }
     }
 
 
 
     componentWillUnmount() {
-
-        this.props.codeValue && keyboardjs.unbind(this.props.codeValue, this.handlePress, this.handleRelease);
-        this.props.debug && coordHelper.writeln('unmount UNBIND', this.props.codeValue)
+        this.getCodes(this.props).forEach(code => {
+            keyboardjs.unbind(code, this.handlePress, this.handleRelease);
+            this.props.debug && coordHelper.writeln('unmount UNBIND', code)
+        });
     }
 
     render() {

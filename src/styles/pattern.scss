@@ -105,7 +105,7 @@
     height: auto;
     max-height: none;
     box-sizing: border-box;
-    pointer-events: auto;
+    pointer-events: none;
     overflow-x: hidden;
 
     &:hover {
@@ -120,6 +120,11 @@
     padding-top: 56px;
     min-height: 100%;
     box-sizing: border-box;
+    pointer-events: none;
+
+    > * {
+      pointer-events: auto;
+    }
   }
 
   & > .right {

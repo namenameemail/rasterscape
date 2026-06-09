@@ -543,7 +543,9 @@
   "globalHotkeys": {
     "hk": "k",
     "patternSelect": "select tool pattern",
-    "patternGoTo": "go to pattern",
+    "patternGoTo": "switch pattern",
+    "addPattern": "add pattern",
+    "deletePattern": "delete pattern (hold)",
     "fullscreen": "fullscreen",
     "hotkeys": "show/hide control settings",
     "hotkeyInvert": "switch onPress/onRelease hotkey mode",

@@ -5,7 +5,7 @@ import {ButtonHK} from "./_shared/buttons/hotkeyed/ButtonHK";
 import {DragAndDrop} from "./_shared/File/DragAndDrop/DragAndDrop";
 import {PatternSelectItem} from "./PatternsSelect";
 import {getPatternsSelectItems, patternHasBackgroundActivity} from "../store/patterns/selectors";
-import {setActivePattern} from "../store/activePattern";
+import {setActivePattern, PATTERN_DELETE_HOLD_MS} from "../store/activePattern";
 import {addPattern} from "../store/patterns/actions";
 import {PatternConfig} from "../store/patterns/pattern/types";
 import {HiddenScroll} from "./_shared/HiddenScroll";
@@ -17,6 +17,7 @@ import '../styles/patternNavigationBar.scss';
 export interface PatternNavigationBarStateProps {
     patternsSelectItems: ReturnType<typeof getPatternsSelectItems>
     activePatternId: string | null
+    deleteHoldPatternId: string | null
     backgroundActivityById: Record<string, boolean>
 }
 
@@ -39,6 +40,7 @@ const PatternNavigationBarComponent: React.FC<PatternNavigationBarProps> = (prop
     const {
         patternsSelectItems,
         activePatternId,
+        deleteHoldPatternId,
         backgroundActivityById,
         setActivePattern,
         addPattern,
@@ -62,9 +64,63 @@ const PatternNavigationBarComponent: React.FC<PatternNavigationBarProps> = (prop
         });
     }, [addPattern]);
 
+    const scrollRef = React.useRef<HTMLDivElement>(null);
+    const prevPatternCountRef = React.useRef(patternsSelectItems.length);
+    const [showOverflowCount, setShowOverflowCount] = React.useState(false);
+
+    const updateScrollState = React.useCallback(() => {
+        const scrollEl = scrollRef.current;
+        if (!scrollEl) {
+            return;
+        }
+
+        const hasOverflow = scrollEl.scrollHeight > scrollEl.clientHeight + 1;
+        const atBottom = scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 1;
+        setShowOverflowCount(hasOverflow && !atBottom);
+    }, []);
+
+    const scrollToEnd = React.useCallback(() => {
+        const scrollEl = scrollRef.current;
+        if (!scrollEl) {
+            return;
+        }
+
+        scrollEl.scrollTop = scrollEl.scrollHeight;
+        updateScrollState();
+    }, [updateScrollState]);
+
+    React.useLayoutEffect(() => {
+        if (patternsSelectItems.length > prevPatternCountRef.current) {
+            scrollToEnd();
+        }
+        prevPatternCountRef.current = patternsSelectItems.length;
+    }, [patternsSelectItems.length, scrollToEnd]);
+
+    React.useEffect(() => {
+        const scrollEl = scrollRef.current;
+        if (!scrollEl) {
+            return;
+        }
+
+        updateScrollState();
+
+        scrollEl.addEventListener('scroll', updateScrollState, {passive: true});
+
+        const resizeObserver = new ResizeObserver(updateScrollState);
+        resizeObserver.observe(scrollEl);
+        if (scrollEl.firstElementChild) {
+            resizeObserver.observe(scrollEl.firstElementChild);
+        }
+
+        return () => {
+            scrollEl.removeEventListener('scroll', updateScrollState);
+            resizeObserver.disconnect();
+        };
+    }, [patternsSelectItems.length, updateScrollState]);
+
     return (
         <div className="pattern-nav-bar">
-            <HiddenScroll className="pattern-nav-scroll">
+            <HiddenScroll ref={scrollRef} className="pattern-nav-scroll">
                 <DragAndDrop
                     onDrop={handleCreatePatternFromFile}
                     className="pattern-nav-thumbnails"
@@ -85,16 +141,24 @@ const PatternNavigationBarComponent: React.FC<PatternNavigationBarProps> = (prop
                                     onSelect={handleSelect}
                                 />
                                 {backgroundActivityById[id] && <span className="pattern-nav-dot"/>}
+                                {deleteHoldPatternId === id && (
+                                    <span
+                                        className="pattern-nav-delete-hold"
+                                        style={{animationDuration: `${PATTERN_DELETE_HOLD_MS}ms`}}
+                                    />
+                                )}
                             </div>
                         </div>
                     ))}
                 </DragAndDrop>
             </HiddenScroll>
             <div className="pattern-nav-add">
-                <span className="pattern-nav-number pattern-nav-number--spacer" aria-hidden="true"/>
+                {showOverflowCount ? (
+                    <span className="pattern-nav-total">{patternsSelectItems.length}</span>
+                ) : (
+                    <span className="pattern-nav-number pattern-nav-number--spacer" aria-hidden="true"/>
+                )}
                 <ButtonHK
-                    hkLabel={'pattern.hotkeysDescription.add'}
-                    path={`pattern.add`}
                     className="pattern-nav-add-button"
                     width={42}
                     onClick={handleAddClick}
@@ -117,6 +181,7 @@ const mapStateToProps: MapStateToProps<PatternNavigationBarStateProps, PatternNa
     return {
         patternsSelectItems,
         activePatternId: state.activePattern.patternId,
+        deleteHoldPatternId: state.activePattern.deleteHoldPatternId,
         backgroundActivityById,
     };
 };

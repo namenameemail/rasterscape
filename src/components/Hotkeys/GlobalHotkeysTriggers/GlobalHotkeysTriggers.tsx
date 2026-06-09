@@ -17,8 +17,13 @@ import {
     updateSelection
 } from "../../../store/patterns/selection/actions";
 import {PatternConfig} from "../../../store/patterns/pattern/types";
-import {addPattern} from "../../../store/patterns/actions";
-import {setActivePattern} from "../../../store/activePattern";
+import {addPattern, removePattern} from "../../../store/patterns/actions";
+import {
+    setActivePattern,
+    startPatternDeleteHold,
+    stopPatternDeleteHold,
+    PATTERN_DELETE_HOLD_MS,
+} from "../../../store/activePattern";
 import {imageToImageData} from "../../../utils/canvas/helpers/imageData";
 import {Segments} from "../../../store/patterns/selection/types";
 
@@ -53,6 +58,9 @@ export interface GlobalHotkeysActionProps {
     doublePattern: (id: string) => void
     copyToClipboard
     setActivePattern: typeof setActivePattern
+    removePattern: typeof removePattern
+    startPatternDeleteHold: typeof startPatternDeleteHold
+    stopPatternDeleteHold: typeof stopPatternDeleteHold
 }
 
 export interface GlobalHotkeysOwnProps {
@@ -89,7 +97,34 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
         copyToClipboard,
         selectAll,
         setActivePattern,
+        removePattern,
+        startPatternDeleteHold,
+        stopPatternDeleteHold,
     } = props;
+
+    const deleteHoldTimerRef = React.useRef<number | null>(null);
+    const deleteHoldPatternIdRef = React.useRef<string | null>(null);
+
+    const clearDeleteHold = React.useCallback(() => {
+        if (deleteHoldTimerRef.current !== null) {
+            window.clearTimeout(deleteHoldTimerRef.current);
+            deleteHoldTimerRef.current = null;
+        }
+        deleteHoldPatternIdRef.current = null;
+        stopPatternDeleteHold();
+    }, [stopPatternDeleteHold]);
+
+    React.useEffect(() => () => {
+        if (deleteHoldTimerRef.current !== null) {
+            window.clearTimeout(deleteHoldTimerRef.current);
+        }
+    }, []);
+
+    React.useEffect(() => {
+        const handleWindowBlur = () => clearDeleteHold();
+        window.addEventListener('blur', handleWindowBlur);
+        return () => window.removeEventListener('blur', handleWindowBlur);
+    }, [clearDeleteHold]);
 
     const receiveImageFromClipboard = React.useCallback((event) => {
         getImageFromClipboard(event, (image) => {
@@ -201,6 +236,9 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
     }, [selectAll, activePatternId]);
 
     const handleSwitchToPattern = React.useCallback((e) => {
+        if (e.altKey || e.ctrlKey || e.metaKey) {
+            return;
+        }
         e.preventDefault();
         const index = +e.key - 1;
         const patternId = patternIds[index];
@@ -208,6 +246,42 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
             setActivePattern(patternId);
         }
     }, [patternIds, setActivePattern]);
+
+    const handleAddPattern = React.useCallback((e) => {
+        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) {
+            return;
+        }
+        e.preventDefault();
+        addPattern({history: true, selection: true, repeating: false});
+    }, [addPattern]);
+
+    const handleDeleteHoldStart = React.useCallback((e) => {
+        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) {
+            return;
+        }
+        if (!activePatternId || deleteHoldTimerRef.current !== null) {
+            return;
+        }
+        e.preventDefault();
+        e.preventRepeat?.();
+
+        deleteHoldPatternIdRef.current = activePatternId;
+        startPatternDeleteHold(activePatternId);
+
+        deleteHoldTimerRef.current = window.setTimeout(() => {
+            const patternId = deleteHoldPatternIdRef.current;
+            deleteHoldTimerRef.current = null;
+            deleteHoldPatternIdRef.current = null;
+            stopPatternDeleteHold();
+            if (patternId) {
+                removePattern(patternId);
+            }
+        }, PATTERN_DELETE_HOLD_MS);
+    }, [activePatternId, removePattern, startPatternDeleteHold, stopPatternDeleteHold]);
+
+    const handleDeleteHoldEnd = React.useCallback(() => {
+        clearDeleteHold();
+    }, [clearDeleteHold]);
 
     return (
         <>
@@ -257,11 +331,17 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
                 onPress={handleCopy}
             />
             <AppHotkeyTrigger
-                keys={[
-                    ...'123456789'.split('').map(n => 'option + ' + n),
-                    ...'123456789'.split('').map(n => 'alt + ' + n),
-                ]}
+                keys={'123456789'.split('')}
                 onPress={handleSwitchToPattern}
+            />
+            <AppHotkeyTrigger
+                keys={'='}
+                onPress={handleAddPattern}
+            />
+            <AppHotkeyTrigger
+                keys={'-'}
+                onPress={handleDeleteHoldStart}
+                onRelease={handleDeleteHoldEnd}
             />
         </>
     );
@@ -293,6 +373,9 @@ const mapDispatchToProps: MapDispatchToProps<GlobalHotkeysActionProps, GlobalHot
     save,
     doublePattern,
     setActivePattern,
+    removePattern,
+    startPatternDeleteHold,
+    stopPatternDeleteHold,
 };
 
 export const GlobalHotkeysTriggers = connect<GlobalHotkeysStateProps,

@@ -56,15 +56,21 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
     return (
         <div className={'global-hotkeys-info'}>
 
-            <Item desc={t('globalHotkeys.patternSelect')}>
+            <Item desc={t('globalHotkeys.patternGoTo')}>
                 <UnchangableKey digits value={'1..9'} />
             </Item>
 
-            {/*<Item desc={t('globalHotkeys.patternGoTo')}>*/}
-            {/*    <ButtonHotkeyTrigger big value={ALT_KEY} /><Plus/><ButtonHotkeyTrigger digits value={'1..9'} />*/}
-            {/*</Item>*/}
+            <Item desc={t('globalHotkeys.patternSelect')}>
+                <UnchangableKey big value={ALT_KEY} /><Plus/><UnchangableKey digits value={'1..9'} />
+            </Item>
 
+            <Item desc={t('globalHotkeys.addPattern')}>
+                <UnchangableKey one value={'+'} />
+            </Item>
 
+            <Item desc={t('globalHotkeys.deletePattern')}>
+                <UnchangableKey one value={'-'} />
+            </Item>
 
             <Item desc={t('globalHotkeys.patternWindow')}>
                 <UnchangableKey big value={ALT_KEY} /><Plus/><UnchangableKey one value={'w'}/>

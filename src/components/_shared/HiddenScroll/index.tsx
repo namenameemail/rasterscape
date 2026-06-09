@@ -7,8 +7,8 @@ export interface HiddenScrollProps {
     className?: string
 }
 
-export const HiddenScroll: React.FC<HiddenScrollProps> = ({children, className}) => (
-    <div className={cn("hidden-scroll", className)}>
+export const HiddenScroll = React.forwardRef<HTMLDivElement, HiddenScrollProps>(({children, className}, ref) => (
+    <div ref={ref} className={cn("hidden-scroll", className)}>
         {children}
     </div>
-);
+));

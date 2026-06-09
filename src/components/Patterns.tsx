@@ -13,7 +13,6 @@ import {load, save} from "../store/patterns/import/actions";
 import {setHeight, setWidth} from "../store/patterns/pattern/actions";
 import {MaskParams} from "../store/patterns/mask/types";
 import {Segments} from "../store/patterns/selection/types";
-import {withTranslation, WithTranslation} from "react-i18next";
 import {setActivePattern} from "../store/activePattern";
 import {PatternNavigationBar} from "./PatternNavigationBar";
 import cn from "classnames";
@@ -50,7 +49,7 @@ export interface PatternsOwnProps {
 
 }
 
-export interface PatternsProps extends PatternsStateProps, PatternsActionProps, PatternsOwnProps, WithTranslation {
+export interface PatternsProps extends PatternsStateProps, PatternsActionProps, PatternsOwnProps {
 
 }
 
@@ -93,14 +92,10 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
             setHeight,
             save, load,
             activePatternId,
-            t,
         } = this.props;
         return (
             <div className="pattern-workspace">
                 <div className="pattern-stage">
-                    {patternsIds.length === 0 && (
-                        <div className="pattern-stage-empty">{t("add")}</div>
-                    )}
                     {patternsIds.map((id, index) => {
                         return (
                             <div
@@ -152,4 +147,4 @@ const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnPro
 export const Patterns = connect<PatternsStateProps, PatternsActionProps, PatternsOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(withTranslation("common")(PatternsComponent));
+)(PatternsComponent);

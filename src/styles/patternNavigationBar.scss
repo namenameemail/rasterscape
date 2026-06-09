@@ -11,9 +11,8 @@
   align-items: stretch;
   gap: 4px;
   width: auto;
-  max-height: calc(100vh - 40px);
+  max-height: calc(100vh - 20px);
   padding: 8px 11px 8px 6px;
-  border-top: 1px solid #b8b8b8;
   background: transparent;
   overflow: hidden;
 
@@ -62,9 +61,21 @@
   }
 }
 
+.pattern-nav-total {
+  flex-shrink: 0;
+  min-width: 12px;
+  font-size: 10px;
+  line-height: 1;
+  text-align: right;
+  color: rgba(0, 0, 0, 0.55);
+  user-select: none;
+  padding-bottom: 2px;
+}
+
 .pattern-nav-thumb {
   position: relative;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .pattern-nav-dot {
@@ -76,7 +87,31 @@
   border-radius: 50%;
   background: red;
   pointer-events: none;
-  z-index: 1;
+  z-index: 3;
+}
+
+.pattern-nav-delete-hold {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  background: rgba(255, 0, 0, 0.55);
+  pointer-events: none;
+  z-index: 2;
+  animation-name: pattern-nav-delete-hold-fill;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes pattern-nav-delete-hold-fill {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: 100%;
+  }
 }
 
 .pattern-nav-add {

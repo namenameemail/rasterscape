@@ -30,19 +30,18 @@
     overflow: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-      width: 0;
-      height: 0;
-    }
-
     padding-top: 56px;
     padding-right: 11px;
     padding-bottom: 8px;
     padding-left: calc(11px + 210px + 8px);
     box-sizing: border-box;
     background: transparent;
+
+    &::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
 
     &:has(.pattern:hover) {
       z-index: 4;
@@ -72,15 +71,4 @@
   width: max-content;
   min-width: 100%;
   pointer-events: none;
-}
-
-.pattern-stage-empty {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 24px;
-  color: rgba(0, 0, 0, 0.35);
-  font-size: 14px;
 }

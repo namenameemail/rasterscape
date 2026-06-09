@@ -150,6 +150,13 @@ export const PatternSelectItem: FC<PatternSelectItemProps> = (props) => {
     const handlePress = React.useCallback((e, id) => {
         onSelect(id);
     }, [onSelect]);
+
+    const hotkeyDigit = (index + 1).toString();
+    const hotkeyCodes = [
+        `alt + ${hotkeyDigit}`,
+        `option + ${hotkeyDigit}`,
+    ];
+
     return (
         <>
             <ButtonHK
@@ -172,8 +179,8 @@ export const PatternSelectItem: FC<PatternSelectItemProps> = (props) => {
                 {HK && (
                     <KeyTrigger
                         debug
-                        keyValue={(index + 1).toString()}
-                        codeValue={(index + 1).toString()}
+                        keyValue={hotkeyDigit}
+                        codeValue={hotkeyCodes}
                         name={id}
                         onPress={handlePress}
                     />
