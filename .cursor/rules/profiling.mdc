@@ -1,0 +1,20 @@
+---
+description: Debug logging via profileLogger, not console
+alwaysApply: true
+---
+
+# Profiling and debug logs
+
+For runtime diagnostics in this project, **never** ask the user to copy from the browser console.
+
+Use `profileLogger` through helpers:
+
+- `profileDebug(scope, label, meta?)` — general debug (`src/utils/profileDebug.ts`)
+- `profileMark` / `profileAutosave` — projects/autosave (`src/utils/projectProfile.ts`)
+- `profileHotkeyAltP` — hotkey tracing (`src/utils/profileHotkeys.ts`)
+
+Logs flush to `profiling/latest.json` in dev (Vite `/__profiling/save`). Read that file in the repo to analyze.
+
+Enable: start **Record** in debug overlay, or `localStorage.setItem('rs:profile', '1')` plus recording.
+
+Do not use `console.log` / `console.info` for agent-facing debug output.

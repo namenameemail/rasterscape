@@ -1,0 +1,17 @@
+export enum EProjectsAction {
+    SET_LIST = 'projects/set-list',
+    SET_CURRENT = 'projects/set-current',
+    SET_PANEL_OPEN = 'projects/set-panel-open',
+    SET_SAVING = 'projects/set-saving',
+    SET_LOADING = 'projects/set-loading',
+    SET_DIRTY = 'projects/set-dirty',
+    SET_LAST_SAVED = 'projects/set-last-saved',
+    RESTORE_CHANGE_FUNCTIONS = 'projects/restore-change-functions',
+    RESTORE_CHANGING_VALUES = 'projects/restore-changing-values',
+    RESTORE_DEPENDENCIES = 'projects/restore-dependencies',
+    RESTORE_TOOL = 'projects/restore-tool',
+    RESTORE_BRUSH = 'projects/restore-brush',
+    RESTORE_LINE = 'projects/restore-line',
+    RESTORE_SELECT_TOOL = 'projects/restore-select-tool',
+    RESTORE_COLOR = 'projects/restore-color',
+}

@@ -9,6 +9,7 @@ import {setLanguage} from "store/language";
 import {activateTutorial} from "store/tutorial";
 import '../styles/tutorial.scss';
 import {Hotkeys} from './Hotkeys';
+import {ProjectsControl} from './Projects/ProjectsControl';
 
 export interface AppControlsStateProps {
     isFull: boolean
@@ -69,6 +70,7 @@ class AppControlsComponent extends React.PureComponent<AppControlsProps, AppCont
         } = this.props;
         return (
             <div className='app-controls'>
+                <ProjectsControl/>
                 <Hotkeys/>
                 <Button
                     className="app-control-button"

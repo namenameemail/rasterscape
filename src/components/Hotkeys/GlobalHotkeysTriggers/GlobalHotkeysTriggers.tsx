@@ -24,6 +24,8 @@ import {
     stopPatternDeleteHold,
     PATTERN_DELETE_HOLD_MS,
 } from "../../../store/activePattern";
+import {setProjectsPanelOpen} from "../../../store/projects/actions";
+import {profileHotkeyAltP} from "../../../utils/profileHotkeys";
 import {imageToImageData} from "../../../utils/canvas/helpers/imageData";
 import {Segments} from "../../../store/patterns/selection/types";
 
@@ -33,6 +35,7 @@ export interface GlobalHotkeysStateProps {
     isSettingMode: boolean
     full: boolean
     optimization: boolean
+    isProjectsPanelOpen: boolean
 }
 
 export interface GlobalHotkeysActionProps {
@@ -61,6 +64,7 @@ export interface GlobalHotkeysActionProps {
     removePattern: typeof removePattern
     startPatternDeleteHold: typeof startPatternDeleteHold
     stopPatternDeleteHold: typeof stopPatternDeleteHold
+    setProjectsPanelOpen: typeof setProjectsPanelOpen
 }
 
 export interface GlobalHotkeysOwnProps {
@@ -72,6 +76,33 @@ export interface GlobalHotkeysProps extends GlobalHotkeysStateProps, GlobalHotke
 }
 
 const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
+    React.useEffect(() => {
+        const logKeydown = (e: KeyboardEvent) => {
+            if (!e.altKey || (e.key?.toLowerCase() !== 'p' && e.code !== 'KeyP')) {
+                return;
+            }
+
+            profileHotkeyAltP('keydown window capture', {
+                key: e.key,
+                code: e.code,
+                altKey: e.altKey,
+                ctrlKey: e.ctrlKey,
+                metaKey: e.metaKey,
+                shiftKey: e.shiftKey,
+                defaultPrevented: e.defaultPrevented,
+                target: (e.target as Element | null)?.nodeName,
+                activeElement: document.activeElement?.nodeName,
+            });
+        };
+
+        window.addEventListener('keydown', logKeydown, true);
+        profileHotkeyAltP('debug listener mounted');
+
+        return () => {
+            window.removeEventListener('keydown', logKeydown, true);
+            profileHotkeyAltP('debug listener unmounted');
+        };
+    }, []);
 
     const {
         activePatternId,
@@ -83,6 +114,8 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
         full,
         setFullScreen,
         toggleDemonstration,
+        isProjectsPanelOpen,
+        setProjectsPanelOpen,
 
         optimization,
         onOptimization,
@@ -189,6 +222,15 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
         e.preventDefault();
         settingMode(!isSettingMode);
     }, [isSettingMode, settingMode]);
+
+    const toggleProjectsPanel = React.useCallback((e) => {
+        profileHotkeyAltP('toggle projects panel', {
+            isProjectsPanelOpen,
+            defaultPrevented: e?.defaultPrevented,
+        });
+        e.preventDefault();
+        setProjectsPanelOpen(!isProjectsPanelOpen);
+    }, [isProjectsPanelOpen, setProjectsPanelOpen]);
 
     const toggleFullscreen = React.useCallback((e) => {
         e.preventDefault();
@@ -297,6 +339,11 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
                 keys={['option + k', 'alt + k']}
                 onPress={toggleHotkeys}
             />
+            <AppHotkeyTrigger
+                name="projectsPanel"
+                keys={['option + p', 'alt + p']}
+                onPress={toggleProjectsPanel}
+            />
             {/*<AppHotkeyTrigger*/}
             {/*    buttons={['option + f', 'alt + f']}*/}
             {/*    onPress={toggleFullscreen}*/}
@@ -353,6 +400,7 @@ const mapStateToProps: MapStateToProps<GlobalHotkeysStateProps, GlobalHotkeysOwn
     isSettingMode: state.hotkeys.setting,
     full: state.fullScreen,
     optimization: state.optimization.on,
+    isProjectsPanelOpen: state.projects.isPanelOpen,
 });
 
 const mapDispatchToProps: MapDispatchToProps<GlobalHotkeysActionProps, GlobalHotkeysOwnProps> = {
@@ -376,6 +424,7 @@ const mapDispatchToProps: MapDispatchToProps<GlobalHotkeysActionProps, GlobalHot
     removePattern,
     startPatternDeleteHold,
     stopPatternDeleteHold,
+    setProjectsPanelOpen,
 };
 
 export const GlobalHotkeysTriggers = connect<GlobalHotkeysStateProps,

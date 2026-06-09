@@ -7,6 +7,7 @@ import {
     SetBrushSelectParamsAction,
     SetBrushTypeAction
 } from "./actions";
+import {EProjectsAction} from "../projects/consts";
 import {ECompositeOperation} from "../compositeOperations";
 
 export interface BrushState {
@@ -72,6 +73,7 @@ export const brushReducer = handleActions<BrushState>({
             params,
         }
     },
+    [EProjectsAction.RESTORE_BRUSH]: (_state: BrushState, action: any) => action.state,
 }, {
     params: {
         brushType: EBrushType.Shape,

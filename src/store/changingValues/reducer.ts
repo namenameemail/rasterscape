@@ -9,6 +9,7 @@ import {EChangingValuesAction} from "./actions";
 import omit from "lodash/omit";
 import {EChangeFunctionsAction} from "../changeFunctions/actions";
 import {RemoveCFAction} from "../changeFunctions/types";
+import {EProjectsAction} from "../projects/consts";
 
 export interface ChangingValuesState {
     [path: string]: ChangingValue
@@ -80,5 +81,6 @@ export const changingValuesReducer = handleActions<ChangingValuesState>({
             })
             .map(({path}) => path);
         return omit(state, ...toDelete);
-    }
+    },
+    [EProjectsAction.RESTORE_CHANGING_VALUES]: (_state: ChangingValuesState, action: any) => action.state,
 }, {});

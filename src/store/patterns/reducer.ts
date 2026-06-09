@@ -1,6 +1,6 @@
 import {handleActions} from "redux-actions";
 import {createPatternInitialState} from "./helpers";
-import {AddPatternAction, RemovePatternAction,} from "./pattern/types";
+import {AddPatternAction, RemovePatternAction, ReplaceAllPatternsAction,} from "./pattern/types";
 import {PatternsState} from "./types";
 import {patternReducers} from "./pattern/reducers";
 import {historyReducers} from "./history/reducers";
@@ -27,6 +27,9 @@ export const patternsReducer = handleActions<PatternsState>({
     },
     [EPatternsAction.REMOVE_PATTERN]: (state: PatternsState, action: RemovePatternAction) =>
         omit(state, action.id),
+
+    [EPatternsAction.REPLACE_ALL]: (_state: PatternsState, action: ReplaceAllPatternsAction) =>
+        action.patterns || {},
 
     ...patternReducers,
     ...demonstrationReducers,

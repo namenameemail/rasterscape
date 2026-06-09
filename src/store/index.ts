@@ -30,6 +30,9 @@ import {HotkeysState} from "./hotkeys/types";
 import {hotkeysReducer} from "./hotkeys/reducer";
 import {PatternsService} from "./patterns/_service";
 import {dependenciesReducer, DependenciesState} from "./dependencies";
+import {projectsReducer} from "./projects/reducer";
+import {ProjectsState} from "./projects/types";
+import {projectAutosaveMiddleware} from "../storage/projectAutosave";
 
 export interface AppState {
     fullScreen: FullScreenState
@@ -57,6 +60,7 @@ export interface AppState {
     changingValues: ChangingValuesState
     changing: ChangingState
     dependencies: DependenciesState
+    projects: ProjectsState
 }
 
 const rootReducer = reduceReducers<AppState>(
@@ -86,6 +90,7 @@ const rootReducer = reduceReducers<AppState>(
         changingValues: changingValuesReducer,
         changing: changingReducer,
         dependencies: dependenciesReducer,
+        projects: projectsReducer,
     }),
     changeReducer
 );
@@ -95,7 +100,7 @@ const rootReducer = reduceReducers<AppState>(
 export const store: Store<AppState, any> = createStore(
     rootReducer,
     compose(
-        applyMiddleware(thunk, logger),
+        applyMiddleware(thunk, projectAutosaveMiddleware, logger),
         // applyMiddleware(thunk),
         persistState(['hotkeys']), //, 'changeFunctions'
     )

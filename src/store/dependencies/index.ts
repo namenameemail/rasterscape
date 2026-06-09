@@ -1,5 +1,6 @@
 import {handleActions} from "redux-actions";
 import {Action} from "redux";
+import {EProjectsAction} from "../projects/consts";
 
 export enum EDependenciesAction {
     ADD_CF_TO_PATTERN_DEP = "dependency/cf-to-p/add",
@@ -82,6 +83,7 @@ export const dependenciesReducer = handleActions<DependenciesState>({
             },
         }
     },
+    [EProjectsAction.RESTORE_DEPENDENCIES]: (_state: DependenciesState, action: any) => action.state,
 }, {
     changeFunctionToPattern: {},
     patternToChangeFunction: {},

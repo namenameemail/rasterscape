@@ -13,6 +13,7 @@ import {RoomParams, RoomState} from "../room/types";
 import {BlurParams, BlurState} from "../blur/types";
 import {DemonstrationParams, DemonstrationState} from "../demonstration/types";
 import {PlatformerParams, PlatformerState} from "../platformer/types";
+import {PatternsState} from "../types";
 
 
 // PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN
@@ -110,6 +111,10 @@ export interface PatternAction extends Action {
 }
 
 export interface RemovePatternAction extends PatternAction {
+}
+
+export interface ReplaceAllPatternsAction extends Action {
+    patterns: PatternsState
 }
 
 export interface UpdatePatternImageAction extends ImageAction, PatternAction {

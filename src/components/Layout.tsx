@@ -8,6 +8,7 @@ import {setFullScreen} from "../store/fullscreen";
 import {AppState} from "../store";
 import {FullScreen, useFullScreenHandle} from "react-full-screen";
 import {AppControls} from "./AppControls";
+import {ProjectsInitializer} from "./Projects/ProjectsInitializer";
 
 export interface LayoutStateProps {
     full: boolean
@@ -41,6 +42,7 @@ export const LayoutComponent: React.FC<LayoutProps> = ({full, setFullScreen}) =>
 
     return (
         <FullScreen handle={handle} onChange={setFullScreen}>
+            <ProjectsInitializer/>
             <div className={"layout-container"}>
                 <div className="layout">
                     <AppControls/>

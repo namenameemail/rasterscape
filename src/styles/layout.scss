@@ -97,12 +97,15 @@
         z-index: 5;
       }
 
-
-      & > button {
+      & > button,
+      & > .hotkeys {
         margin-left: 14px;
       }
 
-
+      & > .hotkeys {
+        display: flex;
+        align-items: center;
+      }
 
       .full-button {
         position: relative;

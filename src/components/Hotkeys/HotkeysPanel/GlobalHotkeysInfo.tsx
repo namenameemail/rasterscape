@@ -94,6 +94,10 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
                 <UnchangableKey big value={ALT_KEY} /><Plus/><UnchangableKey one value={'k'}/>
             </Item>
 
+            <Item desc={t('globalHotkeys.projectsPanel')}>
+                <UnchangableKey big value={ALT_KEY} /><Plus/><UnchangableKey one value={'p'}/>
+            </Item>
+
             <Item desc={t('globalHotkeys.hotkeyInvert')}>
                 <UnchangableKey big value={ALT_KEY} /><Plus/><UnchangableKey one value={'i'}/>
             </Item>

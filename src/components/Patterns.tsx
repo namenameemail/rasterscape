@@ -21,6 +21,7 @@ import '../styles/patternWorkspace.scss';
 export interface PatternsStateProps {
     patternsIds: string[]
     activePatternId: string | null
+    currentProjectId: string | null
 }
 
 export interface PatternsActionProps {
@@ -92,9 +93,11 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
             setHeight,
             save, load,
             activePatternId,
+            currentProjectId,
         } = this.props;
+        const projectKey = currentProjectId ?? 'none';
         return (
-            <div className="pattern-workspace">
+            <div className="pattern-workspace" key={projectKey}>
                 <div className="pattern-stage">
                     {patternsIds.map((id, index) => {
                         return (
@@ -130,6 +133,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
 const mapStateToProps: MapStateToProps<PatternsStateProps, {}, AppState> = state => ({
     patternsIds: Object.keys(state.patterns),
     activePatternId: state.activePattern.patternId,
+    currentProjectId: state.projects.currentProjectId,
 });
 
 const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnProps> = {

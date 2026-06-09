@@ -9,6 +9,7 @@ import {
     SetLineTypeAction
 } from "./types";
 import {ELineAction} from "./actions";
+import {EProjectsAction} from "../projects/consts";
 import {getLineParamsConfig} from "./helpers";
 import {ECompositeOperation} from "../compositeOperations";
 import {ParamConfig} from "../../components/_shared/Params.types";
@@ -38,7 +39,8 @@ export const lineReducer = handleActions<LineState>({
                 type: action.lineType
             }
         }
-    }
+    },
+    [EProjectsAction.RESTORE_LINE]: (_state: LineState, action: any) => action.state,
 }, {
     params: {
         size: 5,

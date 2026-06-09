@@ -10,6 +10,7 @@ import {EChangeFunctionsAction} from "./actions";
 import {cfId, createCFInitialState} from "./helpers";
 import {omit} from "lodash";
 import {CfDepthParams} from "./functions/depth";
+import {EProjectsAction} from "../projects/consts";
 
 export interface ChangeFunctions {
     [id: string]: ChangeFunctionState
@@ -112,6 +113,7 @@ export const changeFunctionsReducer = handleActions<ChangeFunctionsState>({
             }
         }
     },
+    [EProjectsAction.RESTORE_CHANGE_FUNCTIONS]: (_state: ChangeFunctionsState, action: any) => action.state,
 }, {
     functions: {},
     namesList: [],

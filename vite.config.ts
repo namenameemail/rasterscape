@@ -28,7 +28,7 @@ export default defineConfig({
       allow: [bbuutoonnssPath, path.resolve(__dirname, '..')],
     },
   },
-  define: {global: 'window'}
+  define: {global: 'globalThis'}
   // define: {
   //   // By default, Vite doesn't include shims for NodeJS/
   //   // necessary for segment analytics lib to work

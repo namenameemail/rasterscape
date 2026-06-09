@@ -1,6 +1,7 @@
 import {handleActions} from "redux-actions";
 import {SetSelectToolParamsAction, SelectToolParams, CurveValueName} from "./types";
 import {ESelectToolAction} from "./actions";
+import {EProjectsAction} from "../projects/consts";
 import {ECurveType, ESelectionMode} from "./types";
 import {getSelectToolParamsConfig} from "./helpers";
 import {ParamConfig} from "../../components/_shared/Params.types";
@@ -22,6 +23,7 @@ export const selectToolReducer = handleActions<SelectToolState>({
             params
         }
     },
+    [EProjectsAction.RESTORE_SELECT_TOOL]: (_state: SelectToolState, action: any) => action.state,
 }, {
     params: {
         mode: ESelectionMode.Rect,

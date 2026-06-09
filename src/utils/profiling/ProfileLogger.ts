@@ -113,6 +113,19 @@ class ProfileLogger {
         }
     }
 
+    timeAsync = async <T>(name: string, fn: () => Promise<T>): Promise<T> => {
+        if (!this.isRecording) {
+            return fn()
+        }
+
+        const start = performance.now()
+        try {
+            return await fn()
+        } finally {
+            this.pushSpan(name, performance.now() - start)
+        }
+    }
+
     value = (name: string, value: number): void => {
         if (!this.isRecording) {
             return
@@ -156,22 +169,50 @@ class ProfileLogger {
         const session = this.exportSession(label)
 
         if (import.meta.env.DEV) {
-            const response = await fetch('/__profiling/save', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({label, session}),
-            })
-
-            if (!response.ok) {
-                const text = await response.text()
-                throw new Error(text || `Save failed: ${response.status}`)
-            }
-
-            return response.json()
+            return this.persistSession(label ?? this.sessionLabel ?? 'session', session)
         }
 
         this.downloadSession(session)
         return {path: `profile-${Date.now()}.json`}
+    }
+
+    /** Debounced write to profiling/latest.json while recording continues. */
+    flushLatest = (label = 'live'): void => {
+        if (!import.meta.env.DEV) {
+            return
+        }
+
+        if (this.flushTimer !== null) {
+            window.clearTimeout(this.flushTimer)
+        }
+
+        this.flushTimer = window.setTimeout(() => {
+            this.flushTimer = null
+            const session = this.exportSession(label)
+            this.persistSession(label, session).catch(error => {
+                console.warn('[profile] flushLatest failed', error)
+            })
+        }, 300)
+    }
+
+    private flushTimer: number | null = null
+
+    private persistSession = async (
+        label: string,
+        session: ProfileSession,
+    ): Promise<{ path: string; sessionPath?: string }> => {
+        const response = await fetch('/__profiling/save', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({label, session}),
+        })
+
+        if (!response.ok) {
+            const text = await response.text()
+            throw new Error(text || `Save failed: ${response.status}`)
+        }
+
+        return response.json()
     }
 
     private pushSpan = (name: string, durationMs: number): void => {
