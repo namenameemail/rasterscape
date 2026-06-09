@@ -76,7 +76,6 @@ export class PatternToolService {
             });
             if (this.patternService.platformerService.isPlaying) {
                 this.patternService.platformerService.markWorldDirty('tool.onDraw');
-                this.patternService.platformerService.refreshDisplay();
             }
             profileLogger.time('draw.valuesMasked', () => {
                 this.patternService.valuesService.updateMaskedIfNeeded();
@@ -86,7 +85,6 @@ export class PatternToolService {
             this.canvasToolService?.handlers.onRelease?.(...args);
             if (this.patternService.platformerService.isPlaying) {
                 this.patternService.platformerService.markWorldDirty('tool.onRelease');
-                this.patternService.platformerService.refreshDisplay();
             }
             this.patternService.valuesService.update();
         },

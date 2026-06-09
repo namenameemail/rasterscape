@@ -1,0 +1,62 @@
+.hover-pattern-select {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: top;
+
+  &__trigger {
+    .pattern-select-button {
+      pointer-events: none;
+
+      &.button-select-selected {
+        border: 1px solid #b8b8b8 !important;
+      }
+    }
+  }
+
+  &__empty {
+    width: 42px;
+    height: 42px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ebebeb;
+    border: 1px solid #b8b8b8;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 18px;
+    line-height: 1;
+    user-select: none;
+  }
+}
+
+.hover-pattern-select__panel {
+  position: fixed;
+  box-sizing: border-box;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid #b8b8b8;
+  pointer-events: auto;
+}
+
+.hover-pattern-select__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1px;
+  width: 100%;
+  box-sizing: border-box;
+
+  .pattern-select-button {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+
+    canvas {
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+    }
+  }
+
+  .pattern-select-button:not(.button-select-selected) {
+    background-color: #ebebeb;
+  }
+}

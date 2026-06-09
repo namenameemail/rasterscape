@@ -22,7 +22,7 @@ import {
     setVideoSourcePattern,
 } from '../../../store/patterns/video/actions'
 import {getChangeFunctionsSelectItemsVideo} from '../../../store/changeFunctions/selectors'
-import {PatternsSelect} from '../../PatternsSelect'
+import {HoverPatternSelect} from '../HoverPatternSelect'
 import './videoControls.scss'
 import {setCFHighlights, setCFTypeHighlights} from '../../../store/changeFunctionsHighlights'
 import {SelectButtonsEventData} from '../../_shared/buttons/complex/SelectButtons'
@@ -270,9 +270,9 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
         setVideoSourceType(patternId, data.value)
     }
 
-    handleSelectSourcePattern = (value: string | string[], _added: string, _removed: string) => {
+    handleSelectSourcePattern = (value: string | null) => {
         const {setVideoSourcePattern, patternId} = this.props
-        setVideoSourcePattern(patternId, Array.isArray(value) ? value[0] ?? null : value)
+        setVideoSourcePattern(patternId, value)
     }
 
     sourceTypeGetValue = (id: VideoSourceType) => id
@@ -333,16 +333,12 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                         </>
                     )}
                     {isPatternSource && (
-                        <div className={'video-pattern-select'}>
-                            <PatternsSelect
-                                HK={false}
-                                blurOnClick
-                                nullable
-                                excludePatternId={patternId}
-                                value={sourcePatternId ?? undefined}
-                                onChange={this.handleSelectSourcePattern}
-                            />
-                        </div>
+                        <HoverPatternSelect
+                            patternId={patternId}
+                            namePrefix="videoSource"
+                            value={sourcePatternId ?? null}
+                            onChange={this.handleSelectSourcePattern}
+                        />
                     )}
                 </div>
 
@@ -454,8 +450,7 @@ const mapStateToProps: MapStateToProps<VideoControlsStateProps, VideoControlsOwn
             ? state.changeFunctions.functions[changeFunctionId]?.params || null
             : null,
         videoDisabled:
-            (!!state.patterns[patternId]?.room?.value?.connected && !state.patterns[patternId]?.room?.value?.meDrawer)
-            || !!state.patterns[patternId]?.platformer?.params?.playingOn,
+            !!state.patterns[patternId]?.room?.value?.connected && !state.patterns[patternId]?.room?.value?.meDrawer,
         autoblur: state.hotkeys.autoblur,
         autofocus: state.hotkeys.autofocus,
     }

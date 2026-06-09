@@ -217,9 +217,15 @@ export class PatternVideoService {
 
         const newFrameCanvas = profileLogger.time('video.shaderDraw', () => this.shaderVideoModule.updateImage())
 
+        const platformerPlaying = this.patternService.platformerService.isPlaying
+
         if (newFrameCanvas) {
             profileLogger.time('video.drawImage', () => {
-                this.patternService.canvasService.context.drawImage(newFrameCanvas, 0, 0)
+                if (platformerPlaying) {
+                    this.patternService.platformerService.applyVideoFrame(newFrameCanvas)
+                } else {
+                    this.patternService.canvasService.context.drawImage(newFrameCanvas, 0, 0)
+                }
             })
         }
 
@@ -228,19 +234,25 @@ export class PatternVideoService {
 
         if (radius > 0) {
             profileLogger.time('video.blur', () => {
-                this.patternService.canvasService.setImageData(
-                    StackBlur.imageDataRGBA(
-                        this.patternService.canvasService.getImageData(),
-                        0, 0,
-                        this.width, this.height, radius
+                if (platformerPlaying) {
+                    this.patternService.platformerService.applyBlurToWorld(radius)
+                } else {
+                    this.patternService.canvasService.setImageData(
+                        StackBlur.imageDataRGBA(
+                            this.patternService.canvasService.getImageData(),
+                            0, 0,
+                            this.width, this.height, radius
+                        )
                     )
-                )
+                }
             })
         }
 
-        profileLogger.time('video.valuesService', () => {
-            this.patternService.valuesService.updateForVideoFrame()
-        })
+        if (!platformerPlaying) {
+            profileLogger.time('video.valuesService', () => {
+                this.patternService.valuesService.updateForVideoFrame()
+            })
+        }
     }
 
     setStackType = (type: StackType): PatternVideoService => {

@@ -25,10 +25,6 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
         return
     }
 
-    if (pattern.video?.params?.updatingOn) {
-        return
-    }
-
     const params = pattern.platformer?.params ?? getPlatformerState().params
 
     try {

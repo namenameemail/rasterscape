@@ -9,6 +9,7 @@ import {Collision} from './Collision'
 import {PlatformerEngine} from './PlatformerEngine'
 import {PlatformerRenderer} from './PlatformerRenderer'
 import {platformerProfiler} from './PlatformerProfiler'
+import * as StackBlur from 'stackblur-canvas'
 
 const LEFT_KEYS = new Set(['KeyA', 'ArrowLeft'])
 const RIGHT_KEYS = new Set(['KeyD', 'ArrowRight'])
@@ -53,6 +54,32 @@ export class PatternPlatformerService {
     markWorldDirty = (source = 'unknown'): void => {
         this.world.markDirty()
         platformerProfiler.logWorldDirty(source)
+    }
+
+    applyVideoFrame = (source: CanvasImageSource): void => {
+        if (!this.playing || this.width <= 0 || this.height <= 0) {
+            return
+        }
+
+        this.world.context.drawImage(source, 0, 0, this.width, this.height)
+        this.markWorldDirty('video.frame')
+    }
+
+    applyBlurToWorld = (radius: number): void => {
+        if (!this.playing || radius <= 0) {
+            return
+        }
+
+        this.world.setImageData(
+            StackBlur.imageDataRGBA(
+                this.world.getImageData(),
+                0,
+                0,
+                this.width,
+                this.height,
+                radius,
+            ),
+        )
     }
 
     init = (params: PlatformerInitParams): PatternPlatformerService => {

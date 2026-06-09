@@ -1,7 +1,6 @@
 import {createMaskedImageFromImageData, imageDataToCanvas} from "../../../../utils/canvas/helpers/imageData";
 import {PatternService} from "../PatternService";
 import {performanceSettings} from "../../../../config/performanceSettings";
-import {hasMaskedConsumers} from "./valuesServiceHelpers";
 
 export class PatternValuesService {
     patternService: PatternService;
@@ -34,18 +33,13 @@ export class PatternValuesService {
     };
 
     updateMaskedIfNeeded = (force = false): PatternService => {
-        const state = this.patternService.storeService.getState();
         const maskEnabled = this.patternService.maskService.isMaskEnabled;
 
-        if (!maskEnabled && !hasMaskedConsumers(this.patternService, state)) {
+        if (!maskEnabled) {
             return this.syncMaskedReference();
         }
 
         if (!force && !this.isThrottleDue(this.lastMaskedUpdateTime)) {
-            if (!maskEnabled) {
-                return this.syncMaskedReference();
-            }
-
             return this.patternService;
         }
 

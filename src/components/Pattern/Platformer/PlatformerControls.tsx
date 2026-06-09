@@ -18,7 +18,7 @@ import {
 } from '../../../store/patterns/platformer/actions'
 import {ButtonHK} from '../../_shared/buttons/hotkeyed/ButtonHK'
 import {ButtonNumberCF} from '../../_shared/buttons/hotkeyed/ButtonNumberCF'
-import {PatternsSelect} from '../../PatternsSelect'
+import {HoverPatternSelect} from '../HoverPatternSelect'
 import {SelectDrop} from '../../_shared/buttons/complex/SelectDrop'
 import {isMeDrawer} from '../../../store/patterns/room/helpers'
 import './platformerControls.scss'
@@ -26,7 +26,6 @@ import './platformerControls.scss'
 export interface PlatformerControlsStateProps {
     platformerParams: PlatformerParams
     platformerDisabled: boolean
-    isVideoPlaying: boolean
 }
 
 export interface PlatformerControlsActionProps {
@@ -71,12 +70,12 @@ export class PlatformerControlsComponent extends React.PureComponent<PlatformerC
             : start(patternId)
     }
 
-    handleSelectPlayerPattern = (value: string) => {
-        this.props.setPlayerPattern(this.props.patternId, value || null)
+    handleSelectPlayerPattern = (value: string | null) => {
+        this.props.setPlayerPattern(this.props.patternId, value)
     }
 
-    handleSelectBackgroundPattern = (value: string) => {
-        this.props.setBackgroundPattern(this.props.patternId, value || null)
+    handleSelectBackgroundPattern = (value: string | null) => {
+        this.props.setBackgroundPattern(this.props.patternId, value)
     }
 
     handleChangeNumber = ({value, name}: { value: number; name: string }) => {
@@ -119,7 +118,6 @@ export class PlatformerControlsComponent extends React.PureComponent<PlatformerC
             patternId,
             platformerParams,
             platformerDisabled,
-            isVideoPlaying,
             t,
         } = this.props
 
@@ -145,35 +143,25 @@ export class PlatformerControlsComponent extends React.PureComponent<PlatformerC
                     className={'platformer-toggle'}
                     selected={playingOn}
                     name={'playingOn'}
-                    disabled={platformerDisabled || isVideoPlaying}
+                    disabled={platformerDisabled}
                     onClick={this.handleChangePlayingOn}
                 >
                     {t('pattern.platformer.play')}
                 </ButtonHK>
 
-                <div className={'platformer-controls-row'}>
-                    <span className={'platformer-controls-label'}>{t('pattern.platformer.player')}</span>
-                    <PatternsSelect
-                        HK={false}
-                        blurOnClick
-                        nullable
-                        excludePatternId={patternId}
-                        value={playerPatternId ?? undefined}
-                        onChange={this.handleSelectPlayerPattern}
-                    />
-                </div>
+                <HoverPatternSelect
+                    patternId={patternId}
+                    namePrefix="platformerPlayer"
+                    value={playerPatternId ?? null}
+                    onChange={this.handleSelectPlayerPattern}
+                />
 
-                <div className={'platformer-controls-row'}>
-                    <span className={'platformer-controls-label'}>{t('pattern.platformer.background')}</span>
-                    <PatternsSelect
-                        HK={false}
-                        blurOnClick
-                        nullable
-                        excludePatternId={patternId}
-                        value={backgroundPatternId ?? undefined}
-                        onChange={this.handleSelectBackgroundPattern}
-                    />
-                </div>
+                <HoverPatternSelect
+                    patternId={patternId}
+                    namePrefix="platformerBackground"
+                    value={backgroundPatternId ?? null}
+                    onChange={this.handleSelectBackgroundPattern}
+                />
 
                 <div className={'platformer-controls-params'}>
                     <ButtonNumberCF
@@ -253,10 +241,6 @@ export class PlatformerControlsComponent extends React.PureComponent<PlatformerC
                     items={backgroundFitItems}
                     onChange={this.handleChangeBackgroundFit}
                 />
-
-                <div className={'platformer-controls-hint'}>
-                    {t('pattern.platformer.controlsHint')}
-                </div>
             </div>
         )
     }
@@ -272,7 +256,6 @@ const mapStateToProps: MapStateToProps<PlatformerControlsStateProps, PlatformerC
     return {
         platformerParams: pattern?.platformer?.params ?? getPlatformerState().params,
         platformerDisabled: !!room?.connected && !room?.meDrawer,
-        isVideoPlaying: !!pattern?.video?.params?.updatingOn,
     }
 }
 
