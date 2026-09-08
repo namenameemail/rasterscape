@@ -206,7 +206,7 @@ export class PatternPlatformerService {
             this.world,
             this.engine.player,
         )
-        this.patternService.canvasService.present()
+        this.patternService.canvasService.presentFromCpu()
     }
 
     start = (): PatternPlatformerService => {

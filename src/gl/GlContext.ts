@@ -1,0 +1,391 @@
+const compile = (gl: WebGL2RenderingContext, type: number, source: string): WebGLShader => {
+    const shader = gl.createShader(type)
+    if (!shader) {
+        throw new Error('shader')
+    }
+    gl.shaderSource(shader, source)
+    gl.compileShader(shader)
+    return shader
+}
+
+const linkProgram = (gl: WebGL2RenderingContext, vsSrc: string, fsSrc: string): WebGLProgram => {
+    const program = gl.createProgram()
+    if (!program) {
+        throw new Error('program')
+    }
+    const vs = compile(gl, gl.VERTEX_SHADER, vsSrc)
+    const fs = compile(gl, gl.FRAGMENT_SHADER, fsSrc)
+    gl.attachShader(program, vs)
+    gl.attachShader(program, fs)
+    gl.linkProgram(program)
+    gl.deleteShader(vs)
+    gl.deleteShader(fs)
+    return program
+}
+
+const BLIT_VS = `#version 300 es
+in vec2 a_pos;
+in vec2 a_uv;
+uniform float u_flipY;
+out vec2 v_uv;
+void main() {
+    gl_Position = vec4(a_pos, 0.0, 1.0);
+    v_uv = vec2(a_uv.x, u_flipY > 0.5 ? 1.0 - a_uv.y : a_uv.y);
+}`
+
+const BLIT_FS = `#version 300 es
+precision highp float;
+uniform sampler2D u_tex;
+in vec2 v_uv;
+out vec4 o;
+void main() {
+    o = texture(u_tex, v_uv);
+}`
+
+const BLUR_FS = `#version 300 es
+precision highp float;
+uniform sampler2D u_tex;
+uniform vec2 u_offset;
+uniform float u_radius;
+in vec2 v_uv;
+out vec4 o;
+void main() {
+    float r = min(u_radius, 16.0);
+    vec4 acc = texture(u_tex, v_uv);
+    float wsum = 1.0;
+    for (int i = 1; i <= 16; i++) {
+        float fi = float(i);
+        if (fi > r) break;
+        float w = 1.0 - fi / (r + 1.0);
+        acc += texture(u_tex, v_uv + u_offset * fi) * w;
+        acc += texture(u_tex, v_uv - u_offset * fi) * w;
+        wsum += 2.0 * w;
+    }
+    o = acc / wsum;
+}`
+
+const MASK_FS = `#version 300 es
+precision highp float;
+uniform sampler2D u_tex;
+uniform sampler2D u_mask;
+uniform float u_invert;
+uniform float u_maskFlipY;
+in vec2 v_uv;
+out vec4 o;
+void main() {
+    vec4 c = texture(u_tex, v_uv);
+    vec2 muv = vec2(v_uv.x, u_maskFlipY > 0.5 ? 1.0 - v_uv.y : v_uv.y);
+    float ma = texture(u_mask, muv).a;
+    float a = u_invert > 0.5 ? 1.0 - ma : ma;
+    o = vec4(c.rgb, c.a * a);
+}`
+
+const QUAD = new Float32Array([
+    -1, 1, 0, 1,
+    -1, -1, 0, 0,
+    1, 1, 1, 1,
+    1, -1, 1, 0,
+])
+
+export class GlContext {
+    readonly canvas: HTMLCanvasElement
+    readonly gl: WebGL2RenderingContext
+
+    private blitProgram: WebGLProgram
+    private blurProgram: WebGLProgram
+    private maskProgram: WebGLProgram
+    private blitBuffer: WebGLBuffer
+    private copyFbo: WebGLFramebuffer
+    private scratch: WebGLTexture | null = null
+    private scratchW = 0
+    private scratchH = 0
+    private maskScratch: WebGLTexture | null = null
+    private maskScratchW = 0
+    private maskScratchH = 0
+
+    constructor() {
+        this.canvas = document.createElement('canvas')
+        const gl = this.canvas.getContext('webgl2', {
+            antialias: false,
+            depth: false,
+            stencil: false,
+            preserveDrawingBuffer: false,
+        })
+
+        if (!gl) {
+            throw new Error('need webgl2')
+        }
+
+        this.gl = gl
+        gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE)
+        gl.clearColor(0, 0, 0, 0)
+        this.blitProgram = linkProgram(gl, BLIT_VS, BLIT_FS)
+        this.blurProgram = linkProgram(gl, BLIT_VS, BLUR_FS)
+        this.maskProgram = linkProgram(gl, BLIT_VS, MASK_FS)
+        gl.useProgram(this.blitProgram)
+        const blitBuffer = gl.createBuffer()
+        const copyFbo = gl.createFramebuffer()
+        if (!blitBuffer || !copyFbo) {
+            throw new Error('gl alloc')
+        }
+        this.blitBuffer = blitBuffer
+        this.copyFbo = copyFbo
+        gl.bindBuffer(gl.ARRAY_BUFFER, blitBuffer)
+        gl.bufferData(gl.ARRAY_BUFFER, QUAD, gl.STATIC_DRAW)
+    }
+
+    setSize = (width: number, height: number): void => {
+        if (this.canvas.width !== width) {
+            this.canvas.width = width
+        }
+        if (this.canvas.height !== height) {
+            this.canvas.height = height
+        }
+
+        this.gl.viewport(0, 0, width, height)
+    }
+
+    createTexture2D = (width: number, height: number): WebGLTexture => {
+        const {gl} = this
+        const texture = gl.createTexture()
+        if (!texture) {
+            throw new Error('texture')
+        }
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+        return texture
+    }
+
+    resizeTexture2D = (texture: WebGLTexture, width: number, height: number): void => {
+        const {gl} = this
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+    }
+
+    uploadCanvas = (canvas: HTMLCanvasElement, texture: WebGLTexture): void => {
+        const {gl} = this
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, canvas)
+    }
+
+    copyFramebufferToTexture = (texture: WebGLTexture, width: number, height: number): void => {
+        const {gl} = this
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, width, height)
+    }
+
+    copyTexture2DTo3D = (
+        source: WebGLTexture,
+        dest3D: WebGLTexture,
+        z: number,
+        destW: number,
+        destH: number,
+        srcW: number,
+        srcH: number,
+    ): void => {
+        const {gl} = this
+        const readTex = srcW === destW && srcH === destH
+            ? source
+            : this.blitToScratch(source, destW, destH)
+
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, null)
+        gl.bindTexture(gl.TEXTURE_3D, null)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.copyFbo)
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, readTex, 0)
+        gl.bindTexture(gl.TEXTURE_3D, dest3D)
+        gl.copyTexSubImage3D(gl.TEXTURE_3D, 0, 0, 0, z, 0, 0, destW, destH)
+        gl.bindTexture(gl.TEXTURE_3D, null)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+    }
+
+    bindTexture2DTarget = (texture: WebGLTexture, width: number, height: number): void => {
+        const {gl} = this
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, null)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.copyFbo)
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0)
+        gl.viewport(0, 0, width, height)
+    }
+
+    blitToDefault = (texture: WebGLTexture, width: number, height: number, flipY = false): void => {
+        const {gl} = this
+        this.setSize(width, height)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+        this.drawTexture(texture, flipY)
+    }
+
+    compositeTextureOver = (
+        video: WebGLTexture,
+        dest: WebGLTexture,
+        width: number,
+        height: number,
+        destFlipY: boolean,
+    ): void => {
+        const {gl} = this
+        this.setSize(width, height)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+        this.drawTexture(dest, destFlipY)
+        gl.enable(gl.BLEND)
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+        this.drawTexture(video)
+        gl.disable(gl.BLEND)
+        this.copyFramebufferToTexture(dest, width, height)
+    }
+
+    compositeMasked = (
+        source: WebGLTexture,
+        mask: WebGLTexture,
+        width: number,
+        height: number,
+        inverted: boolean,
+        maskFlipY: boolean,
+    ): WebGLTexture => {
+        const dest = this.ensureMaskScratch(width, height)
+        const {gl} = this
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.copyFbo)
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, dest, 0)
+        gl.viewport(0, 0, width, height)
+        gl.disable(gl.BLEND)
+        gl.useProgram(this.maskProgram)
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, source)
+        gl.uniform1i(gl.getUniformLocation(this.maskProgram, 'u_tex'), 0)
+        gl.activeTexture(gl.TEXTURE1)
+        gl.bindTexture(gl.TEXTURE_2D, mask)
+        gl.uniform1i(gl.getUniformLocation(this.maskProgram, 'u_mask'), 1)
+        gl.uniform1f(gl.getUniformLocation(this.maskProgram, 'u_invert'), inverted ? 1 : 0)
+        gl.uniform1f(gl.getUniformLocation(this.maskProgram, 'u_flipY'), 0)
+        gl.uniform1f(gl.getUniformLocation(this.maskProgram, 'u_maskFlipY'), maskFlipY ? 1 : 0)
+        this.bindQuad(this.maskProgram)
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+        gl.activeTexture(gl.TEXTURE1)
+        gl.bindTexture(gl.TEXTURE_2D, null)
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+        return dest
+    }
+
+    compositeDefaultOver = (dest: WebGLTexture, width: number, height: number, destFlipY: boolean): void => {
+        const {gl} = this
+        const video = this.ensureScratch(width, height)
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+        gl.bindTexture(gl.TEXTURE_2D, video)
+        gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, width, height)
+
+        this.blitToDefault(dest, width, height, destFlipY)
+
+        gl.enable(gl.BLEND)
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+        this.drawTexture(video)
+        gl.disable(gl.BLEND)
+
+        this.copyFramebufferToTexture(dest, width, height)
+    }
+
+    blurTexture = (texture: WebGLTexture, width: number, height: number, radius: number): void => {
+        if (radius <= 0) {
+            return
+        }
+
+        const scratch = this.ensureScratch(width, height)
+        const {gl} = this
+        gl.viewport(0, 0, width, height)
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.copyFbo)
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, scratch, 0)
+        this.drawBlur(texture, 1 / width, 0, radius)
+
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0)
+        gl.bindTexture(gl.TEXTURE_2D, null)
+        this.drawBlur(scratch, 0, 1 / height, radius)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+    }
+
+    private ensureScratch = (width: number, height: number): WebGLTexture => {
+        if (!this.scratch || this.scratchW !== width || this.scratchH !== height) {
+            if (this.scratch) {
+                this.gl.deleteTexture(this.scratch)
+            }
+            this.scratch = this.createTexture2D(width, height)
+            this.scratchW = width
+            this.scratchH = height
+        }
+
+        return this.scratch
+    }
+
+    private ensureMaskScratch = (width: number, height: number): WebGLTexture => {
+        if (!this.maskScratch || this.maskScratchW !== width || this.maskScratchH !== height) {
+            if (this.maskScratch) {
+                this.gl.deleteTexture(this.maskScratch)
+            }
+            this.maskScratch = this.createTexture2D(width, height)
+            this.maskScratchW = width
+            this.maskScratchH = height
+        }
+
+        return this.maskScratch
+    }
+
+    private blitToScratch = (source: WebGLTexture, width: number, height: number): WebGLTexture => {
+        const scratch = this.ensureScratch(width, height)
+        const {gl} = this
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.copyFbo)
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, scratch, 0)
+        gl.viewport(0, 0, width, height)
+        this.drawTexture(source)
+        return scratch
+    }
+
+    private bindQuad = (program: WebGLProgram): void => {
+        const {gl} = this
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.blitBuffer)
+        const stride = 16
+        const aPos = gl.getAttribLocation(program, 'a_pos')
+        const aUv = gl.getAttribLocation(program, 'a_uv')
+        gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, stride, 0)
+        gl.vertexAttribPointer(aUv, 2, gl.FLOAT, false, stride, 8)
+        gl.enableVertexAttribArray(aPos)
+        gl.enableVertexAttribArray(aUv)
+    }
+
+    private drawTexture = (texture: WebGLTexture, flipY = false): void => {
+        const {gl} = this
+        gl.useProgram(this.blitProgram)
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.uniform1i(gl.getUniformLocation(this.blitProgram, 'u_tex'), 0)
+        gl.uniform1f(gl.getUniformLocation(this.blitProgram, 'u_flipY'), flipY ? 1 : 0)
+        this.bindQuad(this.blitProgram)
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    }
+
+    private drawBlur = (texture: WebGLTexture, ox: number, oy: number, radius: number): void => {
+        const {gl} = this
+        gl.useProgram(this.blurProgram)
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.uniform1i(gl.getUniformLocation(this.blurProgram, 'u_tex'), 0)
+        gl.uniform2f(gl.getUniformLocation(this.blurProgram, 'u_offset'), ox, oy)
+        gl.uniform1f(gl.getUniformLocation(this.blurProgram, 'u_radius'), radius * 0.5)
+        this.bindQuad(this.blurProgram)
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    }
+}
+
+let instance: GlContext | null = null
+
+export const getGlContext = (): GlContext => {
+    if (!instance) {
+        instance = new GlContext()
+    }
+
+    return instance
+}

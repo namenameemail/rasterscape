@@ -8,9 +8,9 @@ import { ECFType } from '../../../../changeFunctions/types'
 import { CfDepthParams } from '../../../../changeFunctions/functions/depth'
 import { VideoSourceType } from '../../../video/types'
 import { patternsService } from '../../../../index'
-import { createCanvas, HelperCanvas } from '../../../../../utils/canvas/helpers/base'
 import { profileLogger } from '../../../../../utils/profiling/ProfileLogger'
 import { frameScheduler, FramePriority } from '../../../../../utils/FrameScheduler'
+import { getGlContext } from '../../../../../gl/GlContext'
 
 export const CameraAxisDirectionMap = {
     [CameraAxis.T]: 0,
@@ -154,54 +154,34 @@ export class PatternVideoService {
         this.onFrame()
     }
 
-    private sourceScale?: HelperCanvas
-
-    getFrameSource = (): TexImageSource | undefined => {
+    private pushSourceFrame = (): void => {
         if (this.sourceType === VideoSourceType.Camera) {
-            return this.cameraService.receiveImage()
+            const source = this.cameraService.receiveImage()
+            if (source) {
+                profileLogger.time('video.pushNewFrame', () => {
+                    this.shaderVideoModule.pushNewFrame(source)
+                })
+            }
+            return
         }
 
         if (!this.sourcePatternId) {
-            return undefined
+            return
         }
 
-        const sourceCanvas = patternsService.pattern[this.sourcePatternId]?.canvasService.canvas
+        const masked = patternsService.pattern[this.sourcePatternId]?.valuesService.ensureMaskedGpu()
 
-        if (!sourceCanvas?.width || !sourceCanvas?.height) {
-            return undefined
+        if (!masked) {
+            return
         }
 
-        if (sourceCanvas.width === this.width && sourceCanvas.height === this.height) {
-            return sourceCanvas
-        }
-
-        return profileLogger.time('video.source.scale', () => this.scaleSource(sourceCanvas))
-    }
-
-    private scaleSource = (sourceCanvas: HTMLCanvasElement): HTMLCanvasElement => {
-        if (!this.sourceScale) {
-            this.sourceScale = createCanvas(this.width, this.height)
-        } else if (this.sourceScale.canvas.width !== this.width || this.sourceScale.canvas.height !== this.height) {
-            this.sourceScale.canvas.width = this.width
-            this.sourceScale.canvas.height = this.height
-        } else {
-            this.sourceScale.clear()
-        }
-
-        this.sourceScale.context.drawImage(sourceCanvas, 0, 0, this.width, this.height)
-
-        return this.sourceScale.canvas
+        profileLogger.time('video.pushNewFrame', () => {
+            this.shaderVideoModule.pushFrameFromTexture(masked.texture, masked.width, masked.height)
+        })
     }
 
     onFrame = () => {
-
-        const newFrameSource = profileLogger.time('video.getFrameData', () => this.getFrameSource())
-
-        if (newFrameSource) {
-            profileLogger.time('video.pushNewFrame', () => {
-                this.shaderVideoModule.pushNewFrame(newFrameSource)
-            })
-        }
+        this.pushSourceFrame()
 
         profileLogger.time('video.updateFuncParams', () => {
             if (!this.changeFunctionId) {
@@ -230,17 +210,20 @@ export class PatternVideoService {
             this.shaderVideoModule.updateOffsets(patternVideoOffset)
         })
 
-        const newFrameCanvas = profileLogger.time('video.shaderDraw', () => this.shaderVideoModule.updateImage())
+        const frame = profileLogger.time('video.shaderDraw', () => this.shaderVideoModule.updateImage())
 
         const platformerPlaying = this.patternService.platformerService.isPlaying
+        const buffer = this.patternService.canvasService.buffer
 
-        if (newFrameCanvas) {
+        if (frame && platformerPlaying) {
             profileLogger.time('video.drawImage', () => {
-                if (platformerPlaying) {
-                    this.patternService.platformerService.applyVideoFrame(newFrameCanvas)
-                } else {
-                    this.patternService.canvasService.context.drawImage(newFrameCanvas, 0, 0)
-                }
+                const glc = getGlContext()
+                glc.blitToDefault(frame, this.width, this.height)
+                this.patternService.platformerService.applyVideoFrame(glc.canvas)
+            })
+        } else if (frame && buffer) {
+            profileLogger.time('video.composite', () => {
+                buffer.compositeVideo(frame)
             })
         }
 
@@ -251,14 +234,15 @@ export class PatternVideoService {
             profileLogger.time('video.blur', () => {
                 if (platformerPlaying) {
                     this.patternService.platformerService.applyBlurToWorld(radius)
-                } else {
-                    this.patternService.canvasService.buffer?.blur(radius)
+                } else if (buffer?.texture) {
+                    getGlContext().blurTexture(buffer.texture, buffer.width, buffer.height, radius)
+                    getGlContext().blitToDefault(buffer.texture, buffer.width, buffer.height)
                 }
             })
         }
 
-        if (!platformerPlaying) {
-            this.patternService.canvasService.present()
+        if (!platformerPlaying && buffer) {
+            buffer.presentGl()
 
             profileLogger.time('video.valuesService', () => {
                 this.patternService.valuesService.updateForVideoFrame()

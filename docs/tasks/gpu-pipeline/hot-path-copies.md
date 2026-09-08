@@ -27,9 +27,9 @@
 
 ## Не съём в процессор, но в кадре
 
-`video.pushNewFrame` — `texSubImage3D` с 2D-канваса, **~17–26 ms** на 1080p ([`baselines/03-after.md`](baselines/03-after.md)). Уйдёт на этапе 4, когда source станет текстурой.
+`video.pushNewFrame` — этап 4a: source-паттерн `copyTex`, **0.21 ms** ([`baselines/04-after.md`](baselines/04-after.md)). Камера пока `texSubImage3D` с video.
 
-`canvas.present` (этап 1) — блит буфера на видимый канвас, только у видимого. `video.drawImage` — блит GL-канваса в 2D-буфер. Оба уйдут вместе с GL-буфером.
+`video.drawImage` — только platformer world. Видимый монитор: `canvas.present` **0.08 ms** ([`baselines/04-gl-present.md`](baselines/04-gl-present.md)). `video.composite` — source-over на dest, **0.05 ms**. `canvas.downloadGpu` — GL→2D на жесте / `getImageData`. `canvas.uploadGpu` — после штриха.
 
 Внешний спан `video.getFrameData` / `video.valuesService` / `draw.valuesMasked` уже был — внутри них более узкие имена из таблиц.
 

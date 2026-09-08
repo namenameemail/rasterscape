@@ -77,9 +77,9 @@
 
 ### Ушло в следующие задачи
 
-- [`04-tools.md`](../04-tools.md): общий `GlContext`, буфер = GL-текстура, шейдер пишет в FBO, source/DEPTH = `sampler2D` без `texSubImage` с 2D, блюр-шейдер в том же контексте.
+- [`04-tools.md`](04-tools.md): общий `GlContext`, буфер = GL-текстура, шейдер пишет в FBO, source/DEPTH = `sampler2D` без `texSubImage` с 2D, блюр-шейдер в том же контексте.
 - [`03-masked-preview.md`](03-masked-preview.md) — закрыт: `updateMasked` 45 ms → 0.1 ms.
 
 ### Следующая задача
 
-[`04-tools.md`](../04-tools.md).
+[`05-cook-graph.md`](../05-cook-graph.md).

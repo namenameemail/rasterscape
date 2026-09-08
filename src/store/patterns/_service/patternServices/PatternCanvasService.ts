@@ -32,8 +32,14 @@ export class PatternCanvasService {
     };
 
     present = (): PatternService => {
+        this.buffer?.ensureGpu();
         this.buffer?.present();
         return this.patternService;
+    };
+
+    presentFromCpu = (): PatternService => {
+        this.buffer?.markCpuChanged();
+        return this.present();
     };
 
     setImageData = (imageData: ImageData, width?: boolean, height?: boolean): PatternService => {
@@ -51,7 +57,7 @@ export class PatternCanvasService {
         }
 
         buffer.writePixels(imageData);
-        buffer.present();
+        this.present();
 
         return this.patternService;
     };

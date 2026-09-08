@@ -3,6 +3,7 @@ import {performanceSettings} from "../../../../config/performanceSettings";
 import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
 import {HelperCanvas} from "../../../../utils/canvas/helpers/base";
 import {compositeMasked, ensureCanvas} from "../../../../utils/canvas/helpers/composite";
+import {getGlContext} from "../../../../gl/GlContext";
 
 export class PatternValuesService {
     patternService: PatternService;
@@ -27,7 +28,9 @@ export class PatternValuesService {
     };
 
     syncMaskedReference = (): PatternService => {
-        const canvas = this.patternService.canvasService.canvas;
+        const buffer = this.patternService.canvasService.buffer;
+        buffer?.ensureCpu();
+        const canvas = buffer?.canvas;
 
         if (canvas) {
             this.masked = canvas;
@@ -75,6 +78,39 @@ export class PatternValuesService {
         }
 
         return this.patternService;
+    };
+
+    ensureMaskedGpu = (): { texture: WebGLTexture, width: number, height: number } | null => {
+        const buffer = this.patternService.canvasService.buffer;
+
+        if (!buffer?.width || !buffer.height) {
+            return null;
+        }
+
+        const source = buffer.ensureGpu();
+        const maskService = this.patternService.maskService;
+
+        if (!maskService.isMaskEnabled) {
+            return {texture: source, width: buffer.width, height: buffer.height};
+        }
+
+        const maskBuffer = maskService.buffer;
+
+        if (!maskBuffer) {
+            return {texture: source, width: buffer.width, height: buffer.height};
+        }
+
+        const mask = maskBuffer.ensureGpu();
+        const texture = getGlContext().compositeMasked(
+            source,
+            mask,
+            buffer.width,
+            buffer.height,
+            !!maskService.isMaskInverted,
+            buffer.textureFromCanvas !== maskBuffer.textureFromCanvas,
+        );
+
+        return {texture, width: buffer.width, height: buffer.height};
     };
 
     updateMasked = (): PatternService => {

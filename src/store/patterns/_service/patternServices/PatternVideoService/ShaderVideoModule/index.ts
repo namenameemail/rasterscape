@@ -1,9 +1,9 @@
-import {createProgram} from './shadersUtils'
 import fs from './shaders/frag.glsl'
 import vs from './shaders/vert.glsl'
 import {coordHelper4, coordHelper5, imageDataDebug} from '../../../../../../components/Area/canvasPosition.servise'
 import {initShaders} from './utils/cuon-utils'
 import {Matrix4} from './utils/cuon-matrix'
+import {getGlContext} from '../../../../../../gl/GlContext'
 import {
     AnyFxyParams,
     FxyArrayParams,
@@ -30,11 +30,10 @@ export class ShaderVideoModule {
 
     glCanvas: HTMLCanvasElement
     gl: WebGL2RenderingContext
+    program: WebGLProgram
+    vertexBuffer: WebGLBuffer
 
     canvas: HTMLCanvasElement
-    // context: CanvasRenderingContext2D
-
-    loadTextureToShader: (newPixels: Uint8Array) => any
 
     verticesData: Float32Array = new Float32Array([
         -1, 1, 0.0, 1.0,
@@ -81,6 +80,10 @@ export class ShaderVideoModule {
         return this
     }
 
+    frameTexture: WebGLTexture | null = null
+    private frameW = 0
+    private frameH = 0
+
     init(params: VideoServiceInitParams): ShaderVideoModule {
         const {width, height, stackSize, cameraAxis, offset} = params
         this.width = width
@@ -90,10 +93,6 @@ export class ShaderVideoModule {
         this.offset = offset
         this.canvas.width = width
         this.canvas.height = height
-        this.cubeTexture = undefined
-        // this.paramTexture = undefined
-
-        // document.body.appendChild(this.canvas) // ?
 
         this.initShader()
 
@@ -101,70 +100,77 @@ export class ShaderVideoModule {
     }
 
     initShader = () => {
+        const glc = getGlContext()
+        const gl = this.gl = glc.gl
+        this.glCanvas = glc.canvas
 
-        const width = this.width
-        const height = this.height
+        if (!this.program) {
+            if (!initShaders(gl, vs, fs)) {
+                return alert('failed to init')
+            }
 
-        const canvas = this.glCanvas = document.createElement('canvas')
-        canvas.width = width
-        canvas.height = height
-
-        const gl: WebGL2RenderingContext | null = this.gl = canvas.getContext('webgl2')
-
-        // coordHelper4.setText(
-        // gl.MAX_3D_TEXTURE_SIZE)
-        if (!gl) {
-            return alert('need webgl2')
+            this.program = gl.getParameter(gl.CURRENT_PROGRAM)
+            gl.clearColor(0, 0, 0, 0)
+            this.initVertexBuffers(gl)
         }
 
-        if (!initShaders(gl, vs, fs)) {
-            return alert('failed to init')
-        }
-
-        gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE)
-
-
+        this.ensureFrameTexture()
         this.initTexture()
 
         for (let i = 0; i < 4; i++) {
-            this.initParamTextureByIndex(i, width, height)
+            this.ensureParamTexture(i, this.width, this.height)
+        }
+    }
+
+    use = (): void => {
+        const gl = this.gl
+
+        gl.useProgram(this.program)
+
+        if (this.vertexBuffer) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer)
+            const F_SIZE = this.verticesData.BYTES_PER_ELEMENT
+            const a_Position = gl.getAttribLocation(this.program, 'a_Position')
+            const a_TexCoord = gl.getAttribLocation(this.program, 'a_TexCoord')
+            gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 4 * F_SIZE, 0)
+            gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, 4 * F_SIZE, 2 * F_SIZE)
+            gl.enableVertexAttribArray(a_Position)
+            gl.enableVertexAttribArray(a_TexCoord)
         }
 
-        this.initVertexBuffers(gl)
+        if (this.cubeTexture) {
+            gl.activeTexture(gl.TEXTURE0)
+            gl.bindTexture(gl.TEXTURE_3D, this.cubeTexture)
+        }
     }
 
     cubeTexture;
     initTexture = () => {
         const width = this.width
         const height = this.height
-        const depth = this.depth
         const stackSizeWithError = this.stackSizeWithError
         const gl = this.gl
 
-        // coordHelper4.writeln('stackSize', stackSizeWithError, '-')
-        const pixels = new Uint8Array(width * height * 4 * stackSizeWithError)
-        this.cubeTexture = this.cubeTexture || gl.createTexture()
-        // this.paramTexture = this.paramTexture || gl.createTexture()
+        this.use()
 
-        const u_Sampler = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_Sampler')
-        const u_QueueOffset = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_QueueOffset')
-        const u_TexQueueOffset = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_TexQueueOffset')
-        const u_Width = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_Width')
-        const u_Height = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_Height')
-        const u_StackSize = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_StackSize')
-        const u_TexDepth = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_TexDepth')
-        const u_Mirror = gl.getUniformLocation(gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_Mirror')
-        const u_Direction = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_Direction')
-        const u_Error = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_Error')
-        const u_CutFuncType = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CutFuncType')
+        this.cubeTexture = this.cubeTexture || gl.createTexture()
+
+        const u_Sampler = gl.getUniformLocation(this.program, 'u_Sampler')
+        const u_QueueOffset = gl.getUniformLocation(this.program, 'u_QueueOffset')
+        const u_TexQueueOffset = gl.getUniformLocation(this.program, 'u_TexQueueOffset')
+        const u_Width = gl.getUniformLocation(this.program, 'u_Width')
+        const u_Height = gl.getUniformLocation(this.program, 'u_Height')
+        const u_StackSize = gl.getUniformLocation(this.program, 'u_StackSize')
+        const u_Mirror = gl.getUniformLocation(this.program, 'u_Mirror')
+        const u_Direction = gl.getUniformLocation(this.program, 'u_Direction')
+        const u_Error = gl.getUniformLocation(this.program, 'u_Error')
+        const u_CutFuncType = gl.getUniformLocation(this.program, 'u_CutFuncType')
 
         Object.keys(this.offset).forEach(key => {
-
-            const u_CutOffset = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CutOffset_' + key)
+            const u_CutOffset = gl.getUniformLocation(this.program, 'u_CutOffset_' + key)
             gl.uniform1f(u_CutOffset, this.offset[key])
         })
 
-        // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
         gl.activeTexture(gl.TEXTURE0)
         gl.bindTexture(gl.TEXTURE_3D, this.cubeTexture)
         gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
@@ -181,7 +187,7 @@ export class ShaderVideoModule {
             0,
             gl.RGBA,
             gl.UNSIGNED_BYTE,
-            pixels,
+            null,
         )
         gl.uniform1i(u_Sampler, 0)
 
@@ -193,51 +199,84 @@ export class ShaderVideoModule {
         gl.uniform1i(u_Error, this.error)
         gl.uniform1i(u_CutFuncType, XYCutFunctionTypeToNumber[this.cutFunctionType])
 
-
         this.queueOffset = 0
 
         gl.uniform1f(u_TexQueueOffset, this.queueOffset / (this.stackSizeWithError))
         gl.uniform1f(u_QueueOffset, this.queueOffset)
     }
 
+    private setQueueUniforms = () => {
+        const gl = this.gl
+        gl.uniform1f(gl.getUniformLocation(this.program, 'u_TexQueueOffset'), this.queueOffset / this.stackSizeWithError)
+        gl.uniform1f(gl.getUniformLocation(this.program, 'u_QueueOffset'), this.queueOffset)
+    }
+
+    private advanceQueue = () => {
+        this.setQueueUniforms()
+        this.queueOffset = (this.queueOffset + 1) % this.stackSizeWithError
+    }
+
     updateTexture = (source: TexImageSource) => {
         const gl = this.gl
-        const u_TexQueueOffset = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_TexQueueOffset')
-        const u_QueueOffset = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_QueueOffset')
-
+        this.use()
 
         gl.activeTexture(gl.TEXTURE0)
         gl.bindTexture(gl.TEXTURE_3D, this.cubeTexture)
         gl.texSubImage3D(
             gl.TEXTURE_3D,
             0,
-            0, 0, this.queueOffset % (this.stackSizeWithError),
+            0, 0, this.queueOffset % this.stackSizeWithError,
             this.width, this.height, 1,
             gl.RGBA,
             gl.UNSIGNED_BYTE,
             source,
         )
-        gl.uniform1f(u_TexQueueOffset, this.queueOffset / (this.stackSizeWithError))
-        gl.uniform1f(u_QueueOffset, this.queueOffset)
+        this.advanceQueue()
+    }
 
-        this.queueOffset = (this.queueOffset + 1) % (this.stackSizeWithError)
+    pushFrameFromTexture = (texture: WebGLTexture, srcW: number, srcH: number): ShaderVideoModule => {
+        this.use()
+        getGlContext().copyTexture2DTo3D(
+            texture,
+            this.cubeTexture,
+            this.queueOffset % this.stackSizeWithError,
+            this.width,
+            this.height,
+            srcW,
+            srcH,
+        )
+        this.use()
+        this.advanceQueue()
+        return this
+    }
+
+    bindParamTexture = (index: number, texture: WebGLTexture): void => {
+        const gl = this.gl
+        const unit = 1 + index
+        gl.activeTexture(gl.TEXTURE0 + unit)
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.uniform1i(gl.getUniformLocation(this.program, 'u_CFParamTexture_' + index), unit)
     }
 
     initVertexBuffers(gl): number {
         const vertices = this.verticesData
         const F_SIZE = vertices.BYTES_PER_ELEMENT
 
-        const vertexBuffer = gl.createBuffer()
-        if (!vertexBuffer) {
-            console.log('Failed to create the buffer object ')
-            return -1
+        if (this.vertexBuffer) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer)
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
+        } else {
+            const vertexBuffer = this.vertexBuffer = gl.createBuffer()
+            if (!vertexBuffer) {
+                console.log('Failed to create the buffer object ')
+                return -1
+            }
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
         }
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
-        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
-
-        const a_Position = gl.getAttribLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'a_Position')
-        const a_TexCoord = gl.getAttribLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'a_TexCoord')
+        const a_Position = gl.getAttribLocation(this.program, 'a_Position')
+        const a_TexCoord = gl.getAttribLocation(this.program, 'a_TexCoord')
 
         gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 4 * F_SIZE, 0)
         gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, 4 * F_SIZE, 2 * F_SIZE)
@@ -256,15 +295,18 @@ export class ShaderVideoModule {
 
 
     draw = () => {
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT)
-        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, this.verticesCount)
+        this.use()
+        const gl = this.gl
+        getGlContext().bindTexture2DTarget(this.frameTexture as WebGLTexture, this.width, this.height)
+        gl.clear(gl.COLOR_BUFFER_BIT)
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.verticesCount)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
     }
 
-    updateImage(): HTMLCanvasElement {
-
+    updateImage(): WebGLTexture {
+        this.ensureFrameTexture()
         this.draw()
-
-        return this.glCanvas
+        return this.frameTexture as WebGLTexture
     }
 
     pushNewFrame(source: TexImageSource): ShaderVideoModule {
@@ -287,10 +329,9 @@ export class ShaderVideoModule {
 
     updateDepth(value: number): ShaderVideoModule {
         this.depth = value
-
-        const u_TexDepth = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_TexDepth')
+        this.use()
+        const u_TexDepth = this.gl.getUniformLocation(this.program, 'u_TexDepth')
         this.gl.uniform1f(u_TexDepth, this.depth)
-
         return this
     }
 
@@ -306,23 +347,20 @@ export class ShaderVideoModule {
 
     updateCameraAxis(value: CameraAxis): ShaderVideoModule {
         this.cameraAxis = value
-
-        const u_Direction = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_Direction')
+        this.use()
+        const u_Direction = this.gl.getUniformLocation(this.program, 'u_Direction')
         this.gl.uniform1i(u_Direction, CameraAxisToNumber[this.cameraAxis])
-
         return this
     }
 
 
     updateOffsets(value: VideoOffset): ShaderVideoModule {
         this.offset = value
-
+        this.use()
         Object.keys(this.offset).forEach((key) => {
-
-            const u_CutOffset = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CutOffset_' + key)
+            const u_CutOffset = this.gl.getUniformLocation(this.program, 'u_CutOffset_' + key)
             this.gl.uniform1f(u_CutOffset, this.offset[key])
         })
-
         return this
     }
 
@@ -330,9 +368,9 @@ export class ShaderVideoModule {
         this.offset = {...this.offset, [name]: value}
 
         if (this.gl) {
-            const u_CutOffset = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CutOffset_' + name)
+            this.use()
+            const u_CutOffset = this.gl.getUniformLocation(this.program, 'u_CutOffset_' + name)
             this.gl.uniform1f(u_CutOffset, this.offset[name])
-
         }
 
         return this
@@ -347,8 +385,8 @@ export class ShaderVideoModule {
     updateMirror(mirrorH: boolean, mirrorW: boolean): ShaderVideoModule {
         this.mirrorH = mirrorH
         this.mirrorW = mirrorW
-
-        const u_Mirror = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_Mirror')
+        this.use()
+        const u_Mirror = this.gl.getUniformLocation(this.program, 'u_Mirror')
         this.gl.uniform1i(u_Mirror, this.mirrorH ? 1 : 0)
         return this
     }
@@ -358,7 +396,8 @@ export class ShaderVideoModule {
         this.cutFunctionType = value
 
         if (this.gl) {
-            const u_CutFuncType = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CutFuncType')
+            this.use()
+            const u_CutFuncType = this.gl.getUniformLocation(this.program, 'u_CutFuncType')
             this.gl.uniform1i(u_CutFuncType, XYCutFunctionTypeToNumber[this.cutFunctionType])
         }
 
@@ -372,10 +411,10 @@ export class ShaderVideoModule {
             const params = this.cutFuncParams as ParabParams
             // coordHelper4.writeln('FxyType.Parab', ...Object.keys(params))
 
-            const u_CFParamF0 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF0')
-            const u_CFParamF1 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF1')
-            const u_CFParamF2 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF2')
-            const u_CFParamF3 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF3')
+            const u_CFParamF0 = this.gl.getUniformLocation(this.program, 'u_CFParamF0')
+            const u_CFParamF1 = this.gl.getUniformLocation(this.program, 'u_CFParamF1')
+            const u_CFParamF2 = this.gl.getUniformLocation(this.program, 'u_CFParamF2')
+            const u_CFParamF3 = this.gl.getUniformLocation(this.program, 'u_CFParamF3')
 
             this.gl.uniform1f(u_CFParamF2, params.x)
             this.gl.uniform1f(u_CFParamF3, params.y)
@@ -389,16 +428,16 @@ export class ShaderVideoModule {
             // coordHelper4.writeln('FxyType.Sis2', ...Object.keys(params))
 
 
-            const u_CFParamF0 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF0')
-            const u_CFParamF1 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF1')
-            const u_CFParamF2 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF2')
-            const u_CFParamF3 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF3')
-            const u_CFParamF4 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF4')
-            const u_CFParamF5 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF5')
-            const u_CFParamF6 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF6')
-            const u_CFParamF7 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF7')
-            const u_CFParamF8 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF8')
-            const u_CFParamF9 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF9')
+            const u_CFParamF0 = this.gl.getUniformLocation(this.program, 'u_CFParamF0')
+            const u_CFParamF1 = this.gl.getUniformLocation(this.program, 'u_CFParamF1')
+            const u_CFParamF2 = this.gl.getUniformLocation(this.program, 'u_CFParamF2')
+            const u_CFParamF3 = this.gl.getUniformLocation(this.program, 'u_CFParamF3')
+            const u_CFParamF4 = this.gl.getUniformLocation(this.program, 'u_CFParamF4')
+            const u_CFParamF5 = this.gl.getUniformLocation(this.program, 'u_CFParamF5')
+            const u_CFParamF6 = this.gl.getUniformLocation(this.program, 'u_CFParamF6')
+            const u_CFParamF7 = this.gl.getUniformLocation(this.program, 'u_CFParamF7')
+            const u_CFParamF8 = this.gl.getUniformLocation(this.program, 'u_CFParamF8')
+            const u_CFParamF9 = this.gl.getUniformLocation(this.program, 'u_CFParamF9')
 
 
             this.gl.uniform1f(u_CFParamF0, params.end)
@@ -418,11 +457,11 @@ export class ShaderVideoModule {
             const params = this.cutFuncParams as SqParams
             // coordHelper4.writeln('FxyType.Sis2', ...Object.keys(params))
 
-            const u_CFParamF0 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF0')
-            const u_CFParamF1 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF1')
-            const u_CFParamF2 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF2')
-            const u_CFParamF3 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF3')
-            const u_CFParamF4 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF4')
+            const u_CFParamF0 = this.gl.getUniformLocation(this.program, 'u_CFParamF0')
+            const u_CFParamF1 = this.gl.getUniformLocation(this.program, 'u_CFParamF1')
+            const u_CFParamF2 = this.gl.getUniformLocation(this.program, 'u_CFParamF2')
+            const u_CFParamF3 = this.gl.getUniformLocation(this.program, 'u_CFParamF3')
+            const u_CFParamF4 = this.gl.getUniformLocation(this.program, 'u_CFParamF4')
            
             this.gl.uniform1f(u_CFParamF0, params.a)
             this.gl.uniform1f(u_CFParamF1, params.b)
@@ -435,12 +474,12 @@ export class ShaderVideoModule {
 
             const typeParams = params.typeParams[params.type];
 
-            const u_CFParamI0 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamI0')
-            const u_CFParamF1 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF1')
-            const u_CFParamF2 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF2')
-            const u_CFParamI3 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamI3')
-            const u_CFParamI4 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamI4')
-            const u_CFParamIV0 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamIV0')
+            const u_CFParamI0 = this.gl.getUniformLocation(this.program, 'u_CFParamI0')
+            const u_CFParamF1 = this.gl.getUniformLocation(this.program, 'u_CFParamF1')
+            const u_CFParamF2 = this.gl.getUniformLocation(this.program, 'u_CFParamF2')
+            const u_CFParamI3 = this.gl.getUniformLocation(this.program, 'u_CFParamI3')
+            const u_CFParamI4 = this.gl.getUniformLocation(this.program, 'u_CFParamI4')
+            const u_CFParamIV0 = this.gl.getUniformLocation(this.program, 'u_CFParamIV0')
 
 
             this.gl.uniform1i(u_CFParamI0, XYArrayCutFunctionTypeToNumber[params.type])
@@ -460,20 +499,20 @@ export class ShaderVideoModule {
             ).forEach((item, index) => {
                 const {component, patternId, id, zed, zd} = item
 
-                const canvas = patternsService.pattern[patternId]?.canvasService.canvas
+                const buffer = patternsService.pattern[patternId]?.canvasService.buffer
 
-                if (!canvas) {
+                if (!buffer) {
                     return;
                 }
 
                 profileLogger.time('video.depth.texture', () =>
-                    this.updateParamTextureByIndex(index, canvas)
+                    this.bindParamTexture(index, buffer.ensureGpu())
                 )
 
-                const u_CFParamI0 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamI' + (index * 1 + 0))
-                const u_CFParamI5 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamI5')
-                const u_CFParamF0 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF' + (index * 2 + 0))
-                const u_CFParamF1 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamF' + (index * 2 + 1))
+                const u_CFParamI0 = this.gl.getUniformLocation(this.program, 'u_CFParamI' + (index * 1 + 0))
+                const u_CFParamI5 = this.gl.getUniformLocation(this.program, 'u_CFParamI5')
+                const u_CFParamF0 = this.gl.getUniformLocation(this.program, 'u_CFParamF' + (index * 2 + 0))
+                const u_CFParamF1 = this.gl.getUniformLocation(this.program, 'u_CFParamF' + (index * 2 + 1))
 
                 // coordHelper5.writeln(
                 //     Math.min(4, params.items.length),
@@ -495,24 +534,45 @@ export class ShaderVideoModule {
         if (this.cutFunctionType !== type) {
             this.updateCutFunctionType(type)
         }
+        this.use()
         this.updateFuncParamsByType[this.cutFunctionType](state)
 
         return this
     }
 
     paramTextures: { texture, width, height }[] = []
-    initParamTextureByIndex = (index, width, height) => {
 
-        const glTextureIndex = 1 + index;
+    private ensureFrameTexture = (): WebGLTexture => {
+        const glc = getGlContext()
 
-        const gl = this.gl
-        const paramTexture = this.paramTextures[index] = {
-            texture: gl.createTexture(),
-            width,
-            height
+        if (!this.frameTexture) {
+            this.frameTexture = glc.createTexture2D(this.width, this.height)
+            this.frameW = this.width
+            this.frameH = this.height
+            return this.frameTexture
         }
-        const u_CFParamTexture_index = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_CFParamTexture_' + index)
 
+        if (this.frameW !== this.width || this.frameH !== this.height) {
+            glc.resizeTexture2D(this.frameTexture, this.width, this.height)
+            this.frameW = this.width
+            this.frameH = this.height
+        }
+
+        return this.frameTexture
+    }
+
+    ensureParamTexture = (index, width, height) => {
+        const glTextureIndex = 1 + index
+        const gl = this.gl
+        let paramTexture = this.paramTextures[index]
+
+        if (!paramTexture?.texture) {
+            paramTexture = this.paramTextures[index] = {
+                texture: gl.createTexture(),
+                width: 0,
+                height: 0,
+            }
+        }
 
         gl.activeTexture(gl['TEXTURE' + glTextureIndex])
         gl.bindTexture(gl.TEXTURE_2D, paramTexture.texture)
@@ -520,54 +580,24 @@ export class ShaderVideoModule {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-        gl.texImage2D(
-            gl.TEXTURE_2D,
-            0,
-            gl.RGBA,
-            width,
-            height,
-            0,
-            gl.RGBA,
-            gl.UNSIGNED_BYTE,
-            new Uint8Array(width * height * 4),
-        )
-        gl.uniform1i(u_CFParamTexture_index, glTextureIndex)
-    }
 
-    updateParamTextureByIndex = (index: number, source: HTMLCanvasElement) => {
-
-        const glTextureIndex = 1 + index;
-        const {width, height} = source
-
-        const gl = this.gl
-        const paramTexture = this.paramTextures[index]
-        const {width: oldW, height: oldH} = paramTexture
-
-        gl.activeTexture(gl['TEXTURE' + glTextureIndex])
-        gl.bindTexture(gl.TEXTURE_2D, paramTexture.texture)
-
-        if (oldH === height && oldW === width) {
-            gl.texSubImage2D(
-                gl.TEXTURE_2D,
-                0,
-                0, 0,
-                gl.RGBA,
-                gl.UNSIGNED_BYTE,
-                source,
-            )
-        } else {
+        if (paramTexture.width !== width || paramTexture.height !== height) {
             gl.texImage2D(
                 gl.TEXTURE_2D,
                 0,
                 gl.RGBA,
+                width,
+                height,
+                0,
                 gl.RGBA,
                 gl.UNSIGNED_BYTE,
-                source,
+                null,
             )
-
             paramTexture.width = width
             paramTexture.height = height
         }
+
+        gl.uniform1i(gl.getUniformLocation(this.program, 'u_CFParamTexture_' + index), glTextureIndex)
     }
 }
 

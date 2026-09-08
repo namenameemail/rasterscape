@@ -65,18 +65,18 @@ export class PatternToolService {
     canvasEventHandlers: CanvasEventHandlers = {
         onClick: (...args) => {
             this.canvasToolService?.handlers.onClick?.(...args);
-            this.patternService.canvasService.present();
+            this.patternService.canvasService.presentFromCpu();
         },
         onDown: (...args) => {
             this.canvasToolService?.handlers.onDown?.(...args);
-            this.patternService.canvasService.present();
+            this.patternService.canvasService.presentFromCpu();
         },
         onDraw: (...args) => {
             this.syncActiveToolSourceValues();
             profileLogger.time('draw.tool', () => {
                 this.canvasToolService?.handlers.onDraw?.(...args);
             });
-            this.patternService.canvasService.present();
+            this.patternService.canvasService.presentFromCpu();
             if (this.patternService.platformerService.isPlaying) {
                 this.patternService.platformerService.markWorldDirty('tool.onDraw');
             }
@@ -86,7 +86,7 @@ export class PatternToolService {
         },
         onRelease: (...args) => {
             this.canvasToolService?.handlers.onRelease?.(...args);
-            this.patternService.canvasService.present();
+            this.patternService.canvasService.presentFromCpu();
             if (this.patternService.platformerService.isPlaying) {
                 this.patternService.platformerService.markWorldDirty('tool.onRelease');
             }
@@ -99,24 +99,24 @@ export class PatternToolService {
     maskCanvasEventHandlers: CanvasEventHandlers = {
         onClick: (...args) => {
             this.maskToolService?.handlers.onClick?.(...args);
-            this.patternService.maskService.present();
+            this.patternService.maskService.presentFromCpu();
         },
         onDown: (...args) => {
             this.maskToolService?.handlers.onDown?.(...args);
-            this.patternService.maskService.present();
+            this.patternService.maskService.presentFromCpu();
         },
         onDraw: (...args) => {
             profileLogger.time('draw.mask.tool', () => {
                 this.maskToolService?.handlers.onDraw?.(...args);
             });
-            this.patternService.maskService.present();
+            this.patternService.maskService.presentFromCpu();
             profileLogger.time('draw.mask.valuesMasked', () => {
                 this.patternService.valuesService.updateMaskedIfNeeded();
             });
         },
         onRelease: (...args) => {
             this.maskToolService?.handlers.onRelease?.(...args);
-            this.patternService.maskService.present();
+            this.patternService.maskService.presentFromCpu();
             this.patternService.valuesService.update();
         },
         onPushPosition: this.pushPositionToStore,

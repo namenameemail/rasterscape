@@ -159,6 +159,8 @@ export class CanvasEventsService {
             }
         }
 
+        this.buffer?.ensureCpu()
+
         return {
             events: this.frameRelatedEvents,
             context: this.buffer?.context,

@@ -35,14 +35,15 @@ flowchart LR
 | [done/01-buffer-off-css.md](done/01-buffer-off-css.md) | Этап 1 закрыт: пиксели в `PatternBuffer`, канвас на экране — монитор |
 | [done/02-video-stays-on-gpu.md](done/02-video-stays-on-gpu.md) | Этап 2 закрыт: нет `getImageData` на кадре видео; заливка 2D→3D осталась (~16.7 ms) |
 | [done/03-masked-preview.md](done/03-masked-preview.md) | Этап 3 закрыт: `updateMasked` 45 ms → 0.1 ms, не на кадре видео |
-| [04-tools.md](04-tools.md) | Общий GL, буфер = текстура, source как sampler; кисти: штамп 2D→GPU, потом штампы на GPU |
+| [done/04-tools.md](done/04-tools.md) | Этап 4 закрыт: общий GL, source `copyTex`, монитор с GL, кисть 2D→GPU |
+| [04b-gpu-stamps.md](04b-gpu-stamps.md) | Штампы на GPU, маска-шейдер (не блокер этапа 5) |
 | [05-cook-graph.md](05-cook-graph.md) | Считать картинку только если она нужна; на экран — только видимое |
 
-Порядок: 0–3 закрыты. Дальше 4, потом 5.
+Порядок: 0–4 закрыты. Дальше 5; 4b — штампы на GPU, не блокер 5.
 
 ## Объекты
 
-- **`PatternBuffer`** — «лист бумаги» паттерна ([`PatternBuffer.ts`](../../../src/store/patterns/_service/patternServices/PatternBuffer.ts)). Лежит в `PatternService` (внутри `canvasService` / `maskService`). Сейчас 2D-канвас вне DOM. GL-текстура — этап 4, вместе с общим `GlContext`.
+- **`PatternBuffer`** — «лист бумаги» паттерна ([`PatternBuffer.ts`](../../../src/store/patterns/_service/patternServices/PatternBuffer.ts)). Лежит в `PatternService` (внутри `canvasService` / `maskService`). 2D-канвас вне DOM + GL-текстура, один `GlContext`.
 - **Монитор** — видимый `<canvas>`; пиксели в него только копируют. С него же мышь (`CanvasEventsService`). У скрытого паттерна монитора нет.
 - **`GlContext`** — один `WebGL2RenderingContext` на всё приложение. Видео-шейдер сюда, не свой канвас на каждый паттерн.
 - **Считать vs показать** — видео/платформер могут крутиться без картинки на экране, если кто-то их читает. На экран копируем только видимые.
@@ -65,4 +66,4 @@ flowchart LR
 
 - Этап 2: нет `video.source.getImageData`; цена в `video.pushNewFrame`.
 - Этап 3: `values.updateMasked` **0.10 ms** на жесте, не на кадре видео ([`baselines/03-after.md`](baselines/03-after.md)).
-- После 4: нет заливки 2D-канваса в 3D-текстуру на кадр; source — текстура; FPS упирается в шейдер, не в копию.
+- После 4: нет заливки 2D-канваса в 3D-текстуру на кадр; source — текстура. `pushNewFrame` **0.21 ms** ([`baselines/04-after.md`](baselines/04-after.md)). Монитор с GL + composite: кадр **19.8 ms** ([`baselines/04-gl-present.md`](baselines/04-gl-present.md)).

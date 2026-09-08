@@ -63,6 +63,7 @@ export class PatternPreviewService {
     }
 
     putImage = (previewItem: PreviewCanvasItem) => {
+        this.patternService.canvasService.buffer?.ensureCpu();
         const source = this.patternService.canvasService.canvas;
 
         if (!source?.width || !source.height) {
