@@ -165,14 +165,18 @@ export class PatternVideoService {
         }
 
         const sourcePattern = patternsService.pattern[this.sourcePatternId]
-        const imageData = sourcePattern?.canvasService.getImageData()
+        const imageData = profileLogger.time('video.source.getImageData', () =>
+            sourcePattern?.canvasService.getImageData()
+        )
 
         if (!imageData) {
             return undefined
         }
 
         if (imageData.width !== this.width || imageData.height !== this.height) {
-            return resizeImageData(imageData, this.width, this.height).data
+            return profileLogger.time('video.source.resize', () =>
+                resizeImageData(imageData, this.width, this.height).data
+            )
         }
 
         return imageData.data
@@ -225,6 +229,7 @@ export class PatternVideoService {
                     this.patternService.platformerService.applyVideoFrame(newFrameCanvas)
                 } else {
                     this.patternService.canvasService.context.drawImage(newFrameCanvas, 0, 0)
+                    this.patternService.canvasService.present()
                 }
             })
         }

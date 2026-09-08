@@ -110,6 +110,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                                 <Pattern
                                     id={id}
                                     index={index}
+                                    visible={id === activePatternId}
 
                                     onSelectionChange={updateSelection}
                                     onRemove={removePattern}

@@ -10,11 +10,11 @@
 
 1. Общий `GlContext` на app. `ShaderVideoModule` не создаёт отдельный `glCanvas` на паттерн (или использует shared, пишет в FBO/текстуру буфера).
 2. `onFrame`: `updateImage` → запись в `PatternBuffer`, не в 2D display context.
-3. Presenter видимого паттерна blit’ит буфер (раз в кадр или по dirty).
+3. Видимый паттерн: каждый кадр (или когда картинка изменилась) скопировать буфер на канвас на экране.
 4. `getFrameData` для `VideoSourceType.Pattern`: не `getImageData`. Текстура source-буфера (resize на GPU при несовпадении размера).
 5. Камера: upload в текстуру (`texSubImage2D` / 3D stack как сейчас), без промежуточного полного 2D display.
 6. DEPTH cut function: `texSubImage2D` с GPU-буферов источников, не `context.getImageData`.
-7. Video blur: fragment shader вместо `StackBlur.imageDataRGBA` на каждый кадр. `blurOnce` в UI — тот же шейдер или редкий CPU, не hot path.
+7. Блюр видео: шейдер, не StackBlur по всей картинке **каждый кадр**. Кнопка «блюр один раз» в меню может остаться редким проходом на процессоре.
 8. Platformer: `applyVideoFrame` берёт текстуру/канвас GPU-результата в world buffer без CPU roundtrip, если world ещё 2D — один `drawImage` с GL canvas, без `getImageData` source-паттерна.
 
 ## Где смотреть
@@ -26,7 +26,7 @@
 
 ## Профиль «после»
 
-Сценарий из [roadmap.md](roadmap.md): нет спана полного readback в `video.getFrameData`; нет CPU blur на кадр; FPS упирается в шейдер.
+Сценарий из [roadmap.md](roadmap.md): в профиле нет съёма всей картинки в `video.getFrameData`; нет блюра на процессоре каждый кадр; FPS упирается в шейдер.
 
 ## Сломается, если ошибиться
 
@@ -40,4 +40,4 @@
 
 ## Не входит
 
-Кисти на GPU, отказ от `valuesService.updateMasked` (этап 3), cook graph.
+Кисти на GPU, убрать `updateMasked` с кадра видео (этап 3), этап 5.

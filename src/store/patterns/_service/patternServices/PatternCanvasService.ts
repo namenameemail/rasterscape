@@ -1,145 +1,88 @@
 import {PatternService} from "../PatternService";
 import {resizeImageData} from "../../../../utils/canvas/helpers/imageData";
-import {coordHelper5, imageDataDebug} from "../../../../components/Area/canvasPosition.servise";
+import {PatternBuffer} from "./PatternBuffer";
 
 export class PatternCanvasService {
     patternService: PatternService
 
-    _imageData?: ImageData;
-
-    canvas?: HTMLCanvasElement;
-    context?: CanvasRenderingContext2D;
+    buffer?: PatternBuffer;
 
     constructor(patternService: PatternService) {
         this.patternService = patternService;
     }
 
-    setSavedImageData = (imageData: ImageData): PatternService => {
-        this._imageData = imageData;
-        return this.patternService;
+    get canvas(): HTMLCanvasElement | undefined {
+        return this.buffer?.canvas;
+    }
+
+    get context(): CanvasRenderingContext2D | undefined {
+        return this.buffer?.context;
+    }
+
+    get monitor(): HTMLCanvasElement | undefined {
+        return this.buffer?.monitor;
+    }
+
+    ensureBuffer = (width: number, height: number): PatternBuffer => {
+        if (!this.buffer) {
+            this.buffer = new PatternBuffer(width, height);
+        }
+
+        return this.buffer;
     };
 
-    setCanvasImageData = (imageData: ImageData, width?: boolean, height?: boolean): PatternService => {
-        if (width)
-            this.canvas.width = imageData.width
-        if (height)
-            this.canvas.height = imageData.height
-
-        this.context?.putImageData(imageData, 0, 0);
+    present = (): PatternService => {
+        this.buffer?.present();
         return this.patternService;
     };
 
     setImageData = (imageData: ImageData, width?: boolean, height?: boolean): PatternService => {
-        if (this.canvas) {
-            this.setCanvasImageData(imageData, width, height);
-        } else {
-            this.setSavedImageData(imageData);
-        }
-        return this.patternService;
-    };
-
-
-    setCanvasElement = (canvas: HTMLCanvasElement): PatternService => {
-        if (!this.canvas && this._imageData) {
-            this.canvas = canvas;
-            this.context = canvas.getContext('2d');
-
-            this.setCanvasImageData(this._imageData, true, true);
-            this._imageData = null;
-        } else {
-            this.canvas = canvas;
-            this.context = canvas.getContext('2d');
+        if (!imageData) {
+            return this.patternService;
         }
 
-        return this.patternService;
-    }
+        const buffer = this.ensureBuffer(imageData.width, imageData.height);
 
-    resetCanvasElement = (): PatternService => {
-        this._imageData = this.getImageData();
-        this.canvas = null;
-        this.context = null;
-        return this.patternService;
-    }
-
-    setCanvas = (canvas?: HTMLCanvasElement): PatternService => {
-        if (canvas) {
-            this.setCanvasElement(canvas);
-        } else {
-            this.resetCanvasElement();
+        if (width || height) {
+            buffer.setSize(
+                width ? imageData.width : buffer.width,
+                height ? imageData.height : buffer.height
+            );
         }
+
+        buffer.writePixels(imageData);
+        buffer.present();
 
         return this.patternService;
     };
 
+    setCanvas = (monitor?: HTMLCanvasElement, width?: number, height?: number): PatternService => {
+        if (monitor) {
+            this.ensureBuffer(width ?? monitor.width, height ?? monitor.height);
+        }
+
+        this.buffer?.setMonitor(monitor);
+
+        return this.patternService;
+    };
 
     setSize = (width: number, height: number, noStretch?: boolean): PatternService => {
-        if (this.canvas) {
-            const imageData = resizeImageData(
-                this.getImageData(),
-                width,
-                height,
-                noStretch
-            );
-            return this.setCanvasImageData(imageData, true, true);
+        const imageData = this.getImageData();
 
-        } else if (this._imageData) {
-            const imageData = resizeImageData(
-                this.getImageData(),
-                width,
-                height,
-                noStretch
-            );
-            return this.setSavedImageData(imageData);
-        }
+        return imageData
+            ? this.setImageData(resizeImageData(imageData, width, height, noStretch), true, true)
+            : this.patternService;
     };
 
-    setWidth = (width: number, noStretch?: boolean): PatternService => {
-        if (this.canvas) {
-            const imageData = resizeImageData(
-                this.getImageData(),
-                width,
-                this.canvas.height,
-                noStretch
-            );
-            return this.setCanvasImageData(imageData, true);
+    setWidth = (width: number, noStretch?: boolean): PatternService =>
+        this.buffer
+            ? this.setSize(width, this.buffer.height, noStretch)
+            : this.patternService;
 
-        } else if (this._imageData) {
-            const imageData = resizeImageData(
-                this.getImageData(),
-                width,
-                this._imageData.height,
-                noStretch
-            );
-            return this.setSavedImageData(imageData);
-        }
-    };
-    setHeight = (height: number, noStretch: boolean): PatternService => {
-        if (this.canvas) {
+    setHeight = (height: number, noStretch?: boolean): PatternService =>
+        this.buffer
+            ? this.setSize(this.buffer.width, height, noStretch)
+            : this.patternService;
 
-            const imageData = resizeImageData(
-                this.getImageData(),
-                this.canvas.width,
-                height,
-                noStretch
-            );
-            return this.setCanvasImageData(imageData, false, true);
-        } else if (this._imageData) {
-            const imageData = resizeImageData(
-                this.getImageData(),
-                this._imageData.width,
-                height,
-                noStretch
-            );
-            return this.setSavedImageData(imageData);
-        }
-    };
-
-
-    getImageData = (): ImageData | undefined => {
-        return this.context
-            ? this.context.getImageData(0, 0, this.canvas.width, this.canvas.height)
-            : this._imageData;
-    }
-    getCanvas = (): HTMLCanvasElement => this.canvas;
-    getContext = (): CanvasRenderingContext2D => this.context;
+    getImageData = (): ImageData | undefined => this.buffer?.readPixels();
 }

@@ -8,6 +8,7 @@ import {
     PlatformerCanvasEventPhase,
 } from "../PatternPlatformerService/PlatformerProfiler";
 import { frameScheduler, FramePriority } from "../../../../../utils/FrameScheduler";
+import { PatternBuffer } from "../PatternBuffer";
 
 export interface CanvasEventHandlers {
     onPushPosition?: (e: MouseEvent) => void
@@ -25,8 +26,8 @@ export class CanvasEventsService {
     handlers: CanvasEventHandlers;
     storeService: PatternStoreService;
 
-    canvas: HTMLCanvasElement | null = null;
-    context: CanvasRenderingContext2D | null = null;
+    monitor: HTMLCanvasElement | null = null;
+    buffer: PatternBuffer | null = null;
 
     pointerLock: boolean = false;
     drawOnMove: boolean = false;
@@ -48,15 +49,15 @@ export class CanvasEventsService {
         this.frameSubscriberId = `draw:${storeService.patternService.patternId}:${frameSubscriberSuffix}`;
     }
 
-    bindCanvas = (canvas: HTMLCanvasElement) => {
-        if (this.canvas) {
+    bindCanvas = (monitor: HTMLCanvasElement, buffer: PatternBuffer) => {
+        if (this.monitor) {
             this.unbindCanvas();
         }
-        this.canvas = canvas;
-        this.context = canvas.getContext('2d');
+        this.monitor = monitor;
+        this.buffer = buffer;
 
-        this.canvas.addEventListener("mousedown", this.mouseDownHandler);
-        this.canvas.addEventListener("mousemove", this.canvasMouseMoveHandler); // 1 внутри канваса
+        this.monitor.addEventListener("mousedown", this.mouseDownHandler);
+        this.monitor.addEventListener("mousemove", this.canvasMouseMoveHandler); // 1 внутри канваса
         /**
          * есть два вида движения мыши
          * 1 внутри канваса
@@ -64,10 +65,10 @@ export class CanvasEventsService {
          */
     };
     unbindCanvas = () => {
-        this.canvas?.removeEventListener("mousedown", this.mouseDownHandler);
-        this.canvas?.removeEventListener("mousemove", this.canvasMouseMoveHandler);
-        this.canvas = null;
-        this.context = null;
+        this.monitor?.removeEventListener("mousedown", this.mouseDownHandler);
+        this.monitor?.removeEventListener("mousemove", this.canvasMouseMoveHandler);
+        this.monitor = null;
+        this.buffer = null;
     };
 
     pushFrameRelatedEvent = (e: MouseEvent) => {
@@ -95,12 +96,12 @@ export class CanvasEventsService {
         e.preventDefault(); // начал делать хендлеры тач ивентов
 
         if (this.pointerLock) {
-            this.canvas.requestPointerLock();
+            this.monitor.requestPointerLock();
         }
 
         document.addEventListener("mouseup", this.mouseUpHandler);
         document.addEventListener("mousemove", this.documentMouseDragHandler); // 2 по всему экрану
-        this.canvas.removeEventListener("mousemove", this.canvasMouseMoveHandler);
+        this.monitor.removeEventListener("mousemove", this.canvasMouseMoveHandler);
 
         // document.addEventListener("touchend", this.mouseUpHandler);
         // document.addEventListener("touchmove", this.mouseDragHandler);
@@ -160,8 +161,8 @@ export class CanvasEventsService {
 
         return {
             events: this.frameRelatedEvents,
-            context: this.context,
-            canvas: this.canvas,
+            context: this.buffer?.context,
+            canvas: this.buffer?.canvas,
         }
     }
 
@@ -207,8 +208,9 @@ export class CanvasEventsService {
 
     getCanvasRelatedEvent = (e: MouseEvent) => {
 
+        if (!this.monitor) return;
 
-        const offset = getOffset(this.canvas);
+        const offset = getOffset(this.monitor);
 
         if (!offset) return;
 
@@ -229,8 +231,8 @@ export class CanvasEventsService {
 
         return {
             ...e,
-            offsetX: rotatedE.x - canvasCenter.x + this.canvas.width / 2,
-            offsetY: rotatedE.y - canvasCenter.y + this.canvas.height / 2,
+            offsetX: rotatedE.x - canvasCenter.x + this.monitor.width / 2,
+            offsetY: rotatedE.y - canvasCenter.y + this.monitor.height / 2,
         };
     };
 
@@ -289,7 +291,7 @@ export class CanvasEventsService {
 
         document.removeEventListener("mouseup", this.mouseUpHandler);
         document.removeEventListener("mousemove", this.documentMouseDragHandler);
-        this.canvas.addEventListener("mousemove", this.canvasMouseMoveHandler);
+        this.monitor?.addEventListener("mousemove", this.canvasMouseMoveHandler);
 
         // document.removeEventListener("touchend", this.mouseUpHandler);
         // document.removeEventListener("touchmove", this.documentMouseDragHandler);
@@ -322,8 +324,8 @@ export class CanvasEventsService {
         document.removeEventListener("mouseup", this.mouseUpHandler);
         document.removeEventListener("mousemove", this.documentMouseDragHandler);
 
-        this.canvas.removeEventListener("mousedown", this.mouseDownHandler);
-        this.canvas.removeEventListener("mousemove", this.canvasMouseMoveHandler);
+        this.monitor?.removeEventListener("mousedown", this.mouseDownHandler);
+        this.monitor?.removeEventListener("mousemove", this.canvasMouseMoveHandler);
     };
 
 }

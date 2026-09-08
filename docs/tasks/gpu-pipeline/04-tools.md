@@ -1,6 +1,6 @@
 # Этап 4 — инструменты
 
-Инструменты пишут в `CanvasRenderingContext2D` ([`ToolsServices`](../../../src/store/patterns/_service/patternServices/CanvasEventsService/ToolsServices)). Переписывать их поверх старого readback-пайплайна бессмысленно: сначала этапы 2–3.
+Инструменты пишут в `CanvasRenderingContext2D` ([`ToolsServices`](../../../src/store/patterns/_service/patternServices/CanvasEventsService/ToolsServices)). Переписывать кисти, пока видео и masked каждый кадр копируют картинку в процессор, бессмысленно: сначала этапы 2–3.
 
 Два подэтапа. Второй — отдельная большая работа.
 
@@ -8,15 +8,15 @@
 
 Штампы остаются 2D (helper canvas, repeating-координаты как сейчас).
 
-1. Целевой контекст жеста — offscreen 2D, не DOM presenter.
-2. В конце кадра жеста (или по dirty): `texSubImage2D` / upload в `PatternBuffer`. Один upload на кадр рисования, не readback соседей.
+1. Рисовать жест в скрытый 2D-канвас, не в канвас на экране.
+2. В конце кадра жеста (или когда картинка изменилась): залить штамп в `PatternBuffer` (`texSubImage2D`). Один раз за кадр рисования. Не снимать соседние паттерны через `getImageData`.
 3. Рисование в маску — upload во второй буфер.
-4. Платформер playing: жест идёт в world buffer; если world ещё 2D — как сейчас, плюс present с world. Не писать в DOM display напрямую.
+4. Платформер playing: жест идёт в world buffer; если world ещё 2D — как сейчас, плюс показ с world. Не писать в канвас на экране напрямую.
 5. `CanvasEventsService.buildToolEvent` отдаёт контекст буфера/offscreen, не обязательно `canvasService.context` DOM.
 
 **Ломается:** все кисти/линии, repeating, маска, world buffer.
 
-**Готово когда:** штрих виден на presenter, undo после `updateImage`/`pushHistory` (readback на отпускание ок), repeating-сетка совпадает.
+**Готово когда:** штрих виден на экране, undo после отпускания мыши работает (`getImageData` в этот момент — нормально), repeating-сетка как сейчас.
 
 ## 4b — штампы на GPU
 
@@ -33,4 +33,4 @@
 
 ## Не входит
 
-Cook graph (этап 5). Смена модели repeating/rotation (CSS + inverse mouse остаются).
+Этап 5. Не менять repeating/rotation (CSS и пересчёт мыши как сейчас).

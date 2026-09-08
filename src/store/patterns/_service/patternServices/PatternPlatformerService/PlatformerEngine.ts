@@ -3,6 +3,7 @@ import {PlatformerInput} from './PlatformerInput'
 import {platformerProfiler} from './PlatformerProfiler'
 import {PlayerState} from './types'
 import {WorldBuffer} from './WorldBuffer'
+import {profileLogger} from '../../../../../utils/profiling/ProfileLogger'
 
 export interface PlatformerPhysicsParams {
     gravity: number
@@ -140,7 +141,9 @@ export class PlatformerEngine {
         const worldWasDirty = world.isDirty()
 
         if (worldWasDirty) {
-            collision.rebuild(world.getImageData())
+            profileLogger.time('platformer.collision.getImageData', () => {
+                collision.rebuild(world.getImageData())
+            })
             world.clearDirty()
             platformerProfiler.logCollisionRebuild(
                 collision,

@@ -1,6 +1,7 @@
 import {createMaskedImageFromImageData, imageDataToCanvas} from "../../../../utils/canvas/helpers/imageData";
 import {PatternService} from "../PatternService";
 import {performanceSettings} from "../../../../config/performanceSettings";
+import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
 
 export class PatternValuesService {
     patternService: PatternService;
@@ -76,26 +77,30 @@ export class PatternValuesService {
     };
 
     updateMasked = (): PatternService => {
-        if (this.patternService.maskService.isMaskEnabled) {
-            this.masked = createMaskedImageFromImageData(
-                this.patternService.canvasService.getImageData(),
-                this.patternService.maskService.getImageData(),
-                this.patternService.maskService.isMaskInverted
-            );
-        } else {
-            this.masked = imageDataToCanvas(this.patternService.canvasService.getImageData());
-        }
+        profileLogger.time('values.updateMasked', () => {
+            if (this.patternService.maskService.isMaskEnabled) {
+                this.masked = createMaskedImageFromImageData(
+                    this.patternService.canvasService.getImageData(),
+                    this.patternService.maskService.getImageData(),
+                    this.patternService.maskService.isMaskInverted
+                );
+            } else {
+                this.masked = imageDataToCanvas(this.patternService.canvasService.getImageData());
+            }
+        });
 
         return this.patternService;
     };
 
     updateSelected = (): PatternService => {
-        this.selected = this.patternService.selectionService.mask
-            ? createMaskedImageFromImageData(
-                this.patternService.canvasService.getImageData(),
-                this.patternService.selectionService.mask
-            )
-            : null;
+        profileLogger.time('values.updateSelected', () => {
+            this.selected = this.patternService.selectionService.mask
+                ? createMaskedImageFromImageData(
+                    this.patternService.canvasService.getImageData(),
+                    this.patternService.selectionService.mask
+                )
+                : null;
+        });
 
         return this.patternService;
     };

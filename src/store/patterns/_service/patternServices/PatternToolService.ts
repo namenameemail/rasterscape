@@ -64,16 +64,19 @@ export class PatternToolService {
 
     canvasEventHandlers: CanvasEventHandlers = {
         onClick: (...args) => {
-            this.canvasToolService?.handlers.onClick?.(...args)
+            this.canvasToolService?.handlers.onClick?.(...args);
+            this.patternService.canvasService.present();
         },
         onDown: (...args) => {
-            this.canvasToolService?.handlers.onDown?.(...args)
+            this.canvasToolService?.handlers.onDown?.(...args);
+            this.patternService.canvasService.present();
         },
         onDraw: (...args) => {
             this.syncActiveToolSourceValues();
             profileLogger.time('draw.tool', () => {
                 this.canvasToolService?.handlers.onDraw?.(...args);
             });
+            this.patternService.canvasService.present();
             if (this.patternService.platformerService.isPlaying) {
                 this.patternService.platformerService.markWorldDirty('tool.onDraw');
             }
@@ -83,6 +86,7 @@ export class PatternToolService {
         },
         onRelease: (...args) => {
             this.canvasToolService?.handlers.onRelease?.(...args);
+            this.patternService.canvasService.present();
             if (this.patternService.platformerService.isPlaying) {
                 this.patternService.platformerService.markWorldDirty('tool.onRelease');
             }
@@ -94,21 +98,25 @@ export class PatternToolService {
 
     maskCanvasEventHandlers: CanvasEventHandlers = {
         onClick: (...args) => {
-            this.maskToolService?.handlers.onClick?.(...args)
+            this.maskToolService?.handlers.onClick?.(...args);
+            this.patternService.maskService.present();
         },
         onDown: (...args) => {
-            this.maskToolService?.handlers.onDown?.(...args)
+            this.maskToolService?.handlers.onDown?.(...args);
+            this.patternService.maskService.present();
         },
         onDraw: (...args) => {
             profileLogger.time('draw.mask.tool', () => {
                 this.maskToolService?.handlers.onDraw?.(...args);
             });
+            this.patternService.maskService.present();
             profileLogger.time('draw.mask.valuesMasked', () => {
                 this.patternService.valuesService.updateMaskedIfNeeded();
             });
         },
         onRelease: (...args) => {
             this.maskToolService?.handlers.onRelease?.(...args);
+            this.patternService.maskService.present();
             this.patternService.valuesService.update();
         },
         onPushPosition: this.pushPositionToStore,
@@ -116,17 +124,39 @@ export class PatternToolService {
     };
 
     bindCanvas = (): PatternService => {
-        const canvas = this.patternService.canvasService.canvas;
-        this.canvasEventsService.bindCanvas(canvas);
-        this.setToolSize(canvas.width, canvas.height);
+        const {monitor, buffer} = this.patternService.canvasService;
+
+        if (!monitor || !buffer) {
+            return this.patternService;
+        }
+
+        this.canvasEventsService.bindCanvas(monitor, buffer);
+        this.setToolSize(buffer.width, buffer.height);
+
+        return this.patternService;
+    };
+
+    unbindCanvas = (): PatternService => {
+        this.canvasEventsService.unbindCanvas();
 
         return this.patternService;
     };
 
     bindMaskCanvas = (): PatternService => {
-        const canvas = this.patternService.maskService.canvas;
-        this.maskCanvasEventsService.bindCanvas(canvas);
-        this.setToolSize(canvas.width, canvas.height);
+        const {monitor, buffer} = this.patternService.maskService;
+
+        if (!monitor || !buffer) {
+            return this.patternService;
+        }
+
+        this.maskCanvasEventsService.bindCanvas(monitor, buffer);
+        this.setToolSize(buffer.width, buffer.height);
+
+        return this.patternService;
+    };
+
+    unbindMaskCanvas = (): PatternService => {
+        this.maskCanvasEventsService.unbindCanvas();
 
         return this.patternService;
     };

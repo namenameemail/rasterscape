@@ -1,6 +1,5 @@
 import React, {RefObject} from 'react';
 import ReactDOM from 'react-dom';
-import {canvasToImageData, resizeImageData} from "../../../utils/canvas/helpers/imageData";
 import "../../../styles/canvas.scss";
 import classNames from "classnames";
 import {getOffset} from "../../../utils/offset";
@@ -183,7 +182,7 @@ export class CanvasLight extends React.PureComponent<CanvasProps, CanvasState> {
 
             const {onChange} = this.props;
 
-            onChange && onChange(canvasToImageData(this.canvas));
+            onChange?.();
 
             const {onUp} = this.props;
 

@@ -20,13 +20,22 @@ import {getSelectedImageData} from "../selection/helpers";
 import {PreviewCanvasType} from "../_service/patternServices/PatternPreviewService";
 import {imageDataDebug} from "../../../components/Area/canvasPosition.servise";
 
-export const bindCanvas = (id: string, canvas: HTMLCanvasElement) => (dispatch, getState: () => AppState) => {
+export const bindCanvas = (id: string, canvas?: HTMLCanvasElement) => (dispatch, getState: () => AppState) => {
 
-    const state = getState();
-    const pattern = state.patterns[id];
+    const patternService = patternsService.pattern[id];
 
-    patternsService.pattern[id]
-        .bindCanvas(canvas, pattern.width, pattern.height);
+    if (!patternService) {
+        return;
+    }
+
+    if (!canvas) {
+        patternService.unbindCanvas();
+        return;
+    }
+
+    const pattern = getState().patterns[id];
+
+    patternService.bindCanvas(canvas, pattern.width, pattern.height);
 };
 export const bindPreview = (id: string, previewId: string, canvas: HTMLCanvasElement) => (dispatch, getState: () => AppState) => {
     patternsService.pattern[id]

@@ -61,7 +61,7 @@ export interface PatternComponentActionProps {
 
     updateImage(options: UpdateOptions)
 
-    updateMask(id: string, imageData: ImageData)
+    updateMask(id: string, imageData?: ImageData)
 
     editConfig(id: string, config: PatternConfig)
 
@@ -77,14 +77,15 @@ export interface PatternComponentActionProps {
 
     setDrawer(patternId: string, persist?: boolean)
 
-    bindCanvas(patternId: string, canvas: HTMLCanvasElement)
+    bindCanvas(patternId: string, canvas?: HTMLCanvasElement)
 
-    bindMaskCanvas(patternId: string, canvas: HTMLCanvasElement)
+    bindMaskCanvas(patternId: string, canvas?: HTMLCanvasElement)
 }
 
 export interface PatternComponentOwnProps {
     id: string
     index: number
+    visible: boolean
 }
 
 export interface PatternComponentProps extends PatternComponentStateProps, PatternComponentActionProps, PatternComponentOwnProps, WithTranslation {
@@ -116,9 +117,15 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
         this.setState({error});
     }
 
-    handleImageChange = imageData => this.props.updateImage({id: this.props.id, imageData});
+    componentDidUpdate(prevProps: PatternComponentProps) {
+        if (prevProps.visible !== this.props.visible || prevProps.demonstration !== this.props.demonstration) {
+            this.syncMonitors();
+        }
+    }
 
-    handleMaskChange = imageData => this.props.updateMask(this.props.id, imageData);
+    handleImageChange = () => this.props.updateImage({id: this.props.id});
+
+    handleMaskChange = () => this.props.updateMask(this.props.id);
 
     handleSelectionChange = (value, bBox: SVGRect) =>
         this.props.onSelectionChange(this.props.id, value, bBox);
@@ -198,15 +205,24 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
     };
 
 
+    canvas?: HTMLCanvasElement;
+    maskCanvas?: HTMLCanvasElement;
+
     handleCanvasRef = (canvas: HTMLCanvasElement) => {
-        const {bindCanvas, id} = this.props;
-        if (canvas)
-            bindCanvas(id, canvas);
+        this.canvas = canvas;
+        this.syncMonitors();
     };
     handleMaskCanvasRef = (canvas: HTMLCanvasElement) => {
-        const {bindMaskCanvas, id} = this.props;
-        if (canvas)
-            bindMaskCanvas(id, canvas);
+        this.maskCanvas = canvas;
+        this.syncMonitors();
+    };
+
+    syncMonitors = () => {
+        const {bindCanvas, bindMaskCanvas, id, visible, demonstration} = this.props;
+        const shown = visible || demonstration;
+
+        bindCanvas(id, shown ? this.canvas : undefined);
+        bindMaskCanvas(id, shown ? this.maskCanvas : undefined);
     };
 
     render() {

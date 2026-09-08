@@ -23,6 +23,7 @@ import {VideoServiceInitParams} from '../index'
 import {ECFType} from '../../../../../changeFunctions/types'
 import {CfDepthParams} from '../../../../../changeFunctions/functions/depth'
 import {AppState, patternsService} from '../../../../../index'
+import {profileLogger} from '../../../../../../utils/profiling/ProfileLogger'
 
 
 export class ShaderVideoModule {
@@ -459,7 +460,9 @@ export class ShaderVideoModule {
                 const {component, patternId, id, zed, zd} = item
 
                 const canvas = patternsService.pattern[patternId].canvasService.canvas
-                const imageData = canvas && patternsService.pattern[patternId].canvasService.context?.getImageData(0, 0, canvas.width, canvas.height);
+                const imageData = canvas && profileLogger.time('video.depth.getImageData', () =>
+                    patternsService.pattern[patternId].canvasService.context?.getImageData(0, 0, canvas.width, canvas.height)
+                )
 
                 if (!canvas || !imageData) {
                     return;

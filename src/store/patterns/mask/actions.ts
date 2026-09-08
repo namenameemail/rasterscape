@@ -19,11 +19,13 @@ export interface SetMaskParamsAction extends PatternAction {
     params: MaskParams
 }
 
-export const updateMask = (id: string, imageData: ImageData, noHistory?: boolean) => (dispatch) => {
+export const updateMask = (id: string, imageData?: ImageData, noHistory?: boolean) => (dispatch) => {
 
     dispatch(pushHistory(id));
 
-    dispatch({type: EMaskAction.UPDATE_MASK, imageData, id, noHistory}); // уже не нужный экшен
+    const maskImageData = imageData ?? patternsService.pattern[id].maskService.getImageData();
+
+    dispatch({type: EMaskAction.UPDATE_MASK, imageData: maskImageData, id, noHistory}); // уже не нужный экшен
 
     patternsService.pattern[id]
         .valuesService.updateMasked()
@@ -39,14 +41,20 @@ export const setMaskParams = (id: string, params: MaskParams) => (dispatch) => {
         .previewService.update();
 }
 
-export const bindMaskCanvas = (id: string, canvas: HTMLCanvasElement) => (dispatch, getState: () => AppState) => {
+export const bindMaskCanvas = (id: string, canvas?: HTMLCanvasElement) => (dispatch, getState: () => AppState) => {
 
-    const state = getState();
-    const pattern = state.patterns[id];
+    const patternService = patternsService.pattern[id];
 
-    patternsService.pattern[id]
-        .bindMaskCanvas(canvas, pattern.width, pattern.height);
-        // .patternToolService.bindTool(tool, toolType);
+    if (!patternService) {
+        return;
+    }
 
-    // dispatch(initHistory(id));
+    if (!canvas) {
+        patternService.unbindMaskCanvas();
+        return;
+    }
+
+    const pattern = getState().patterns[id];
+
+    patternService.bindMaskCanvas(canvas, pattern.width, pattern.height);
 };

@@ -10,6 +10,7 @@ import {PlatformerEngine} from './PlatformerEngine'
 import {PlatformerRenderer} from './PlatformerRenderer'
 import {platformerProfiler} from './PlatformerProfiler'
 import * as StackBlur from 'stackblur-canvas'
+import {profileLogger} from '../../../../../utils/profiling/ProfileLogger'
 
 const LEFT_KEYS = new Set(['KeyA', 'ArrowLeft'])
 const RIGHT_KEYS = new Set(['KeyD', 'ArrowRight'])
@@ -71,13 +72,15 @@ export class PatternPlatformerService {
         }
 
         this.world.setImageData(
-            StackBlur.imageDataRGBA(
-                this.world.getImageData(),
-                0,
-                0,
-                this.width,
-                this.height,
-                radius,
+            profileLogger.time('platformer.blur', () =>
+                StackBlur.imageDataRGBA(
+                    this.world.getImageData(),
+                    0,
+                    0,
+                    this.width,
+                    this.height,
+                    radius,
+                ),
             ),
         )
     }
@@ -211,6 +214,7 @@ export class PatternPlatformerService {
             this.world,
             this.engine.player,
         )
+        this.patternService.canvasService.present()
     }
 
     start = (): PatternPlatformerService => {
@@ -262,10 +266,7 @@ export class PatternPlatformerService {
         window.removeEventListener('keyup', this.boundKeyUp)
         this.input.reset()
 
-        const displayContext = this.patternService.canvasService.context
-        if (displayContext) {
-            displayContext.putImageData(this.world.getImageData(), 0, 0)
-        }
+        this.patternService.canvasService.setImageData(this.world.getImageData())
 
         return this
     }

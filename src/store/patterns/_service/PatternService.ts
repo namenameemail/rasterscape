@@ -102,19 +102,29 @@ export class PatternService {
     };
 
     bindCanvas = (canvas: HTMLCanvasElement, width: number, height: number): PatternService => {
-        canvas.width = width;
-        canvas.height = height;
-        this.canvasService.setCanvas(canvas);
+        this.canvasService.setCanvas(canvas, width, height);
         this.patternToolService.bindCanvas();
 
         return this;
     };
 
+    unbindCanvas = (): PatternService => {
+        this.patternToolService.unbindCanvas();
+        this.canvasService.setCanvas();
+
+        return this;
+    };
+
     bindMaskCanvas = (canvas: HTMLCanvasElement, width: number, height: number): PatternService => {
-        canvas.width = width;
-        canvas.height = height;
-        this.maskService.setCanvas(canvas);
+        this.maskService.setCanvas(canvas, width, height);
         this.patternToolService.bindMaskCanvas();
+
+        return this;
+    };
+
+    unbindMaskCanvas = (): PatternService => {
+        this.patternToolService.unbindMaskCanvas();
+        this.maskService.setCanvas();
 
         return this;
     };
