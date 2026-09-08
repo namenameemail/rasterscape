@@ -2,19 +2,30 @@
 
 Снято при этапе 0. Новые такие копии в цикле кадра не добавлять. Undo / сейв / буфер обмена сюда не входят.
 
+## Осталось
+
 | Спан | Где | Когда | Что копируется |
 |------|-----|--------|----------------|
-| `video.source.getImageData` | `PatternVideoService.getFrameData` | каждый кадр видео, source = паттерн | `getImageData` канваса B |
-| `video.source.resize` | там же | source размер ≠ видео | `resizeImageData` (ещё get/put) |
-| `video.blur` | `PatternVideoService.onFrame` | видео и blur radius > 0 | get + StackBlur + put |
-| `video.depth.getImageData` | `ShaderVideoModule` DEPTH | видео и cut function DEPTH | `getImageData` до 4 паттернов за кадр |
 | `values.updateMasked` | `PatternValuesService.updateMasked` | маска вкл. и throttle (~100 ms): видео `updateForVideoFrame`, рисование `draw.valuesMasked` | canvas+mask `getImageData` + `createMaskedImageFromImageData` |
 | `values.updateSelected` | `PatternValuesService.updateSelected` | есть selection mask, тот же throttle | canvas + selection mask |
 | `platformer.collision.getImageData` | `PlatformerEngine.step` | playing и world dirty | `world.getImageData` перед `collision.rebuild` |
-| `platformer.blur` | `applyBlurToWorld` | видео+платформер и blur | get + StackBlur + put мира |
 
-Внешний спан `video.getFrameData` / `video.valuesService` / `draw.valuesMasked` уже был — внутри них теперь более узкие имена из таблицы.
+## Снято на этапе 2
 
-С этапа 1 в кадре есть ещё `canvas.present` — блит буфера на видимый канвас. Это не съём в процессор и он только у видимого паттерна; на этапах 2–3 станет копией на GPU.
+| Было | Стало |
+|------|-------|
+| `video.source.getImageData` — `getImageData` канваса-источника каждый кадр | канвас источника уходит в `texSubImage3D` как есть |
+| `video.source.resize` — `resizeImageData` при несовпадении размера | `video.source.scale` — `drawImage` со скейлом на GPU |
+| `video.depth.getImageData` — до 4 паттернов за кадр | `video.depth.texture` — `texSubImage2D` с канвасов |
+| `video.blur` — get + StackBlur + put | тот же спан, внутри `filter: blur()` канваса |
+| `platformer.blur` — get + StackBlur + put мира | тот же спан, `filter: blur()` |
 
-Не кадр (не трогаем): `history/actions`, `import/actions` save/load, clipboard, `projectSerializer`, `room/actions`, `pattern/helpers` startImage, resize паттерна, platformer `init`/`stop`.
+## Не съём в процессор, но в кадре
+
+`video.pushNewFrame` — `texSubImage3D` с 2D-канваса, **16.7 ms** на 1080p ([`baselines/02-after.md`](baselines/02-after.md)). Уйдёт на этапе 4, когда source станет текстурой.
+
+`canvas.present` (этап 1) — блит буфера на видимый канвас, только у видимого. `video.drawImage` — блит GL-канваса в 2D-буфер. Оба уйдут вместе с GL-буфером.
+
+Внешний спан `video.getFrameData` / `video.valuesService` / `draw.valuesMasked` уже был — внутри них более узкие имена из таблиц.
+
+Не кадр (не трогаем): `history/actions`, `import/actions` save/load, clipboard, `projectSerializer`, `room/actions`, `pattern/helpers` startImage, resize паттерна, platformer `init`/`stop`, кнопка блюра в `blur/actions`.

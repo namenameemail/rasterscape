@@ -33,16 +33,16 @@ flowchart LR
 |------|-----|
 | [done/00-contract-and-profiling.md](done/00-contract-and-profiling.md) | Этап 0 закрыт: интерфейс, опись, эталоны |
 | [done/01-buffer-off-css.md](done/01-buffer-off-css.md) | Этап 1 закрыт: пиксели в `PatternBuffer`, канвас на экране — монитор |
-| [02-video-stays-on-gpu.md](02-video-stays-on-gpu.md) | Видео и source-паттерн без `getImageData` каждый кадр |
+| [done/02-video-stays-on-gpu.md](done/02-video-stays-on-gpu.md) | Этап 2 закрыт: нет `getImageData` на кадре видео; заливка 2D→3D осталась (~16.7 ms) |
 | [03-masked-preview.md](03-masked-preview.md) | Маска, превью, кисть-паттерн без копирования всей картинки в процессор на кадр |
-| [04-tools.md](04-tools.md) | Кисти: сначала штамп в скрытый 2D и заливка в GPU, потом штампы на GPU |
+| [04-tools.md](04-tools.md) | Общий GL, буфер = текстура, source как sampler; кисти: штамп 2D→GPU, потом штампы на GPU |
 | [05-cook-graph.md](05-cook-graph.md) | Считать картинку только если она нужна; на экран — только видимое |
 
 Порядок обязательный. Этап 4 без 2–3 не делать.
 
 ## Объекты
 
-- **`PatternBuffer`** — «лист бумаги» паттерна ([`PatternBuffer.ts`](../../../src/store/patterns/_service/patternServices/PatternBuffer.ts)). Лежит в `PatternService` (внутри `canvasService` / `maskService`). Сейчас 2D-канвас вне DOM, на этапе 2 внутрь приходит GL-текстура.
+- **`PatternBuffer`** — «лист бумаги» паттерна ([`PatternBuffer.ts`](../../../src/store/patterns/_service/patternServices/PatternBuffer.ts)). Лежит в `PatternService` (внутри `canvasService` / `maskService`). Сейчас 2D-канвас вне DOM. GL-текстура — этап 4, вместе с общим `GlContext`.
 - **Монитор** — видимый `<canvas>`; пиксели в него только копируют. С него же мышь (`CanvasEventsService`). У скрытого паттерна монитора нет.
 - **`GlContext`** — один `WebGL2RenderingContext` на всё приложение. Видео-шейдер сюда, не свой канвас на каждый паттерн.
 - **Считать vs показать** — видео/платформер могут крутиться без картинки на экране, если кто-то их читает. На экран копируем только видимые.
@@ -59,9 +59,9 @@ flowchart LR
 - Выкинуть `ImageData` из приложения.
 - Ждать от этапа 1 FPS «как TD». Кадр дешевеет на 2–3.
 
-## Как понять, что сработало (после этапа 2)
+## Как понять, что сработало (после этапа 4)
 
 Паттерн B скрыт, видео A берёт B как source, оба ~1080p.
 
-- Сейчас: каждый кадр `getImageData` у B и копирование GL-картинки в 2D-канвас A.
-- После: в профиле нет съёма всей картинки B в `video.getFrameData`; копирование на GPU; FPS упирается в шейдер, не в процессор.
+- Этап 2: в профиле нет `video.source.getImageData`; цена в `video.pushNewFrame` (~16.7 ms на 1080p).
+- После 4: нет заливки 2D-канваса в 3D-текстуру на кадр; source — текстура; FPS упирается в шейдер, не в копию.

@@ -2,6 +2,8 @@
 
 `PatternValuesService.updateMasked` снимает canvas и маску в `ImageData` и собирает новый канвас. На видео это не каждый кадр (~100 ms), но всё равно **копия всей картинки в процессор**. Превью и кисть Pattern берут `valuesService.masked`. Если маски нет, уже есть `syncMaskedReference()` (`masked = canvas`) — так и должно остаться: masked это сам буфер, без копии.
 
+После этапа 2 это главный съём на кадре видео: [`baselines/02-after.md`](baselines/02-after.md) — `values.updateMasked` **45.5 ms** (47 раз за 15 с). `video.source.getImageData` уже нет. Общий GL и текстура буфера — этап 4, сюда не тащить.
+
 ## Сделать
 
 1. Нет маски: кисть и превью берут сам буфер, без копии.

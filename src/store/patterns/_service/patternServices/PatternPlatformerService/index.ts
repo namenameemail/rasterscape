@@ -9,7 +9,7 @@ import {Collision} from './Collision'
 import {PlatformerEngine} from './PlatformerEngine'
 import {PlatformerRenderer} from './PlatformerRenderer'
 import {platformerProfiler} from './PlatformerProfiler'
-import * as StackBlur from 'stackblur-canvas'
+import {blurCanvasInPlace} from '../../../../../utils/canvas/helpers/blur'
 import {profileLogger} from '../../../../../utils/profiling/ProfileLogger'
 
 const LEFT_KEYS = new Set(['KeyA', 'ArrowLeft'])
@@ -71,18 +71,10 @@ export class PatternPlatformerService {
             return
         }
 
-        this.world.setImageData(
-            profileLogger.time('platformer.blur', () =>
-                StackBlur.imageDataRGBA(
-                    this.world.getImageData(),
-                    0,
-                    0,
-                    this.width,
-                    this.height,
-                    radius,
-                ),
-            ),
+        profileLogger.time('platformer.blur', () =>
+            blurCanvasInPlace(this.world.canvas, this.world.context, radius),
         )
+        this.markWorldDirty('video.blur')
     }
 
     init = (params: PlatformerInitParams): PatternPlatformerService => {

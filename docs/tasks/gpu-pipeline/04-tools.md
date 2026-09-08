@@ -1,8 +1,19 @@
-# Этап 4 — инструменты
+# Этап 4 — инструменты и общий GL
 
 Инструменты пишут в `CanvasRenderingContext2D` ([`ToolsServices`](../../../src/store/patterns/_service/patternServices/CanvasEventsService/ToolsServices)). Переписывать кисти, пока видео и masked каждый кадр копируют картинку в процессор, бессмысленно: сначала этапы 2–3.
 
-Два подэтапа. Второй — отдельная большая работа.
+С этапа 2 сюда ушло то, что нельзя сделать, пока буфер — 2D-канвас: общий `GlContext`, выход шейдера в текстуру, source как `sampler2D`. Без этого `pushNewFrame` на 1080p стоит **16.7 ms** ([`baselines/02-after.md`](baselines/02-after.md)) — `texSubImage3D` с 2D-канваса, та же копия что бывший `getImageData`.
+
+Два подэтапа, плюс GL-мост. 4b — отдельная большая работа.
+
+## С этапа 2 (пока буфер станет GL)
+
+1. Один `GlContext` на приложение. `ShaderVideoModule` не плодит `glCanvas` на паттерн: пишет в FBO/текстуру `PatternBuffer`.
+2. Source-паттерн и DEPTH — `sampler2D` / `copyTex`, не `texSubImage*` с 2D-канваса. Скейл размера — на GPU.
+3. Блюр видео — шейдер в том же контексте. Сейчас кадр блюрится через `filter: blur()` ([`blur.ts`](../../../src/utils/canvas/helpers/blur.ts)); кнопка разового блюра в `blur/actions` может остаться на процессоре.
+4. `video.drawImage` (GL → 2D буфер, ~1.7 ms) и `canvas.present` уйдут, когда монитор рисует ту же текстуру.
+
+Пока кисти рисуют в 2D-контекст, буфер обязан оставаться 2D — поэтому это не закрыли на этапе 2. Делать вместе с 4a или сразу после: иначе инструменты ломаются.
 
 ## 4a — мост 2D offscreen → GPU
 

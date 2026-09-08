@@ -121,6 +121,8 @@ export class ShaderVideoModule {
             return alert('failed to init')
         }
 
+        gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE)
+
 
         this.initTexture()
 
@@ -198,7 +200,7 @@ export class ShaderVideoModule {
         gl.uniform1f(u_QueueOffset, this.queueOffset)
     }
 
-    updateTexture = (newPixels: Uint8Array) => {
+    updateTexture = (source: TexImageSource) => {
         const gl = this.gl
         const u_TexQueueOffset = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_TexQueueOffset')
         const u_QueueOffset = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_QueueOffset')
@@ -213,7 +215,7 @@ export class ShaderVideoModule {
             this.width, this.height, 1,
             gl.RGBA,
             gl.UNSIGNED_BYTE,
-            newPixels,
+            source,
         )
         gl.uniform1f(u_TexQueueOffset, this.queueOffset / (this.stackSizeWithError))
         gl.uniform1f(u_QueueOffset, this.queueOffset)
@@ -265,10 +267,9 @@ export class ShaderVideoModule {
         return this.glCanvas
     }
 
-    pushNewFrame(imageData: Uint8ClampedArray): ShaderVideoModule {
+    pushNewFrame(source: TexImageSource): ShaderVideoModule {
 
-        const pixels = new Uint8Array(imageData.buffer)
-        this.updateTexture(pixels)
+        this.updateTexture(source)
 
         return this
     }
@@ -459,16 +460,15 @@ export class ShaderVideoModule {
             ).forEach((item, index) => {
                 const {component, patternId, id, zed, zd} = item
 
-                const canvas = patternsService.pattern[patternId].canvasService.canvas
-                const imageData = canvas && profileLogger.time('video.depth.getImageData', () =>
-                    patternsService.pattern[patternId].canvasService.context?.getImageData(0, 0, canvas.width, canvas.height)
-                )
+                const canvas = patternsService.pattern[patternId]?.canvasService.canvas
 
-                if (!canvas || !imageData) {
+                if (!canvas) {
                     return;
                 }
 
-                this.updateParamTextureByIndex(index, new Uint8Array(imageData.data.buffer), canvas.width, canvas.height)
+                profileLogger.time('video.depth.texture', () =>
+                    this.updateParamTextureByIndex(index, canvas)
+                )
 
                 const u_CFParamI0 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamI' + (index * 1 + 0))
                 const u_CFParamI5 = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_CFParamI5')
@@ -534,10 +534,10 @@ export class ShaderVideoModule {
         gl.uniform1i(u_CFParamTexture_index, glTextureIndex)
     }
 
-    updateParamTextureByIndex = (index: number, newPixels: Uint8Array, width, height) => {
-
+    updateParamTextureByIndex = (index: number, source: HTMLCanvasElement) => {
 
         const glTextureIndex = 1 + index;
+        const {width, height} = source
 
         const gl = this.gl
         const paramTexture = this.paramTextures[index]
@@ -547,31 +547,27 @@ export class ShaderVideoModule {
         gl.bindTexture(gl.TEXTURE_2D, paramTexture.texture)
 
         if (oldH === height && oldW === width) {
-
             gl.texSubImage2D(
                 gl.TEXTURE_2D,
                 0,
                 0, 0,
-                this.width, this.height,
                 gl.RGBA,
                 gl.UNSIGNED_BYTE,
-                newPixels,
+                source,
             )
         } else {
             gl.texImage2D(
                 gl.TEXTURE_2D,
                 0,
                 gl.RGBA,
-                width,
-                height,
-                0,
                 gl.RGBA,
                 gl.UNSIGNED_BYTE,
-                newPixels,
+                source,
             )
+
+            paramTexture.width = width
+            paramTexture.height = height
         }
-
-
     }
 }
 

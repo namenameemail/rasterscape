@@ -6,10 +6,9 @@ import { getFxyFunctionType } from './utils'
 import { VideoOffset } from './ShaderVideoModule/types'
 import { ECFType } from '../../../../changeFunctions/types'
 import { CfDepthParams } from '../../../../changeFunctions/functions/depth'
-import * as StackBlur from 'stackblur-canvas'
 import { VideoSourceType } from '../../../video/types'
 import { patternsService } from '../../../../index'
-import { resizeImageData } from '../../../../../utils/canvas/helpers/imageData'
+import { createCanvas, HelperCanvas } from '../../../../../utils/canvas/helpers/base'
 import { profileLogger } from '../../../../../utils/profiling/ProfileLogger'
 import { frameScheduler, FramePriority } from '../../../../../utils/FrameScheduler'
 
@@ -155,40 +154,52 @@ export class PatternVideoService {
         this.onFrame()
     }
 
-    getFrameData = (): Uint8ClampedArray | undefined => {
+    private sourceScale?: HelperCanvas
+
+    getFrameSource = (): TexImageSource | undefined => {
         if (this.sourceType === VideoSourceType.Camera) {
-            return this.cameraService.receiveImageData()?.data
+            return this.cameraService.receiveImage()
         }
 
         if (!this.sourcePatternId) {
             return undefined
         }
 
-        const sourcePattern = patternsService.pattern[this.sourcePatternId]
-        const imageData = profileLogger.time('video.source.getImageData', () =>
-            sourcePattern?.canvasService.getImageData()
-        )
+        const sourceCanvas = patternsService.pattern[this.sourcePatternId]?.canvasService.canvas
 
-        if (!imageData) {
+        if (!sourceCanvas?.width || !sourceCanvas?.height) {
             return undefined
         }
 
-        if (imageData.width !== this.width || imageData.height !== this.height) {
-            return profileLogger.time('video.source.resize', () =>
-                resizeImageData(imageData, this.width, this.height).data
-            )
+        if (sourceCanvas.width === this.width && sourceCanvas.height === this.height) {
+            return sourceCanvas
         }
 
-        return imageData.data
+        return profileLogger.time('video.source.scale', () => this.scaleSource(sourceCanvas))
+    }
+
+    private scaleSource = (sourceCanvas: HTMLCanvasElement): HTMLCanvasElement => {
+        if (!this.sourceScale) {
+            this.sourceScale = createCanvas(this.width, this.height)
+        } else if (this.sourceScale.canvas.width !== this.width || this.sourceScale.canvas.height !== this.height) {
+            this.sourceScale.canvas.width = this.width
+            this.sourceScale.canvas.height = this.height
+        } else {
+            this.sourceScale.clear()
+        }
+
+        this.sourceScale.context.drawImage(sourceCanvas, 0, 0, this.width, this.height)
+
+        return this.sourceScale.canvas
     }
 
     onFrame = () => {
 
-        const newFrameData = profileLogger.time('video.getFrameData', () => this.getFrameData())
+        const newFrameSource = profileLogger.time('video.getFrameData', () => this.getFrameSource())
 
-        if (newFrameData) {
+        if (newFrameSource) {
             profileLogger.time('video.pushNewFrame', () => {
-                this.shaderVideoModule.pushNewFrame(newFrameData)
+                this.shaderVideoModule.pushNewFrame(newFrameSource)
             })
         }
 
@@ -229,7 +240,6 @@ export class PatternVideoService {
                     this.patternService.platformerService.applyVideoFrame(newFrameCanvas)
                 } else {
                     this.patternService.canvasService.context.drawImage(newFrameCanvas, 0, 0)
-                    this.patternService.canvasService.present()
                 }
             })
         }
@@ -242,18 +252,14 @@ export class PatternVideoService {
                 if (platformerPlaying) {
                     this.patternService.platformerService.applyBlurToWorld(radius)
                 } else {
-                    this.patternService.canvasService.setImageData(
-                        StackBlur.imageDataRGBA(
-                            this.patternService.canvasService.getImageData(),
-                            0, 0,
-                            this.width, this.height, radius
-                        )
-                    )
+                    this.patternService.canvasService.buffer?.blur(radius)
                 }
             })
         }
 
         if (!platformerPlaying) {
+            this.patternService.canvasService.present()
+
             profileLogger.time('video.valuesService', () => {
                 this.patternService.valuesService.updateForVideoFrame()
             })

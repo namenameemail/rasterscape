@@ -80,6 +80,8 @@
 
 `tsc -b` и `vite build` проходят (ошибки строгости в файлах были и до этапа). Живая проверка вручную: A↔B без потери пикселей, кисть, маска, resize, undo/redo, load, платформер, видео с source-паттерном.
 
+Замер: [`baselines/01-after.md`](../baselines/01-after.md). `canvas.present` **0.5 ms** на 1080p, кадр 34.2 ms против 32.5 в эталоне — перенос пикселей с DOM обошёлся почти бесплатно.
+
 ### Следующая задача
 
-[`02-video-stays-on-gpu.md`](../02-video-stays-on-gpu.md) — там и падает FPS: `video.source.getImageData` 15.4 ms на 1080p по эталону [`00-before-1080.md`](../baselines/00-before-1080.md).
+[`02-video-stays-on-gpu.md`](02-video-stays-on-gpu.md) — закрыт: `getImageData` с кадра видео нет; заливка 2D→3D осталась.

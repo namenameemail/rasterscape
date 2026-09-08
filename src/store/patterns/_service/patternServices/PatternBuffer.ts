@@ -1,4 +1,5 @@
 import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
+import {blurCanvasInPlace} from "../../../../utils/canvas/helpers/blur";
 
 export class PatternBuffer {
     readonly canvas: HTMLCanvasElement;
@@ -33,6 +34,10 @@ export class PatternBuffer {
 
     writePixels = (imageData: ImageData): void => {
         this.context.putImageData(imageData, 0, 0);
+    };
+
+    blur = (radius: number): void => {
+        blurCanvasInPlace(this.canvas, this.context, radius);
     };
 
     setMonitor = (monitor?: HTMLCanvasElement): void => {
