@@ -6,6 +6,7 @@
   &__trigger {
     .pattern-select-button {
       pointer-events: none;
+      background-color: #ebebeb;
 
       &.button-select-selected {
         border: 1px solid #b8b8b8 !important;
@@ -33,7 +34,8 @@
   position: fixed;
   box-sizing: border-box;
   padding: 0;
-  background: rgba(0, 0, 0, 0.08);
+  background: radial-gradient(ellipse at center, lightgrey 0%, transparent 250%);
+
   border: 1px solid #b8b8b8;
   pointer-events: auto;
 }

@@ -262,16 +262,6 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                                 >
                                     {t('plugins.repeating')}</ButtonHK>
                                 <ButtonHK
-                                    path={`pattern.${id}.room`}
-                                    name={"room"}
-                                    hkLabel={'pattern.hotkeysDescription.config.room'}
-                                    hkData1={id}
-                                    selected={config.room}
-                                    onClick={this.handleConfigToggle}
-                                    disabled
-                                >
-                                    {t('plugins.room')}</ButtonHK>
-                                <ButtonHK
                                     path={`pattern.${id}.video`}
                                     name={"video"}
                                     hkLabel={'pattern.hotkeysDescription.config.video'}

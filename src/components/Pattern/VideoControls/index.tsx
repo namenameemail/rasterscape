@@ -1,9 +1,9 @@
 import * as React from 'react'
-import {VideoParams, VideoSourceType} from '../../../store/patterns/video/types'
-import {SelectDrop} from '../../_shared/buttons/complex/SelectDrop'
-import {connect, MapDispatchToProps, MapStateToProps} from 'react-redux'
-import {AppState} from '../../../store'
-import {ChangeFunctionState, ECFType} from '../../../store/changeFunctions/types'
+import { VideoParams, VideoSourceType } from '../../../store/patterns/video/types'
+import { SelectDrop } from '../../_shared/buttons/complex/SelectDrop'
+import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
+import { AppState } from '../../../store'
+import { ChangeFunctionState, ECFType } from '../../../store/changeFunctions/types'
 import {
 
     setChangeFunction,
@@ -21,21 +21,21 @@ import {
     setVideoSourceType,
     setVideoSourcePattern,
 } from '../../../store/patterns/video/actions'
-import {getChangeFunctionsSelectItemsVideo} from '../../../store/changeFunctions/selectors'
-import {HoverPatternSelect} from '../HoverPatternSelect'
+import { getChangeFunctionsSelectItemsVideo } from '../../../store/changeFunctions/selectors'
+import { HoverPatternSelect } from '../HoverPatternSelect'
 import './videoControls.scss'
-import {setCFHighlights, setCFTypeHighlights} from '../../../store/changeFunctionsHighlights'
-import {SelectButtonsEventData} from '../../_shared/buttons/complex/SelectButtons'
-import {ButtonHK} from '../../_shared/buttons/hotkeyed/ButtonHK'
-import {WithTranslation, withTranslation} from 'react-i18next'
-import {LabelFormatter} from '../../../store/hotkeys/label-formatters'
-import {Translations} from '../../../store/language/helpers'
-import {SelectVideoDevice} from 'bbuutoonnss'
-import {InputNumber, InputNumberProps} from '../../_shared/inputs/InputNumber'
-import {VideoOffsetForm} from './VideoOffsetForm'
-import {CameraAxis, EdgeMode, MirrorMode, StackType} from '../../../store/patterns/_service/patternServices/PatternVideoService/ShaderVideoModule'
-import {ButtonEventData} from '../../_shared/buttons/simple/Button'
-import {getVideoState} from '../../../store/patterns/video/helpers'
+import { setCFHighlights, setCFTypeHighlights } from '../../../store/changeFunctionsHighlights'
+import { SelectButtonsEventData } from '../../_shared/buttons/complex/SelectButtons'
+import { ButtonHK } from '../../_shared/buttons/hotkeyed/ButtonHK'
+import { WithTranslation, withTranslation } from 'react-i18next'
+import { LabelFormatter } from '../../../store/hotkeys/label-formatters'
+import { Translations } from '../../../store/language/helpers'
+import { SelectVideoDevice } from 'bbuutoonnss'
+import { InputNumber, InputNumberProps } from '../../_shared/inputs/InputNumber'
+import { VideoOffsetForm } from './VideoOffsetForm'
+import { CameraAxis, EdgeMode, MirrorMode, StackType } from '../../../store/patterns/_service/patternServices/PatternVideoService/ShaderVideoModule'
+import { ButtonEventData } from '../../_shared/buttons/simple/Button'
+import { getVideoState } from '../../../store/patterns/video/helpers'
 
 export interface VideoControlsStateProps {
 
@@ -113,65 +113,65 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
     }
 
     handleChangeCameraOnParam = () => {
-        const {videoParams, patternId} = this.props
+        const { videoParams, patternId } = this.props
         videoParams.cameraOn
             ? this.props.stopCamera(patternId)
             : this.props.startCamera(patternId)
     }
 
     handleChangeUpdatingOnParam = () => {
-        const {videoParams, patternId} = this.props
+        const { videoParams, patternId } = this.props
         videoParams.updatingOn
             ? this.props.stop(patternId)
             : this.props.start(patternId)
     }
 
     handleChangeSlitModeParam = (axis: CameraAxis) => {
-        const {setCameraAxis, patternId} = this.props
+        const { setCameraAxis, patternId } = this.props
         setCameraAxis(patternId, axis)
     }
 
     handleChangeEdgeMode = (data: SelectButtonsEventData) => {
-        const {setEdgeMode, patternId} = this.props
-        const {value} = data
+        const { setEdgeMode, patternId } = this.props
+        const { value } = data
         setEdgeMode(patternId, value)
     }
 
-    handleChangeMirrorMode = (data: ButtonEventData & {selected?: boolean}) => {
-        const {setMirrorMode, patternId} = this.props
+    handleChangeMirrorMode = (data: ButtonEventData & { selected?: boolean }) => {
+        const { setMirrorMode, patternId } = this.props
         setMirrorMode(patternId, data.selected ? MirrorMode.NO : MirrorMode.HORIZONTAL)
     }
 
     handleChangeStackType = (data: SelectButtonsEventData) => {
-        const {setStackType, patternId} = this.props
-        const {value} = data
+        const { setStackType, patternId } = this.props
+        const { value } = data
         setStackType(patternId, value)
     }
 
     handleChangeChangeFunction = (data: SelectButtonsEventData) => {
-        const {setChangeFunction, patternId} = this.props
-        const {value} = data
+        const { setChangeFunction, patternId } = this.props
+        const { value } = data
         setChangeFunction(patternId, value)
     }
 
     handleClearChangeFunction = () => {
-        const {setChangeFunction, patternId} = this.props
+        const { setChangeFunction, patternId } = this.props
         setChangeFunction(patternId, null)
     }
 
     handleChangeStackSize = (value: number) => {
-        const {setStackSize, patternId} = this.props
+        const { setStackSize, patternId } = this.props
         setStackSize(patternId, value)
     }
 
     handleChangeOffset = (data: SelectButtonsEventData) => {
-        const {setVideoOffset, patternId} = this.props
-        const {value, name} = data
+        const { setVideoOffset, patternId } = this.props
+        const { value, name } = data
         if (!name) return
         setVideoOffset(patternId, name, value)
     }
     handleChangeOffsetForm = (name: string, value: number) => {
-        const {setVideoOffset, patternId} = this.props
+        const { setVideoOffset, patternId } = this.props
         setVideoOffset(patternId, name, value)
     }
 
@@ -183,21 +183,21 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
     availableChangeTypes = [ECFType.FXY, ECFType.DEPTH]
 
     handleCFValueMouseEnter = () => {
-        const {setCFTypeHighlights, changeFunctionsSelectItems} = this.props
+        const { setCFTypeHighlights, changeFunctionsSelectItems } = this.props
         if (!changeFunctionsSelectItems.length)
             setCFTypeHighlights(availableCFTypes)
     }
     handleCFValueMouseLeave = () => {
-        const {setCFTypeHighlights} = this.props
+        const { setCFTypeHighlights } = this.props
         setCFTypeHighlights()
     }
 
     handleCFMouseEnter = (data: SelectButtonsEventData) => {
-        const {setCFHighlights} = this.props
+        const { setCFHighlights } = this.props
         setCFHighlights(data?.value?.id)
     }
     handleCFMouseLeave = () => {
-        const {setCFHighlights} = this.props
+        const { setCFHighlights } = this.props
         setCFHighlights()
     }
 
@@ -242,13 +242,13 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
 
     edgeModeGetValue = (id: EdgeMode) => id
     edgeModeGetText = (id: EdgeMode) => {
-        const {t} = this.props
+        const { t } = this.props
         return t('pattern.video.edgeMode.' + id)
     }
 
     cameraAxisGetValue = (id: CameraAxis) => id
     cameraAxisGetText = (id: CameraAxis) => {
-        const {t} = this.props
+        const { t } = this.props
         return t('pattern.video.cameraAxis.' + id)
     }
 
@@ -256,7 +256,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
 
     cfGetValue = (item: ChangeFunctionState) => item.id
     cfGetText = (item: ChangeFunctionState) => {
-        const {t} = this.props
+        const { t } = this.props
         return Translations.cfName(t)(item)
     }
 
@@ -266,18 +266,18 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
     }
 
     handleChangeSourceType = (data: SelectButtonsEventData) => {
-        const {setVideoSourceType, patternId} = this.props
+        const { setVideoSourceType, patternId } = this.props
         setVideoSourceType(patternId, data.value)
     }
 
     handleSelectSourcePattern = (value: string | null) => {
-        const {setVideoSourcePattern, patternId} = this.props
+        const { setVideoSourcePattern, patternId } = this.props
         setVideoSourcePattern(patternId, value)
     }
 
     sourceTypeGetValue = (id: VideoSourceType) => id
     sourceTypeGetText = (id: VideoSourceType) => {
-        const {t} = this.props
+        const { t } = this.props
         return t('pattern.video.sourceType.' + id)
     }
 
@@ -291,7 +291,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
             autoblur,
             autofocus,
         } = this.props
-        const {cameraOn, updatingOn, sourceType, sourcePatternId} = params
+        const { cameraOn, updatingOn, sourceType, sourcePatternId } = params
         const isCameraSource = sourceType === VideoSourceType.Camera
         const isPatternSource = sourceType === VideoSourceType.Pattern
 
@@ -328,7 +328,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                                 disabled={videoDisabled || !params.device?.deviceId}
                                 onClick={this.handleChangeCameraOnParam}
                             >
-                                {t('pattern.video.camera')}
+                                {t('pattern.video.cameraOn')}
                             </ButtonHK>
                         </>
                     )}
@@ -434,13 +434,13 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                     cameraAxis={params.cameraAxis}
                     onCameraAxisChange={this.handleChangeSlitModeParam}
                     params={params}
-                    value={params.offset} onChange={this.handleChangeOffsetForm}/>
+                    value={params.offset} onChange={this.handleChangeOffsetForm} />
             </div>
         )
     }
 }
 
-const mapStateToProps: MapStateToProps<VideoControlsStateProps, VideoControlsOwnProps, AppState> = (state, {patternId}) => {
+const mapStateToProps: MapStateToProps<VideoControlsStateProps, VideoControlsOwnProps, AppState> = (state, { patternId }) => {
     const changeFunctionId = state.patterns[patternId]?.video?.params?.changeFunctionId
 
     return {

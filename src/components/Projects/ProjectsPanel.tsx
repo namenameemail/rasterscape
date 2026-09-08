@@ -212,11 +212,11 @@ const ProjectsPanelComponent: React.FC<ProjectsPanelProps> = (props) => {
                                     +
                                 </Button>
                                 <Button
-                                    className="projects-panel-header-button"
+                                    className="projects-panel-header-button projects-panel-header-button--text"
                                     onClick={handleImportClick}
                                     title={t('projects.import')}
                                 >
-                                    ↑
+                                    {t('projects.import')}
                                 </Button>
                                 <span className="projects-panel-storage">
                                     {storagePercent === null

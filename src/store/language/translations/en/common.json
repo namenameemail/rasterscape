@@ -382,6 +382,7 @@
       "stop": "stop",
       "start": "start",
       "camera": "camera",
+      "cameraOn": "on",
       "update": "update",
       "play": "play",
       "pause": "pause",
@@ -436,9 +437,9 @@
         "flat": {
           "float": "pattern{{data1}} | repeating | flat | float values",
           "xd": "pattern{{data1}} | repeating | flat | horizontal splits",
-          "yd":  "pattern{{data1}} | repeating | flat | vertical splits",
+          "yd": "pattern{{data1}} | repeating | flat | vertical splits",
           "xn0": "pattern{{data1}} | repeating | flat | horizontal outer repeats",
-          "yn0":  "pattern{{data1}} | repeating | flat | vertical outer repeats"
+          "yn0": "pattern{{data1}} | repeating | flat | vertical outer repeats"
         }
       },
       "rotating": {
@@ -565,7 +566,7 @@
     "rename": "rename",
     "duplicate": "duplicate",
     "export": "export",
-    "import": "import .rs2d",
+    "import": "import",
     "delete": "delete",
     "deleteHold": "hold to delete",
     "deleteConfirm": "Delete project \"{{name}}\"?",
