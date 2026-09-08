@@ -1,19 +1,19 @@
 # Этап 4 — инструменты и общий GL
 
-Инструменты пишут в `CanvasRenderingContext2D` ([`ToolsServices`](../../../src/store/patterns/_service/patternServices/CanvasEventsService/ToolsServices)). Переписывать кисти, пока видео и masked каждый кадр копируют картинку в процессор, бессмысленно: сначала этапы 2–3.
-
-С этапа 2 сюда ушло то, что нельзя сделать, пока буфер — 2D-канвас: общий `GlContext`, выход шейдера в текстуру, source как `sampler2D`. Без этого `pushNewFrame` на 1080p стоит **16.7 ms** ([`baselines/02-after.md`](baselines/02-after.md)) — `texSubImage3D` с 2D-канваса, та же копия что бывший `getImageData`.
+Инструменты пишут в `CanvasRenderingContext2D` ([`ToolsServices`](../../../src/store/patterns/_service/patternServices/CanvasEventsService/ToolsServices)). Этапы 2–3 закрыты: съёма картинки в процессор на кадре видео больше нет. Кадр держит заливка 2D→3D и то, что буфер ещё канвас.
 
 Два подэтапа, плюс GL-мост. 4b — отдельная большая работа.
 
-## С этапа 2 (пока буфер станет GL)
+## Пока буфер станет GL (с этапов 2–3)
 
 1. Один `GlContext` на приложение. `ShaderVideoModule` не плодит `glCanvas` на паттерн: пишет в FBO/текстуру `PatternBuffer`.
-2. Source-паттерн и DEPTH — `sampler2D` / `copyTex`, не `texSubImage*` с 2D-канваса. Скейл размера — на GPU.
+2. Source-паттерн и DEPTH — `sampler2D` / `copyTex`, не `texSubImage*` с 2D-канваса. Скейл размера — на GPU. Сейчас `pushNewFrame` **~17–26 ms** на 1080p ([`baselines/03-after.md`](baselines/03-after.md)).
 3. Блюр видео — шейдер в том же контексте. Сейчас кадр блюрится через `filter: blur()` ([`blur.ts`](../../../src/utils/canvas/helpers/blur.ts)); кнопка разового блюра в `blur/actions` может остаться на процессоре.
-4. `video.drawImage` (GL → 2D буфер, ~1.7 ms) и `canvas.present` уйдут, когда монитор рисует ту же текстуру.
+4. `video.drawImage` (GL → 2D буфер) и `canvas.present` уйдут, когда монитор рисует ту же текстуру.
+5. Маска — шейдер (или on-the-fly в сэмпле), не полный 2D `source-in` в `.masked`.
+6. Штамп Pattern / BrushSelect сэмплит текстуру (downsample на GPU), не `drawImage` полного masked-канваса.
 
-Пока кисти рисуют в 2D-контекст, буфер обязан оставаться 2D — поэтому это не закрыли на этапе 2. Делать вместе с 4a или сразу после: иначе инструменты ломаются.
+Пока кисти рисуют в 2D-контекст, буфер обязан оставаться 2D. Делать вместе с 4a или сразу после: иначе инструменты ломаются.
 
 ## 4a — мост 2D offscreen → GPU
 
@@ -33,7 +33,7 @@
 
 Отдельный объём: brush/line как GPU (инстансы, stamp texture). Repeating — тот же набор координат, другой backend. `drawMasked` / `drawWithRotation` — шейдер.
 
-Не начинать, пока 4a стабилен и этапы 2–3 закрыты.
+Не начинать 4b, пока 4a стабилен. Этапы 2–3 закрыты.
 
 ## Где смотреть
 

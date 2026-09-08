@@ -6,9 +6,14 @@
 
 | Спан | Где | Когда | Что копируется |
 |------|-----|--------|----------------|
-| `values.updateMasked` | `PatternValuesService.updateMasked` | маска вкл. и throttle (~100 ms): видео `updateForVideoFrame`, рисование `draw.valuesMasked` | canvas+mask `getImageData` + `createMaskedImageFromImageData` |
-| `values.updateSelected` | `PatternValuesService.updateSelected` | есть selection mask, тот же throttle | canvas + selection mask |
 | `platformer.collision.getImageData` | `PlatformerEngine.step` | playing и world dirty | `world.getImageData` перед `collision.rebuild` |
+
+## Снято на этапе 3
+
+| Было | Стало |
+|------|-------|
+| `values.updateMasked` — `getImageData` + `createMaskedImageFromImageData` ~45 ms на кадре видео | `drawImage` + `source-in`, **0.10 ms**, только жест / смена маски |
+| `values.updateSelected` — то же с selection mask | тот же композит с `maskCanvas` |
 
 ## Снято на этапе 2
 
@@ -22,7 +27,7 @@
 
 ## Не съём в процессор, но в кадре
 
-`video.pushNewFrame` — `texSubImage3D` с 2D-канваса, **16.7 ms** на 1080p ([`baselines/02-after.md`](baselines/02-after.md)). Уйдёт на этапе 4, когда source станет текстурой.
+`video.pushNewFrame` — `texSubImage3D` с 2D-канваса, **~17–26 ms** на 1080p ([`baselines/03-after.md`](baselines/03-after.md)). Уйдёт на этапе 4, когда source станет текстурой.
 
 `canvas.present` (этап 1) — блит буфера на видимый канвас, только у видимого. `video.drawImage` — блит GL-канваса в 2D-буфер. Оба уйдут вместе с GL-буфером.
 

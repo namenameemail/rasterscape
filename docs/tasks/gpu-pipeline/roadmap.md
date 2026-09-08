@@ -34,11 +34,11 @@ flowchart LR
 | [done/00-contract-and-profiling.md](done/00-contract-and-profiling.md) | Этап 0 закрыт: интерфейс, опись, эталоны |
 | [done/01-buffer-off-css.md](done/01-buffer-off-css.md) | Этап 1 закрыт: пиксели в `PatternBuffer`, канвас на экране — монитор |
 | [done/02-video-stays-on-gpu.md](done/02-video-stays-on-gpu.md) | Этап 2 закрыт: нет `getImageData` на кадре видео; заливка 2D→3D осталась (~16.7 ms) |
-| [03-masked-preview.md](03-masked-preview.md) | Маска, превью, кисть-паттерн без копирования всей картинки в процессор на кадр |
+| [done/03-masked-preview.md](done/03-masked-preview.md) | Этап 3 закрыт: `updateMasked` 45 ms → 0.1 ms, не на кадре видео |
 | [04-tools.md](04-tools.md) | Общий GL, буфер = текстура, source как sampler; кисти: штамп 2D→GPU, потом штампы на GPU |
 | [05-cook-graph.md](05-cook-graph.md) | Считать картинку только если она нужна; на экран — только видимое |
 
-Порядок обязательный. Этап 4 без 2–3 не делать.
+Порядок: 0–3 закрыты. Дальше 4, потом 5.
 
 ## Объекты
 
@@ -63,5 +63,6 @@ flowchart LR
 
 Паттерн B скрыт, видео A берёт B как source, оба ~1080p.
 
-- Этап 2: в профиле нет `video.source.getImageData`; цена в `video.pushNewFrame` (~16.7 ms на 1080p).
+- Этап 2: нет `video.source.getImageData`; цена в `video.pushNewFrame`.
+- Этап 3: `values.updateMasked` **0.10 ms** на жесте, не на кадре видео ([`baselines/03-after.md`](baselines/03-after.md)).
 - После 4: нет заливки 2D-канваса в 3D-текстуру на кадр; source — текстура; FPS упирается в шейдер, не в копию.

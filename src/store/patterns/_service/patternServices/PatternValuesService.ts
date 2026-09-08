@@ -1,7 +1,8 @@
-import {createMaskedImageFromImageData, imageDataToCanvas} from "../../../../utils/canvas/helpers/imageData";
 import {PatternService} from "../PatternService";
 import {performanceSettings} from "../../../../config/performanceSettings";
 import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
+import {HelperCanvas} from "../../../../utils/canvas/helpers/base";
+import {compositeMasked, ensureCanvas} from "../../../../utils/canvas/helpers/composite";
 
 export class PatternValuesService {
     patternService: PatternService;
@@ -9,6 +10,8 @@ export class PatternValuesService {
     masked?: HTMLCanvasElement;
     selected?: HTMLCanvasElement;
 
+    private maskedBuffer?: HelperCanvas;
+    private selectedBuffer?: HelperCanvas;
     private lastMaskedUpdateTime = 0;
     private lastSelectedUpdateTime = 0;
 
@@ -51,8 +54,8 @@ export class PatternValuesService {
     };
 
     updateSelectedIfNeeded = (force = false): PatternService => {
-        if (!this.patternService.selectionService.mask) {
-            this.selected = null;
+        if (!this.patternService.selectionService.maskCanvas) {
+            this.selected = undefined;
             return this.patternService;
         }
 
@@ -67,9 +70,7 @@ export class PatternValuesService {
     };
 
     updateForVideoFrame = (): PatternService => {
-        this.updateMaskedIfNeeded();
-
-        if (this.patternService.selectionService.mask) {
+        if (this.patternService.selectionService.maskCanvas) {
             this.updateSelectedIfNeeded();
         }
 
@@ -78,15 +79,32 @@ export class PatternValuesService {
 
     updateMasked = (): PatternService => {
         profileLogger.time('values.updateMasked', () => {
-            if (this.patternService.maskService.isMaskEnabled) {
-                this.masked = createMaskedImageFromImageData(
-                    this.patternService.canvasService.getImageData(),
-                    this.patternService.maskService.getImageData(),
-                    this.patternService.maskService.isMaskInverted
-                );
-            } else {
-                this.masked = imageDataToCanvas(this.patternService.canvasService.getImageData());
+            const source = this.patternService.canvasService.canvas;
+
+            if (!source) {
+                return;
             }
+
+            if (!this.patternService.maskService.isMaskEnabled) {
+                this.masked = source;
+                return;
+            }
+
+            const mask = this.patternService.maskService.canvas;
+
+            if (!mask) {
+                this.masked = source;
+                return;
+            }
+
+            this.maskedBuffer = ensureCanvas(this.maskedBuffer, source.width, source.height);
+            compositeMasked(
+                this.maskedBuffer,
+                source,
+                mask,
+                this.patternService.maskService.isMaskInverted,
+            );
+            this.masked = this.maskedBuffer.canvas;
         });
 
         return this.patternService;
@@ -94,19 +112,24 @@ export class PatternValuesService {
 
     updateSelected = (): PatternService => {
         profileLogger.time('values.updateSelected', () => {
-            this.selected = this.patternService.selectionService.mask
-                ? createMaskedImageFromImageData(
-                    this.patternService.canvasService.getImageData(),
-                    this.patternService.selectionService.mask
-                )
-                : null;
+            const source = this.patternService.canvasService.canvas;
+            const mask = this.patternService.selectionService.maskCanvas;
+
+            if (!source || !mask) {
+                this.selected = undefined;
+                return;
+            }
+
+            this.selectedBuffer = ensureCanvas(this.selectedBuffer, source.width, source.height);
+            compositeMasked(this.selectedBuffer, source, mask);
+            this.selected = this.selectedBuffer.canvas;
         });
 
         return this.patternService;
     };
 
     clearSelected = () => {
-        this.selected = null;
+        this.selected = undefined;
     };
 
     private isThrottleDue = (lastTime: number): boolean => {

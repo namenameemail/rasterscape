@@ -78,8 +78,8 @@
 ### Ушло в следующие задачи
 
 - [`04-tools.md`](../04-tools.md): общий `GlContext`, буфер = GL-текстура, шейдер пишет в FBO, source/DEPTH = `sampler2D` без `texSubImage` с 2D, блюр-шейдер в том же контексте.
-- [`03-masked-preview.md`](../03-masked-preview.md): `values.updateMasked` ~45 ms на кадре видео — следующий съём в процессор, GL-буфер для этого не нужен.
+- [`03-masked-preview.md`](03-masked-preview.md) — закрыт: `updateMasked` 45 ms → 0.1 ms.
 
 ### Следующая задача
 
-[`03-masked-preview.md`](../03-masked-preview.md).
+[`04-tools.md`](../04-tools.md).
