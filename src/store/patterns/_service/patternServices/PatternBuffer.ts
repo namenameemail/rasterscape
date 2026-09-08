@@ -1,6 +1,7 @@
 import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
 import {blurCanvasInPlace} from "../../../../utils/canvas/helpers/blur";
 import {getGlContext} from "../../../../gl/GlContext";
+import {StampDrawParams} from "../../../../gl/stampMat";
 
 export class PatternBuffer {
     readonly canvas: HTMLCanvasElement;
@@ -32,6 +33,10 @@ export class PatternBuffer {
 
     get textureFromCanvas(): boolean {
         return this.gpuFromCanvas;
+    }
+
+    get isGpuAhead(): boolean {
+        return this.gpuInSync && !this.cpuInSync && !!this.texture;
     }
 
     markCpuChanged = (): void => {
@@ -142,6 +147,29 @@ export class PatternBuffer {
             this.canvas.height,
             this.gpuFromCanvas,
         );
+        this.gpuInSync = true;
+        this.cpuInSync = false;
+        this.gpuFromCanvas = false;
+    };
+
+    stampGpu = (
+        source: WebGLTexture,
+        sourceFlipY: boolean,
+        stamps: StampDrawParams[],
+        opacity: number,
+    ): void => {
+        const dest = this.ensureGpu();
+        profileLogger.time('canvas.stampGpu', () => {
+            getGlContext().stampTextures(
+                dest,
+                this.canvas.width,
+                this.canvas.height,
+                source,
+                sourceFlipY,
+                stamps,
+                opacity,
+            );
+        });
         this.gpuInSync = true;
         this.cpuInSync = false;
         this.gpuFromCanvas = false;

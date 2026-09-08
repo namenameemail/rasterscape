@@ -1,4 +1,3 @@
-import * as React from "react";
 import {drawMasked, drawWithRotationAndOffset} from "../../../../../../utils/canvas/helpers/draw";
 import {ECompositeOperation} from "../../../../../../store/compositeOperations";
 import {getRandomColor} from "../../../../../../utils/utils";
@@ -7,9 +6,11 @@ import {CanvasServiceEvent, ToolHandlers, ToolService} from "../types";
 import {patternsService} from "../../../../../../store";
 import {PatternService} from "../../../PatternService";
 import {EBrushType} from "../../../../../brush/types";
+import {StampDrawParams} from "../../../../../../gl/stampMat";
 
 export class BrushPattern implements ToolService {
     patternService: PatternService;
+    drewGpu = false;
 
     helperCanvas1: HelperCanvas;
     helperCanvas2: HelperCanvas;
@@ -28,53 +29,6 @@ export class BrushPattern implements ToolService {
         this.handlers = {
             onDraw: this.patternBrush,
             onClick: this.patternBrush,
-            // cursors: ({x, y, outer}) => {
-            //
-            //     const brushPattern = toolPattern;
-            //     const pattern = destinationPattern;
-            //     const {size: patternSize} = toolParams as BrushPatternParams;
-            //
-            //     const patternRotation = (
-            //         pattern?.config.rotation &&
-            //         pattern?.rotation?.value.rotateDrawAreaElement
-            //     ) ? pattern?.rotation?.value : null;
-            //
-            //     const brushRotation = brushPattern?.config.rotation ? brushPattern?.rotation?.value : null;
-            //     // const brushPatternImage = patternsService.pattern[brushPattern?.id]?.current;
-            //
-            //     const width = patternSize * (brushPattern?.width);
-            //     const height = patternSize * (brushPattern?.height);
-            //     const xd = patternSize * (brushRotation?.offset?.xd || 0);
-            //     const yd = patternSize * (brushRotation?.offset?.yd || 0);
-            //     const xc = patternSize * (brushRotation?.offset?.xc || 0);
-            //     const yc = patternSize * (brushRotation?.offset?.yc || 0);
-            //     const patternAngle = patternRotation?.angle || 0;
-            //     const brushAngle = brushRotation?.angle || 0;
-            //
-            //     return (
-            //         <>
-            //             {Cursors.rect(x, y, width, height, {
-            //                 transform: `
-            //                 rotate(
-            //                     ${-patternAngle}
-            //                     ${x}
-            //                     ${y}
-            //                 )
-            //                 translate(
-            //                     ${xd},
-            //                     ${-yd}
-            //                 )
-            //                 rotate(
-            //                     ${brushAngle}
-            //                     ${x + xc}
-            //                     ${y - yc}
-            //                 )
-            //             `
-            //             })}
-            //             {Cursors.cross(x, y, 20)}
-            //         </>
-            //     );
-            // }
         };
     }
 
@@ -86,13 +40,12 @@ export class BrushPattern implements ToolService {
     };
 
     patternBrush = (brushEvent: CanvasServiceEvent) => {
-
-        const {context, events} = brushEvent;
+        this.drewGpu = false;
+        const {context, events, gpuAhead} = brushEvent;
 
         if (!events[0]) return;
 
         const state = this.patternService.storeService.getState();
-
         const targetPattern = state.patterns[this.patternService.patternId];
         const {
             size: patternSize,
@@ -102,14 +55,10 @@ export class BrushPattern implements ToolService {
         } = state.brush.params.paramsByType[EBrushType.Pattern];
         const toolPattern = state.patterns[toolPatternId];
         const coordinates = state.position.coordinates;
-
-
-
-
-        context.fillStyle = getRandomColor();
-        context.globalAlpha = opacity;
-        context.globalCompositeOperation = compositeOperation;
-        context.imageSmoothingEnabled = true;
+        const selectionMask = this.patternService.selectionService.mask;
+        const useGpu = !!gpuAhead
+            && compositeOperation === ECompositeOperation.SourceOver
+            && !selectionMask;
 
         const brushRotation = toolPattern?.config?.rotation ? toolPattern?.rotation?.value : null;
         const destinationRotation = (
@@ -117,21 +66,60 @@ export class BrushPattern implements ToolService {
             targetPattern?.rotation?.value?.rotateDrawAreaElement
         ) ? targetPattern?.rotation?.value : null;
 
-        const brushPatternImage = patternsService.pattern[toolPatternId]?.valuesService.masked;
+        if (useGpu) {
+            const masked = patternsService.pattern[toolPatternId]?.valuesService.ensureMaskedGpu();
+            const dest = this.patternService.canvasService.buffer;
+            if (!masked || !dest) return;
 
+            const sourceService = patternsService.pattern[toolPatternId];
+            const stamps: StampDrawParams[] = [];
+            const width = patternSize * masked.width;
+            const height = patternSize * masked.height;
+
+            coordinates[0]?.forEach(({x, y}) => {
+                const destAngle = destinationRotation ? destinationRotation.angle : 0;
+                const brushAngle = brushRotation ? brushRotation.angle : 0;
+                stamps.push({
+                    x, y,
+                    angleB: brushAngle,
+                    angleD: destAngle,
+                    xc: brushRotation ? patternSize * brushRotation.offset.xc : 0,
+                    yc: brushRotation ? -patternSize * brushRotation.offset.yc : 0,
+                    xd: brushRotation ? patternSize * brushRotation.offset.xd : 0,
+                    yd: brushRotation ? -patternSize * brushRotation.offset.yd : 0,
+                    width,
+                    height,
+                });
+            });
+
+            dest.stampGpu(
+                masked.texture,
+                sourceService.canvasService.buffer?.textureFromCanvas ?? true,
+                stamps,
+                opacity,
+            );
+            this.drewGpu = true;
+            return;
+        }
+
+        if (gpuAhead) {
+            this.patternService.canvasService.buffer?.ensureCpu();
+            patternsService.pattern[toolPatternId]?.valuesService.updateMaskedIfNeeded(true);
+        }
+
+        const brushPatternImage = patternsService.pattern[toolPatternId]?.valuesService.masked;
         if (!brushPatternImage) return;
 
-        const selectionMask = this.patternService.selectionService.mask;
+        context.fillStyle = getRandomColor();
+        context.globalAlpha = opacity;
+        context.globalCompositeOperation = compositeOperation;
+        context.imageSmoothingEnabled = true;
 
-        // 1 patternSize - divide two
         const width = patternSize * brushPatternImage.width;
         const height = patternSize * brushPatternImage.height;
 
         coordinates[0].forEach(({x, y}) => {
-
-            //
             const destAngle = destinationRotation ? destinationRotation.angle : 0;
-
             const brushAngle = brushRotation ? brushRotation.angle : 0;
             const brushCenter = brushRotation ? {
                 x: patternSize * brushRotation.offset.xc,
@@ -141,7 +129,6 @@ export class BrushPattern implements ToolService {
                 x: patternSize * brushRotation.offset.xd,
                 y: patternSize * brushRotation.offset.yd
             } : {x: 0, y: 0};
-
 
             drawWithRotationAndOffset(
                 brushAngle,
@@ -153,23 +140,17 @@ export class BrushPattern implements ToolService {
                     context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height);
                 }
             )(this.helperCanvas1);
-
-
         });
 
         const resultCanvas: HelperCanvas = selectionMask
             ? drawMasked(
                 selectionMask,
                 ({context}) => {
-
                     context.drawImage(this.helperCanvas1.canvas, 0, 0);
                     this.helperCanvas1.clear();
                 }
-            )(
-                this.helperCanvas2
-            )
+            )(this.helperCanvas2)
             : this.helperCanvas1;
-
 
         context.globalCompositeOperation = compositeOperation;
         context.globalAlpha = opacity;

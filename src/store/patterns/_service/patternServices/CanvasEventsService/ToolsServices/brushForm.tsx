@@ -44,9 +44,13 @@ export class BrushShape implements ToolService {
     };
 
     circleBrush = (brushEvent: CanvasServiceEvent) => {
-        const {context, events} = brushEvent;
+        const {context, events, gpuAhead} = brushEvent;
 
         if (!events[0]) return;
+
+        if (gpuAhead) {
+            this.patternService.canvasService.buffer?.ensureCpu();
+        }
 
         const state = this.patternService.storeService.getState();
 

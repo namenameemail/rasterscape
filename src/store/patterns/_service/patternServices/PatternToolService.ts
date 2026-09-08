@@ -62,31 +62,57 @@ export class PatternToolService {
         }
     }
 
+    private presentToolResult = () => {
+        const buffer = this.patternService.canvasService.buffer;
+
+        if (this.canvasToolService?.drewGpu) {
+            buffer?.presentGl();
+            this.canvasToolService.drewGpu = false;
+            return;
+        }
+
+        if (buffer?.isGpuAhead) {
+            buffer.presentGl();
+            return;
+        }
+
+        this.patternService.canvasService.presentFromCpu();
+    };
+
     canvasEventHandlers: CanvasEventHandlers = {
         onClick: (...args) => {
+            const gpuAhead = !!this.patternService.canvasService.buffer?.isGpuAhead;
+            if (!gpuAhead) {
+                this.syncActiveToolSourceValues();
+            }
             this.canvasToolService?.handlers.onClick?.(...args);
-            this.patternService.canvasService.presentFromCpu();
+            this.presentToolResult();
         },
         onDown: (...args) => {
             this.canvasToolService?.handlers.onDown?.(...args);
-            this.patternService.canvasService.presentFromCpu();
+            this.presentToolResult();
         },
         onDraw: (...args) => {
-            this.syncActiveToolSourceValues();
+            const gpuAhead = !!this.patternService.canvasService.buffer?.isGpuAhead;
+            if (!gpuAhead) {
+                this.syncActiveToolSourceValues();
+            }
             profileLogger.time('draw.tool', () => {
                 this.canvasToolService?.handlers.onDraw?.(...args);
             });
-            this.patternService.canvasService.presentFromCpu();
+            this.presentToolResult();
             if (this.patternService.platformerService.isPlaying) {
                 this.patternService.platformerService.markWorldDirty('tool.onDraw');
             }
-            profileLogger.time('draw.valuesMasked', () => {
-                this.patternService.valuesService.updateMaskedIfNeeded();
-            });
+            if (!this.patternService.canvasService.buffer?.isGpuAhead) {
+                profileLogger.time('draw.valuesMasked', () => {
+                    this.patternService.valuesService.updateMaskedIfNeeded();
+                });
+            }
         },
         onRelease: (...args) => {
             this.canvasToolService?.handlers.onRelease?.(...args);
-            this.patternService.canvasService.presentFromCpu();
+            this.presentToolResult();
             if (this.patternService.platformerService.isPlaying) {
                 this.patternService.platformerService.markWorldDirty('tool.onRelease');
             }

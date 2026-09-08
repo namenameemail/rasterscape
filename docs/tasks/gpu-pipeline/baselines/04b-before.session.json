@@ -1,0 +1,115 @@
+{
+  "label": "session",
+  "startedAt": "2026-09-08T22:29:15.319Z",
+  "stoppedAt": "2026-09-08T22:29:25.113Z",
+  "summary": {
+    "spans": {
+      "video.pushNewFrame": {
+        "count": 526,
+        "avgMs": 0.07528517128963443,
+        "maxMs": 0.3999999910593033,
+        "minMs": 0
+      },
+      "video.updateFuncParams": {
+        "count": 526,
+        "avgMs": 0.0019011406844106457,
+        "maxMs": 0.10000000894069672,
+        "minMs": 0
+      },
+      "video.updateOffsets": {
+        "count": 526,
+        "avgMs": 0.032509505748748745,
+        "maxMs": 0.20000000298023224,
+        "minMs": 0
+      },
+      "video.shaderDraw": {
+        "count": 526,
+        "avgMs": 0.019011406787448063,
+        "maxMs": 0.29999999701976776,
+        "minMs": 0
+      },
+      "video.composite": {
+        "count": 526,
+        "avgMs": 0.04486691997078437,
+        "maxMs": 0.3999999910593033,
+        "minMs": 0
+      },
+      "canvas.present": {
+        "count": 929,
+        "avgMs": 0.0966630783353094,
+        "maxMs": 0.7000000029802322,
+        "minMs": 0
+      },
+      "video.valuesService": {
+        "count": 526,
+        "avgMs": 0.0022813687703002097,
+        "maxMs": 0.10000000894069672,
+        "minMs": 0
+      },
+      "canvas.downloadGpu": {
+        "count": 401,
+        "avgMs": 0.3012468831571854,
+        "maxMs": 9.200000002980232,
+        "minMs": 0
+      },
+      "canvas.uploadGpu": {
+        "count": 403,
+        "avgMs": 0.1052109179810318,
+        "maxMs": 6.4000000059604645,
+        "minMs": 0
+      },
+      "draw.resolveEvent": {
+        "count": 399,
+        "avgMs": 0.5152882207231713,
+        "maxMs": 1.300000011920929,
+        "minMs": 0
+      },
+      "values.updateMasked": {
+        "count": 72,
+        "avgMs": 0.06388888901306522,
+        "maxMs": 0.29999999701976776,
+        "minMs": 0
+      },
+      "draw.tool": {
+        "count": 399,
+        "avgMs": 0.22982456100016926,
+        "maxMs": 1,
+        "minMs": 0
+      },
+      "draw.valuesMasked": {
+        "count": 399,
+        "avgMs": 0.0022556390753366,
+        "maxMs": 0.10000000894069672,
+        "minMs": 0
+      },
+      "draw.onDraw": {
+        "count": 399,
+        "avgMs": 0.6649122806569386,
+        "maxMs": 9.799999997019768,
+        "minMs": 0.29999999701976776
+      },
+      "draw.pushFrameRelatedEvent": {
+        "count": 399,
+        "avgMs": 1.073684210727985,
+        "maxMs": 4.399999991059303,
+        "minMs": 0.5
+      },
+      "values.updateSelected": {
+        "count": 4,
+        "avgMs": 0,
+        "maxMs": 0,
+        "minMs": 0
+      }
+    },
+    "values": {
+      "frame.interval": {
+        "count": 526,
+        "avg": 18.612927756653832,
+        "max": 266.60000000009313,
+        "min": 10.399999999906868
+      }
+    },
+    "logCount": 0,
+    "entryCount": 7486
+  }
+}

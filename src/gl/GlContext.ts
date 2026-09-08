@@ -1,3 +1,5 @@
+import {stampCanvasMat, type StampDrawParams} from './stampMat'
+
 const compile = (gl: WebGL2RenderingContext, type: number, source: string): WebGLShader => {
     const shader = gl.createShader(type)
     if (!shader) {
@@ -80,11 +82,49 @@ void main() {
     o = vec4(c.rgb, c.a * a);
 }`
 
+const STAMP_VS = `#version 300 es
+in vec2 a_corner;
+uniform vec2 u_destSize;
+uniform vec2 u_stampSize;
+uniform mat3 u_mat;
+out vec2 v_uv;
+void main() {
+    vec2 local = a_corner * u_stampSize;
+    vec3 p = u_mat * vec3(local, 1.0);
+    gl_Position = vec4(
+        p.x / u_destSize.x * 2.0 - 1.0,
+        1.0 - p.y / u_destSize.y * 2.0,
+        0.0,
+        1.0
+    );
+    v_uv = a_corner + 0.5;
+}`
+
+const STAMP_FS = `#version 300 es
+precision highp float;
+uniform sampler2D u_tex;
+uniform float u_opacity;
+uniform float u_flipY;
+in vec2 v_uv;
+out vec4 o;
+void main() {
+    vec2 uv = vec2(v_uv.x, u_flipY > 0.5 ? 1.0 - v_uv.y : v_uv.y);
+    vec4 c = texture(u_tex, uv);
+    o = vec4(c.rgb, c.a * u_opacity);
+}`
+
 const QUAD = new Float32Array([
     -1, 1, 0, 1,
     -1, -1, 0, 0,
     1, 1, 1, 1,
     1, -1, 1, 0,
+])
+
+const STAMP_CORNERS = new Float32Array([
+    -0.5, -0.5,
+    -0.5, 0.5,
+    0.5, -0.5,
+    0.5, 0.5,
 ])
 
 export class GlContext {
@@ -94,7 +134,9 @@ export class GlContext {
     private blitProgram: WebGLProgram
     private blurProgram: WebGLProgram
     private maskProgram: WebGLProgram
+    private stampProgram: WebGLProgram
     private blitBuffer: WebGLBuffer
+    private stampBuffer: WebGLBuffer
     private copyFbo: WebGLFramebuffer
     private scratch: WebGLTexture | null = null
     private scratchW = 0
@@ -122,16 +164,21 @@ export class GlContext {
         this.blitProgram = linkProgram(gl, BLIT_VS, BLIT_FS)
         this.blurProgram = linkProgram(gl, BLIT_VS, BLUR_FS)
         this.maskProgram = linkProgram(gl, BLIT_VS, MASK_FS)
+        this.stampProgram = linkProgram(gl, STAMP_VS, STAMP_FS)
         gl.useProgram(this.blitProgram)
         const blitBuffer = gl.createBuffer()
+        const stampBuffer = gl.createBuffer()
         const copyFbo = gl.createFramebuffer()
-        if (!blitBuffer || !copyFbo) {
+        if (!blitBuffer || !stampBuffer || !copyFbo) {
             throw new Error('gl alloc')
         }
         this.blitBuffer = blitBuffer
+        this.stampBuffer = stampBuffer
         this.copyFbo = copyFbo
         gl.bindBuffer(gl.ARRAY_BUFFER, blitBuffer)
         gl.bufferData(gl.ARRAY_BUFFER, QUAD, gl.STATIC_DRAW)
+        gl.bindBuffer(gl.ARRAY_BUFFER, stampBuffer)
+        gl.bufferData(gl.ARRAY_BUFFER, STAMP_CORNERS, gl.STATIC_DRAW)
     }
 
     setSize = (width: number, height: number): void => {
@@ -287,6 +334,49 @@ export class GlContext {
         gl.disable(gl.BLEND)
 
         this.copyFramebufferToTexture(dest, width, height)
+    }
+
+    stampTextures = (
+        dest: WebGLTexture,
+        destW: number,
+        destH: number,
+        source: WebGLTexture,
+        sourceFlipY: boolean,
+        stamps: StampDrawParams[],
+        opacity: number,
+    ): void => {
+        if (!stamps.length) {
+            return
+        }
+
+        const {gl} = this
+        this.bindTexture2DTarget(dest, destW, destH)
+        gl.enable(gl.BLEND)
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+        gl.useProgram(this.stampProgram)
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, source)
+        gl.uniform1i(gl.getUniformLocation(this.stampProgram, 'u_tex'), 0)
+        gl.uniform2f(gl.getUniformLocation(this.stampProgram, 'u_destSize'), destW, destH)
+        gl.uniform1f(gl.getUniformLocation(this.stampProgram, 'u_opacity'), opacity)
+        gl.uniform1f(gl.getUniformLocation(this.stampProgram, 'u_flipY'), sourceFlipY ? 1 : 0)
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.stampBuffer)
+        const aCorner = gl.getAttribLocation(this.stampProgram, 'a_corner')
+        gl.vertexAttribPointer(aCorner, 2, gl.FLOAT, false, 0, 0)
+        gl.enableVertexAttribArray(aCorner)
+
+        const uMat = gl.getUniformLocation(this.stampProgram, 'u_mat')
+        const uStampSize = gl.getUniformLocation(this.stampProgram, 'u_stampSize')
+
+        for (const stamp of stamps) {
+            gl.uniform2f(uStampSize, stamp.width, stamp.height)
+            gl.uniformMatrix3fv(uMat, false, stampCanvasMat(stamp))
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+        }
+
+        gl.disable(gl.BLEND)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
     }
 
     blurTexture = (texture: WebGLTexture, width: number, height: number, radius: number): void => {

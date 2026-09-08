@@ -89,7 +89,7 @@ export class LineSolidPattern implements ToolService {
     };
 
     lineDraw = (brushEvent: CanvasServiceEvent) => {
-        const {context, events} = brushEvent;
+        const {context, events, gpuAhead} = brushEvent;
 
         if (!events[0]) return;
 
@@ -103,8 +103,10 @@ export class LineSolidPattern implements ToolService {
 
         const toolPattern = state.patterns[patternId];
 
-        // const selectionMask = pattern.selection && pattern.selection.value.mask;
-
+        if (gpuAhead) {
+            this.patternService.canvasService.buffer?.ensureCpu();
+            patternsService.pattern[patternId]?.valuesService.updateMaskedIfNeeded(true);
+        }
 
         const linePatternImage = patternsService.pattern[patternId]?.valuesService.masked;
 

@@ -159,12 +159,17 @@ export class CanvasEventsService {
             }
         }
 
-        this.buffer?.ensureCpu()
+        const gpuAhead = !!this.buffer?.isGpuAhead
+
+        if (!gpuAhead) {
+            this.buffer?.ensureCpu()
+        }
 
         return {
             events: this.frameRelatedEvents,
-            context: this.buffer?.context,
-            canvas: this.buffer?.canvas,
+            context: this.buffer?.context as CanvasRenderingContext2D,
+            canvas: this.buffer?.canvas as HTMLCanvasElement,
+            gpuAhead,
         }
     }
 
