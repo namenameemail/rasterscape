@@ -9,6 +9,13 @@ import {
     TextHelper,
 } from '../canvasPosition.servise'
 import { profileLogger, ProfileSummary } from '../../../utils/profiling/ProfileLogger'
+import {
+    getProfileSet,
+    setProfileSet,
+    PROFILE_SET_IDS,
+    PROFILE_SET_LABELS,
+    type ProfileSetId,
+} from '../../../utils/profiling/profileSets'
 import './debugOverlay.scss'
 
 const frameHelpers: { helper: TextHelper; label: string }[] = [
@@ -90,6 +97,7 @@ const formatSummary = (summary: ProfileSummary | null): string => {
 
 export const DebugOverlay: React.FC = () => {
     const [isRecording, setIsRecording] = React.useState(profileLogger.isRecording)
+    const [profileSet, setProfileSetState] = React.useState<ProfileSetId>(() => getProfileSet())
     const [status, setStatus] = React.useState('idle')
     const [summaryText, setSummaryText] = React.useState('')
     const [isCollapsed, setIsCollapsed] = React.useState(() => readStoredPreferences().isCollapsed)
@@ -113,7 +121,14 @@ export const DebugOverlay: React.FC = () => {
 
     React.useEffect(() => profileLogger.subscribe(() => {
         setIsRecording(profileLogger.isRecording)
+        setProfileSetState(profileLogger.getActiveSet())
     }), [])
+
+    const handleSetChange = (next: ProfileSetId) => {
+        setProfileSet(next)
+        profileLogger.setActiveSet(next)
+        setProfileSetState(next)
+    }
 
     const handleStart = () => {
         profileLogger.startRecording()
@@ -196,6 +211,20 @@ export const DebugOverlay: React.FC = () => {
                 ))}
 
                 <div className="debug-overlay__controls">
+                    {PROFILE_SET_IDS.map(id => (
+                        <button
+                            key={id}
+                            type="button"
+                            className={`debug-overlay__button${profileSet === id ? ' debug-overlay__button--active' : ''}`}
+                            onClick={() => handleSetChange(id)}
+                            title={`Profile set: ${PROFILE_SET_LABELS[id]}`}
+                        >
+                            {PROFILE_SET_LABELS[id]}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="debug-overlay__controls">
                     <button
                         type="button"
                         className={`debug-overlay__button${isRecording ? ' debug-overlay__button--active' : ''}`}
@@ -223,7 +252,7 @@ export const DebugOverlay: React.FC = () => {
                 </div>
 
                 <div className="debug-overlay__status">
-                    {isRecording ? '● recording' : `○ ${status}`}
+                    {isRecording ? `● recording (${PROFILE_SET_LABELS[profileSet]})` : `○ ${status}`}
                     {summaryText ? `\n${summaryText}` : ''}
                 </div>
             </div>

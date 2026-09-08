@@ -16,7 +16,7 @@ import {
     createExportFile,
     parseProjectExportFile,
 } from '../../storage/projectSerializer';
-import {serializeProjectToBuffer} from '../../storage/projectSerializeClient';
+import {serializeProjectToBuffer, terminateProjectSerializeWorker} from '../../storage/projectSerializeClient';
 import {PROJECT_FILE_EXTENSION, ProjectMeta, resolveUniqueProjectName, stripProjectFileExtension} from '../../storage/projectTypes';
 import {EProjectsAction} from './consts';
 import {hydrateEditor} from './hydrateEditor';
@@ -31,7 +31,33 @@ import {
 } from '../../storage/projectAutosave';
 import {profileAutosave, profileAutosaveAsync} from '../../utils/projectProfile';
 
+const IN_FLIGHT_WAIT_MS = 45000;
+
 let saveInFlight: Promise<void> | null = null;
+let saveEpoch = 0;
+
+const waitWithTimeout = (promise: Promise<void>, ms: number): Promise<void> =>
+    new Promise((resolve, reject) => {
+        const timer = window.setTimeout(() => reject(new Error(`in-flight save timeout ${ms}ms`)), ms);
+        promise.then(
+            () => {
+                window.clearTimeout(timer);
+                resolve();
+            },
+            (error) => {
+                window.clearTimeout(timer);
+                reject(error);
+            },
+        );
+    });
+
+const abandonInFlightSave = (dispatch) => {
+    saveEpoch += 1;
+    terminateProjectSerializeWorker();
+    saveInFlight = null;
+    dispatch({type: EProjectsAction.SET_SAVING, saving: false});
+    profileAutosave('abandoned in-flight save');
+};
 
 const yieldToUi = () => new Promise<void>(resolve => {
     requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
@@ -85,7 +111,18 @@ export const setProjectsPanelOpen = (open: boolean) => ({
 export const saveCurrentProject = () => async (dispatch, getState: () => AppState) => {
     if (saveInFlight) {
         profileAutosave('waiting for in-flight save');
-        await saveInFlight;
+        try {
+            await waitWithTimeout(saveInFlight, IN_FLIGHT_WAIT_MS);
+        } catch (error) {
+            profileAutosave('in-flight save wait failed', {
+                error: error instanceof Error ? error.message : String(error),
+            });
+            abandonInFlightSave(dispatch);
+        }
+    }
+
+    if (saveInFlight) {
+        return saveInFlight;
     }
 
     const {currentProjectId, list, isDirty} = getState().projects;
@@ -103,6 +140,7 @@ export const saveCurrentProject = () => async (dispatch, getState: () => AppStat
     const meta = list.find(item => item.id === currentProjectId);
     const name = meta?.name || 'Project';
     const dirtyGenerationAtStart = getDirtyGeneration();
+    const epoch = ++saveEpoch;
 
     profileAutosave('start', {currentProjectId, name, dirtyGenerationAtStart});
     dispatch({type: EProjectsAction.SET_SAVING, saving: true});
@@ -119,6 +157,11 @@ export const saveCurrentProject = () => async (dispatch, getState: () => AppStat
                 currentProjectId,
                 sizeBytes: buffer.byteLength,
             });
+
+            if (epoch !== saveEpoch) {
+                profileAutosave('success ignored', {reason: 'epoch stale', currentProjectId});
+                return;
+            }
 
             const nextList = getState().projects.list.map(item =>
                 item.id === updated.id ? updated : item
@@ -150,6 +193,10 @@ export const saveCurrentProject = () => async (dispatch, getState: () => AppStat
                 dirtyGenerationAtStart,
             });
         } catch (error) {
+            if (epoch !== saveEpoch) {
+                return;
+            }
+
             profileAutosave('failed', {
                 currentProjectId,
                 error: error instanceof Error ? error.message : String(error),
@@ -158,8 +205,10 @@ export const saveCurrentProject = () => async (dispatch, getState: () => AppStat
             scheduleAutosaveRetry(dispatch);
             throw error;
         } finally {
-            dispatch({type: EProjectsAction.SET_SAVING, saving: false});
-            saveInFlight = null;
+            if (epoch === saveEpoch) {
+                dispatch({type: EProjectsAction.SET_SAVING, saving: false});
+                saveInFlight = null;
+            }
         }
     })();
 

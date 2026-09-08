@@ -2,6 +2,7 @@ import {AppState, patternsService} from '../store';
 import {PatternHistoryItem} from '../store/patterns/history/types';
 import {PatternState} from '../store/patterns/pattern/types';
 import {cloneImageBuffer} from '../utils/imageDataBinary';
+import {profileLogger} from '../utils/profiling/ProfileLogger';
 import {
     ProjectSerializeError,
     ProjectSerializeRequest,
@@ -10,12 +11,19 @@ import {
     RawImagePayload,
 } from './projectSerializeTypes';
 
+const SERIALIZE_WORKER_TIMEOUT_MS = 45000;
+
 let worker: Worker | null = null;
 let requestCounter = 0;
 const pending = new Map<number, {
     resolve(buffer: ArrayBuffer): void
     reject(error: Error): void
 }>();
+
+function rejectAllPending(error: Error): void {
+    pending.forEach(({reject}) => reject(error));
+    pending.clear();
+}
 
 function getWorker(): Worker {
     if (!worker) {
@@ -40,8 +48,10 @@ function getWorker(): Worker {
         };
 
         worker.onerror = (error) => {
-            pending.forEach(({reject}) => reject(new Error(error.message || 'Project serialize worker failed')));
-            pending.clear();
+            const dead = worker;
+            worker = null;
+            rejectAllPending(new Error(error.message || 'Project serialize worker failed'));
+            dead?.terminate();
         };
     }
 
@@ -169,24 +179,54 @@ function collectTransferables(request: ProjectSerializeRequest): Transferable[] 
 }
 
 export function serializeProjectToBuffer(state: AppState): Promise<ArrayBuffer> {
-    const request = buildProjectSerializeRequest(state);
-    const id = ++requestCounter;
-    request.id = id;
-
-    return new Promise((resolve, reject) => {
-        pending.set(id, {resolve, reject});
-
-        try {
-            getWorker().postMessage(request, collectTransferables(request));
-        } catch (error) {
-            pending.delete(id);
-            reject(error instanceof Error ? error : new Error(String(error)));
-        }
+    const request = profileLogger.time('projects.autosave.serialize.build', () => {
+        const built = buildProjectSerializeRequest(state);
+        const id = ++requestCounter;
+        built.id = id;
+        return built;
     });
+
+    return profileLogger.timeAsync('projects.autosave.serialize.worker', () =>
+        new Promise<ArrayBuffer>((resolve, reject) => {
+            let settled = false;
+
+            const finish = (ok: boolean, value?: ArrayBuffer, error?: Error) => {
+                if (settled) {
+                    return;
+                }
+
+                settled = true;
+                window.clearTimeout(timer);
+                pending.delete(request.id);
+
+                if (ok) {
+                    resolve(value as ArrayBuffer);
+                } else {
+                    reject(error ?? new Error('serialize worker failed'));
+                }
+            };
+
+            const timer = window.setTimeout(() => {
+                finish(false, undefined, new Error(`serialize worker timeout ${SERIALIZE_WORKER_TIMEOUT_MS}ms`));
+                terminateProjectSerializeWorker();
+            }, SERIALIZE_WORKER_TIMEOUT_MS);
+
+            pending.set(request.id, {
+                resolve: buffer => finish(true, buffer),
+                reject: error => finish(false, undefined, error),
+            });
+
+            try {
+                getWorker().postMessage(request, collectTransferables(request));
+            } catch (error) {
+                finish(false, undefined, error instanceof Error ? error : new Error(String(error)));
+            }
+        }),
+    );
 }
 
 export function terminateProjectSerializeWorker(): void {
+    rejectAllPending(new Error('Project serialize worker terminated'));
     worker?.terminate();
     worker = null;
-    pending.clear();
 }

@@ -10,12 +10,8 @@ export function isProfileDebugEnabled(): boolean {
     }
 }
 
-function canLog(): boolean {
-    return isProfileDebugEnabled() && profileLogger.isRecording;
-}
-
 export function profileDebug(scope: string, label: string, meta?: ProfileMeta): void {
-    if (!canLog()) {
+    if (!profileLogger.isRecording) {
         return;
     }
 

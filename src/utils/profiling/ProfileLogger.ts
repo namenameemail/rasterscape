@@ -1,3 +1,5 @@
+import {getProfileSet, matchesProfileSet, type ProfileSetId} from './profileSets'
+
 export type ProfileSpanEntry = {
     type: 'span'
     name: string
@@ -64,6 +66,7 @@ class ProfileLogger {
     private lastSummary: ProfileSummary | null = null
     private currentFrame = 0
     private listeners = new Set<ProfileLoggerListener>()
+    private activeSet: ProfileSetId = getProfileSet()
 
     subscribe = (listener: ProfileLoggerListener): (() => void) => {
         this.listeners.add(listener)
@@ -72,7 +75,15 @@ class ProfileLogger {
 
     getLastSummary = (): ProfileSummary | null => this.lastSummary
 
+    getActiveSet = (): ProfileSetId => this.activeSet
+
+    setActiveSet = (setId: ProfileSetId): void => {
+        this.activeSet = setId
+        this.notify()
+    }
+
     startRecording = (label?: string): void => {
+        this.activeSet = getProfileSet()
         this.entries = []
         this.startedAt = new Date().toISOString()
         this.stoppedAt = null
@@ -100,8 +111,10 @@ class ProfileLogger {
 
     getEntries = (): ProfileEntry[] => [...this.entries]
 
+    private allows = (name: string): boolean => matchesProfileSet(name, this.activeSet)
+
     time = <T>(name: string, fn: () => T): T => {
-        if (!this.isRecording) {
+        if (!this.isRecording || !this.allows(name)) {
             return fn()
         }
 
@@ -114,7 +127,7 @@ class ProfileLogger {
     }
 
     timeAsync = async <T>(name: string, fn: () => Promise<T>): Promise<T> => {
-        if (!this.isRecording) {
+        if (!this.isRecording || !this.allows(name)) {
             return fn()
         }
 
@@ -127,7 +140,7 @@ class ProfileLogger {
     }
 
     value = (name: string, value: number): void => {
-        if (!this.isRecording) {
+        if (!this.isRecording || !this.allows(name)) {
             return
         }
 
@@ -141,7 +154,7 @@ class ProfileLogger {
     }
 
     log = (message: string, data?: unknown): void => {
-        if (!this.isRecording) {
+        if (!this.isRecording || !this.allows(message)) {
             return
         }
 

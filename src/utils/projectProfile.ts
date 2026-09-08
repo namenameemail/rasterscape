@@ -4,11 +4,11 @@ import {profileLogger} from './profiling/ProfileLogger';
 type ProfileMeta = Record<string, unknown>;
 
 export function isProjectProfileEnabled(): boolean {
-    return isProfileDebugEnabled();
+    return isProfileDebugEnabled() || profileLogger.isRecording;
 }
 
 function ensureProjectProfiling(): boolean {
-    return isProfileDebugEnabled() && profileLogger.isRecording;
+    return profileLogger.isRecording;
 }
 
 function spanName(label: string): string {

@@ -15,6 +15,18 @@ Use `profileLogger` through helpers:
 
 Logs flush to `profiling/latest.json` in dev (Vite `/__profiling/save`). Read that file in the repo to analyze.
 
-Enable: start **Record** in debug overlay, or `localStorage.setItem('rs:profile', '1')` plus recording.
+## Profile sets
+
+Rec writes only the **active set** (`localStorage rs:profile:set`, default `save`). Switch in debug overlay: Frame / Save / All.
+
+| Set | What is written |
+|---|---|
+| `frame` | `video.`, `canvas.`, `draw.`, `values.`, `platformer.`, `frame.` |
+| `save` | `projects.` + `canvas.downloadGpu` |
+| `all` | everything |
+
+Call sites stay in code. Names are not renamed. Filter is at write time in `ProfileLogger`.
+
+Enable: **Rec** in debug overlay. Optional `localStorage.setItem('rs:profile', '1')` is not required for save spans when Rec is on.
 
 Do not use `console.log` / `console.info` for agent-facing debug output.

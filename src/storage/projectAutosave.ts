@@ -1,10 +1,16 @@
 import {Middleware} from 'redux';
 import {AppState} from '../store';
 import {saveCurrentProject, setProjectDirty} from '../store/projects/actions';
+import {EVideoAction} from '../store/patterns/video/consts';
 import {profileAutosave} from '../utils/projectProfile';
 
 const AUTOSAVE_DELAY_MS = 1500;
 const AUTOSAVE_RETRY_DELAY_MS = 3000;
+
+const ignoredExact = new Set([
+    'change',
+    'changing/start',
+]);
 
 const ignoredPrefixes = [
     'projects/',
@@ -36,7 +42,19 @@ export function resetDirtyGeneration(): void {
 }
 
 function shouldIgnoreAction(type: string): boolean {
+    if (ignoredExact.has(type)) {
+        return true;
+    }
+
     return ignoredPrefixes.some(prefix => type.startsWith(prefix));
+}
+
+function isAnyVideoUpdating(state: AppState | null | undefined): boolean {
+    if (!state?.patterns) {
+        return false;
+    }
+
+    return Object.values(state.patterns).some(pattern => pattern?.video?.params?.updatingOn);
 }
 
 function autosaveSnapshot(state: AppState | null | undefined) {
@@ -52,6 +70,7 @@ function autosaveSnapshot(state: AppState | null | undefined) {
         enabled: autosaveEnabled,
         debouncePending: debounceTimer !== null,
         retryPending: retryTimer !== null,
+        videoUpdating: isAnyVideoUpdating(state),
     };
 }
 
@@ -81,7 +100,14 @@ export function resumeProjectAutosave(): void {
 }
 
 function runAutosaveDispatch(dispatch, source: 'debounce' | 'retry') {
-    profileAutosave(`${source} fired`, autosaveSnapshot(readAppState?.()));
+    const state = readAppState?.();
+
+    if (isAnyVideoUpdating(state)) {
+        profileAutosave(`${source} deferred video`, autosaveSnapshot(state));
+        return;
+    }
+
+    profileAutosave(`${source} fired`, autosaveSnapshot(state));
 
     Promise.resolve(dispatch(saveCurrentProject()))
         .then(() => {
@@ -102,6 +128,12 @@ function scheduleAutosave(dispatch) {
             enabled: autosaveEnabled,
             paused: autosavePaused,
         });
+        return;
+    }
+
+    if (isAnyVideoUpdating(readAppState?.())) {
+        cancelScheduledProjectAutosave();
+        profileAutosave('debounce deferred video', autosaveSnapshot(readAppState?.()));
         return;
     }
 
@@ -128,6 +160,11 @@ export function scheduleAutosaveRetry(dispatch): void {
     const state = readAppState?.();
     if (!state?.projects.isDirty) {
         profileAutosave('retry skipped', {reason: 'clean'});
+        return;
+    }
+
+    if (isAnyVideoUpdating(state)) {
+        profileAutosave('retry deferred video', autosaveSnapshot(state));
         return;
     }
 
@@ -175,6 +212,16 @@ export const projectAutosaveMiddleware: Middleware = (store) => {
             });
         } else {
             profileAutosave('still dirty', {action: action.type, dirtyGeneration});
+        }
+
+        if (action.type === EVideoAction.START_UPDATING || isAnyVideoUpdating(state)) {
+            cancelScheduledProjectAutosave();
+            profileAutosave('deferred while video', {
+                action: action.type,
+                dirtyGeneration,
+                ...autosaveSnapshot(store.getState() as AppState),
+            });
+            return result;
         }
 
         scheduleAutosave(store.dispatch);
