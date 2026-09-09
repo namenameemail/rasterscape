@@ -11,8 +11,6 @@ import {BrushSelect} from "./CanvasEventsService/ToolsServices/brushSelect";
 import {LineSolidPattern} from "./CanvasEventsService/ToolsServices/lineSolidPattern";
 import {LineTrailingPattern} from "./CanvasEventsService/ToolsServices/lineTrailingPattern";
 import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
-import {patternsService} from "../../../index";
-import {getActiveToolSourcePatternIds} from "./valuesServiceHelpers";
 
 
 export const BrushServiceByType = {
@@ -54,14 +52,6 @@ export class PatternToolService {
         this.patternService.storeService.dispatchResetPosition();
     }
 
-    syncActiveToolSourceValues = () => {
-        const state = this.patternService.storeService.getState();
-
-        for (const patternId of getActiveToolSourcePatternIds(state)) {
-            patternsService.pattern[patternId]?.valuesService.updateMaskedIfNeeded();
-        }
-    }
-
     private presentToolResult = () => {
         const buffer = this.patternService.canvasService.buffer;
 
@@ -81,10 +71,6 @@ export class PatternToolService {
 
     canvasEventHandlers: CanvasEventHandlers = {
         onClick: (...args) => {
-            const gpuAhead = !!this.patternService.canvasService.buffer?.isGpuAhead;
-            if (!gpuAhead) {
-                this.syncActiveToolSourceValues();
-            }
             this.canvasToolService?.handlers.onClick?.(...args);
             this.presentToolResult();
         },
@@ -93,10 +79,6 @@ export class PatternToolService {
             this.presentToolResult();
         },
         onDraw: (...args) => {
-            const gpuAhead = !!this.patternService.canvasService.buffer?.isGpuAhead;
-            if (!gpuAhead) {
-                this.syncActiveToolSourceValues();
-            }
             profileLogger.time('draw.tool', () => {
                 this.canvasToolService?.handlers.onDraw?.(...args);
             });

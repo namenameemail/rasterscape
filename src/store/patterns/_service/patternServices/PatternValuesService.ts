@@ -113,6 +113,29 @@ export class PatternValuesService {
         return {texture, width: buffer.width, height: buffer.height};
     };
 
+    ensureSelectedGpu = (): { texture: WebGLTexture, width: number, height: number } | null => {
+        const buffer = this.patternService.canvasService.buffer;
+        const maskCanvas = this.patternService.selectionService.maskCanvas;
+
+        if (!buffer?.width || !buffer.height || !maskCanvas) {
+            return null;
+        }
+
+        const source = buffer.ensureGpu();
+        const glc = getGlContext();
+        const mask = glc.uploadCanvasSized(maskCanvas);
+        const texture = glc.compositeMasked(
+            source,
+            mask,
+            buffer.width,
+            buffer.height,
+            false,
+            !buffer.textureFromCanvas,
+        );
+
+        return {texture, width: buffer.width, height: buffer.height};
+    };
+
     updateMasked = (): PatternService => {
         profileLogger.time('values.updateMasked', () => {
             const source = this.patternService.canvasService.canvas;

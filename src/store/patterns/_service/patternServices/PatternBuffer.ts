@@ -175,6 +175,23 @@ export class PatternBuffer {
         this.gpuFromCanvas = false;
     };
 
+    compositeLayerGpu = (layer: HTMLCanvasElement, opacity = 1): void => {
+        const dest = this.ensureGpu();
+        profileLogger.time('canvas.compositeLayerGpu', () => {
+            getGlContext().compositeCanvasOver(
+                dest,
+                this.canvas.width,
+                this.canvas.height,
+                this.gpuFromCanvas,
+                layer,
+                opacity,
+            );
+        });
+        this.gpuInSync = true;
+        this.cpuInSync = false;
+        this.gpuFromCanvas = false;
+    };
+
     setMonitor = (monitor?: HTMLCanvasElement): void => {
         this.monitor = monitor;
         this.monitorContext = monitor?.getContext('2d') as CanvasRenderingContext2D;

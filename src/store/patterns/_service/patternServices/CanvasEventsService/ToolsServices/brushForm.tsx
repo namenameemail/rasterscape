@@ -1,16 +1,16 @@
 import {drawMasked, drawWithRotation} from "../../../../../../utils/canvas/helpers/draw";
-
-import {Cursors} from "./cursors";
+import {ECompositeOperation} from "../../../../../../store/compositeOperations";
 import {ToolService, ToolHandlers} from "../types";
 import {createCanvas, HelperCanvas} from "../../../../../../utils/canvas/helpers/base";
 import {CanvasServiceEvent} from "../types";
 import {PatternService} from "../../../PatternService";
-import {BrushShapeParams, EBrushType} from "../../../../../brush/types";
+import {EBrushType} from "../../../../../brush/types";
 import {getRandomColor} from "../../../../../../utils/utils";
 import {circle} from "../../../../../../utils/canvas/helpers/geometry";
 
 export class BrushShape implements ToolService {
     patternService: PatternService;
+    drewGpu = false;
 
     helperCanvas1: HelperCanvas;
     helperCanvas2: HelperCanvas;
@@ -27,12 +27,8 @@ export class BrushShape implements ToolService {
         this.helperCanvas2 = createCanvas(width, height);
 
         this.handlers = {
-            // onDown: this.circleBrush,
             onDraw: this.circleBrush,
             onClick: this.circleBrush,
-            // cursors: ({x, y}) => {
-            //     return Cursors.circle(x, y, (toolParams as BrushShapeParams).size)
-            // }
         };
     }
 
@@ -44,62 +40,60 @@ export class BrushShape implements ToolService {
     };
 
     circleBrush = (brushEvent: CanvasServiceEvent) => {
-        const {context, events, gpuAhead} = brushEvent;
+        this.drewGpu = false;
+        const {context, events} = brushEvent;
 
         if (!events[0]) return;
 
-        if (gpuAhead) {
-            this.patternService.canvasService.buffer?.ensureCpu();
-        }
-
         const state = this.patternService.storeService.getState();
-
         const pattern = state.patterns[this.patternService.patternId];
         const {size, opacity, compositeOperation} = state.brush.params.paramsByType[EBrushType.Shape];
         const coordinates = state.position.coordinates;
-
+        const selectionMask = this.patternService.selectionService.mask;
+        const dest = this.patternService.canvasService.buffer;
+        const useGpu = compositeOperation === ECompositeOperation.SourceOver
+            && !selectionMask
+            && !!dest
+            && brushEvent.canvas === dest.canvas;
 
         const rotation = pattern.rotation.value;
-
         const angle = rotation ? rotation.angle : 0;
 
-        // const selectionMask = pattern.selection && pattern.selection.value.mask;
-        const selectionMask = this.patternService.selectionService.mask;
-
-
-        context.globalCompositeOperation = compositeOperation;
-        context.globalAlpha = opacity;
-
-
+        this.helperCanvas1.clear();
         coordinates[0]?.forEach(({x, y}) => {
-
             drawWithRotation(
                 -angle,
                 x, y,
                 ({context}) => {
                     context.fillStyle = getRandomColor();
-
                     circle(context, 0, 0, size / 2);
                 }
             )(this.helperCanvas1);
         });
 
+        if (useGpu) {
+            dest.compositeLayerGpu(this.helperCanvas1.canvas, opacity);
+            this.helperCanvas1.clear();
+            this.drewGpu = true;
+            return;
+        }
+
+        this.patternService.canvasService.buffer?.ensureCpu();
+
+        context.globalCompositeOperation = compositeOperation;
+        context.globalAlpha = opacity;
+
         const resultCanvas: HelperCanvas = selectionMask
             ? drawMasked(
                 selectionMask,
                 ({context}) => {
-
                     context.drawImage(this.helperCanvas1.canvas, 0, 0);
                     this.helperCanvas1.clear();
                 }
-            )(
-                this.helperCanvas2
-            )
+            )(this.helperCanvas2)
             : this.helperCanvas1;
-
 
         context.drawImage(resultCanvas.canvas, 0, 0);
         resultCanvas.clear();
     };
 }
-

@@ -62,7 +62,7 @@ export class LineTrailingPattern implements ToolService {
 
     patternLine = (brushEvent: CanvasServiceEvent) => {
         this.drewGpu = false;
-        const {context, events, gpuAhead} = brushEvent;
+        const {context, events} = brushEvent;
         if (!events[0]) return;
 
         const state = this.patternService.storeService.getState();
@@ -77,9 +77,11 @@ export class LineTrailingPattern implements ToolService {
         const toolPattern = state.patterns[toolPatternId];
         const coordinates = state.position.coordinates;
         const selectionMask = patternsService.pattern[this.patternService.patternId].selectionService.mask;
-        const useGpu = !!gpuAhead
-            && compositeOperation === ECompositeOperation.SourceOver
-            && !selectionMask;
+        const dest = this.patternService.canvasService.buffer;
+        const useGpu = compositeOperation === ECompositeOperation.SourceOver
+            && !selectionMask
+            && !!dest
+            && brushEvent.canvas === dest.canvas;
 
         const brushRotation = toolPattern?.config?.rotation ? toolPattern?.rotation?.value : null;
         const destinationRotation =
@@ -105,8 +107,7 @@ export class LineTrailingPattern implements ToolService {
 
         if (useGpu) {
             const masked = patternsService.pattern[toolPatternId]?.valuesService.ensureMaskedGpu();
-            const dest = this.patternService.canvasService.buffer;
-            if (!masked || !dest) return;
+            if (!masked) return;
 
             const sourceService = patternsService.pattern[toolPatternId];
             const width = patternSize * masked.width;
@@ -161,10 +162,8 @@ export class LineTrailingPattern implements ToolService {
             return;
         }
 
-        if (gpuAhead) {
-            this.patternService.canvasService.buffer?.ensureCpu();
-            patternsService.pattern[toolPatternId]?.valuesService.updateMaskedIfNeeded(true);
-        }
+        this.patternService.canvasService.buffer?.ensureCpu();
+        patternsService.pattern[toolPatternId]?.valuesService.updateMaskedIfNeeded(true);
 
         const linePatternImage = patternsService.pattern[toolPatternId]?.valuesService.masked;
         if (!linePatternImage) return;

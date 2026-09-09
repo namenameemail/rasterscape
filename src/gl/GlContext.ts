@@ -38,10 +38,12 @@ void main() {
 const BLIT_FS = `#version 300 es
 precision highp float;
 uniform sampler2D u_tex;
+uniform float u_opacity;
 in vec2 v_uv;
 out vec4 o;
 void main() {
-    o = texture(u_tex, v_uv);
+    vec4 c = texture(u_tex, v_uv);
+    o = vec4(c.rgb, c.a * u_opacity);
 }`
 
 const BLUR_FS = `#version 300 es
@@ -144,6 +146,9 @@ export class GlContext {
     private maskScratch: WebGLTexture | null = null
     private maskScratchW = 0
     private maskScratchH = 0
+    private layerTex: WebGLTexture | null = null
+    private layerW = 0
+    private layerH = 0
 
     constructor() {
         this.canvas = document.createElement('canvas')
@@ -166,6 +171,7 @@ export class GlContext {
         this.maskProgram = linkProgram(gl, BLIT_VS, MASK_FS)
         this.stampProgram = linkProgram(gl, STAMP_VS, STAMP_FS)
         gl.useProgram(this.blitProgram)
+        gl.uniform1f(gl.getUniformLocation(this.blitProgram, 'u_opacity'), 1)
         const blitBuffer = gl.createBuffer()
         const stampBuffer = gl.createBuffer()
         const copyFbo = gl.createFramebuffer()
@@ -273,6 +279,8 @@ export class GlContext {
         width: number,
         height: number,
         destFlipY: boolean,
+        opacity = 1,
+        layerFlipY = false,
     ): void => {
         const {gl} = this
         this.setSize(width, height)
@@ -280,9 +288,22 @@ export class GlContext {
         this.drawTexture(dest, destFlipY)
         gl.enable(gl.BLEND)
         gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
-        this.drawTexture(video)
+        this.drawTexture(video, layerFlipY, opacity)
         gl.disable(gl.BLEND)
         this.copyFramebufferToTexture(dest, width, height)
+    }
+
+    compositeCanvasOver = (
+        dest: WebGLTexture,
+        width: number,
+        height: number,
+        destFlipY: boolean,
+        layer: HTMLCanvasElement,
+        opacity = 1,
+    ): void => {
+        const tex = this.ensureLayer(width, height)
+        this.uploadCanvas(layer, tex)
+        this.compositeTextureOver(tex, dest, width, height, destFlipY, opacity, true)
     }
 
     compositeMasked = (
@@ -424,6 +445,25 @@ export class GlContext {
         return this.maskScratch
     }
 
+    private ensureLayer = (width: number, height: number): WebGLTexture => {
+        if (!this.layerTex || this.layerW !== width || this.layerH !== height) {
+            if (this.layerTex) {
+                this.gl.deleteTexture(this.layerTex)
+            }
+            this.layerTex = this.createTexture2D(width, height)
+            this.layerW = width
+            this.layerH = height
+        }
+
+        return this.layerTex
+    }
+
+    uploadCanvasSized = (canvas: HTMLCanvasElement): WebGLTexture => {
+        const tex = this.ensureLayer(canvas.width, canvas.height)
+        this.uploadCanvas(canvas, tex)
+        return tex
+    }
+
     private blitToScratch = (source: WebGLTexture, width: number, height: number): WebGLTexture => {
         const scratch = this.ensureScratch(width, height)
         const {gl} = this
@@ -446,13 +486,14 @@ export class GlContext {
         gl.enableVertexAttribArray(aUv)
     }
 
-    private drawTexture = (texture: WebGLTexture, flipY = false): void => {
+    private drawTexture = (texture: WebGLTexture, flipY = false, opacity = 1): void => {
         const {gl} = this
         gl.useProgram(this.blitProgram)
         gl.activeTexture(gl.TEXTURE0)
         gl.bindTexture(gl.TEXTURE_2D, texture)
         gl.uniform1i(gl.getUniformLocation(this.blitProgram, 'u_tex'), 0)
         gl.uniform1f(gl.getUniformLocation(this.blitProgram, 'u_flipY'), flipY ? 1 : 0)
+        gl.uniform1f(gl.getUniformLocation(this.blitProgram, 'u_opacity'), opacity)
         this.bindQuad(this.blitProgram)
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     }
