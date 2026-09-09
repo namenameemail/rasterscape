@@ -55,11 +55,12 @@ export class LineSolid implements ToolService {
         const {size, opacity, compositeOperation, cap, join, random} = state.line.params;
         const coordinates = state.position.coordinates;
         const selectionMask = this.patternService.selectionService.mask;
+        const clipMask = this.patternService.selectionService.maskCanvas;
         const dest = this.patternService.canvasService.buffer;
         const useGpu = compositeOperation === ECompositeOperation.SourceOver
-            && !selectionMask
             && !!dest
-            && brushEvent.canvas === dest.canvas;
+            && brushEvent.canvas === dest.canvas
+            && (!selectionMask || !!clipMask);
         const newPrevPoints = {};
 
         if (!this.draw) {
@@ -107,7 +108,7 @@ export class LineSolid implements ToolService {
         });
 
         if (useGpu) {
-            dest.compositeLayerGpu(this.helperCanvas1.canvas, opacity);
+            dest.compositeLayerGpu(this.helperCanvas1.canvas, opacity, clipMask);
             this.helperCanvas1.clear();
             this.drewGpu = true;
             this.prevPoints = newPrevPoints;

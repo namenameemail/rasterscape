@@ -73,7 +73,6 @@ const ProjectsControlComponent: React.FC<ProjectsControlProps> = ({
         <>
             {isLoading && createPortal(
                 <div className="projects-preloader">
-                    <div className="projects-preloader-spinner"/>
                     <span className="projects-preloader-text">{t(loadingMessageKey)}</span>
                 </div>,
                 document.body,

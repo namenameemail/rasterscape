@@ -36,10 +36,12 @@ flowchart LR
 | [done/02-video-stays-on-gpu.md](done/02-video-stays-on-gpu.md) | Этап 2 закрыт: нет `getImageData` на кадре видео; заливка 2D→3D осталась (~16.7 ms) |
 | [done/03-masked-preview.md](done/03-masked-preview.md) | Этап 3 закрыт: `updateMasked` 45 ms → 0.1 ms, не на кадре видео |
 | [done/04-tools.md](done/04-tools.md) | Этап 4 закрыт: общий GL, source `copyTex`, монитор с GL, кисть 2D→GPU |
-| [04b-gpu-stamps.md](04b-gpu-stamps.md) | Штампы на GPU, маска-шейдер (не блокер этапа 5) |
+| [done/04b-gpu-stamps.md](done/04b-gpu-stamps.md) | 4b закрыт (срез): штампы/слой на GPU с видео и без; хвосты → 4c |
+| [04c/](04c/README.md) | 4c: подзадачи по оставшимся CPU-местам |
+| [names.md](names.md) | Как называть UI ↔ код в задачах пайплайна |
 | [05-cook-graph.md](05-cook-graph.md) | Считать картинку только если она нужна; на экран — только видимое |
 
-Порядок: 0–4 закрыты. Дальше 5; 4b — штампы на GPU, не блокер 5.
+Порядок: 0–4 и 4b закрыты. Дальше **4c** (по одной подзадаче) и/или **5**; 4c не блокер 5.
 
 ## Объекты
 

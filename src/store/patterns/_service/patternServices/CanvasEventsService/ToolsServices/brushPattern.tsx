@@ -56,11 +56,12 @@ export class BrushPattern implements ToolService {
         const toolPattern = state.patterns[toolPatternId];
         const coordinates = state.position.coordinates;
         const selectionMask = this.patternService.selectionService.mask;
+        const clipMask = this.patternService.selectionService.maskCanvas;
         const dest = this.patternService.canvasService.buffer;
         const useGpu = compositeOperation === ECompositeOperation.SourceOver
-            && !selectionMask
             && !!dest
-            && brushEvent.canvas === dest.canvas;
+            && brushEvent.canvas === dest.canvas
+            && (!selectionMask || !!clipMask);
 
         const brushRotation = toolPattern?.config?.rotation ? toolPattern?.rotation?.value : null;
         const destinationRotation = (
@@ -98,6 +99,7 @@ export class BrushPattern implements ToolService {
                 sourceService.canvasService.buffer?.textureFromCanvas ?? true,
                 stamps,
                 opacity,
+                clipMask,
             );
             this.drewGpu = true;
             return;

@@ -90,6 +90,7 @@ uniform vec2 u_destSize;
 uniform vec2 u_stampSize;
 uniform mat3 u_mat;
 out vec2 v_uv;
+out vec2 v_destUv;
 void main() {
     vec2 local = a_corner * u_stampSize;
     vec3 p = u_mat * vec3(local, 1.0);
@@ -100,19 +101,29 @@ void main() {
         1.0
     );
     v_uv = a_corner + 0.5;
+    v_destUv = vec2(p.x / u_destSize.x, p.y / u_destSize.y);
 }`
 
 const STAMP_FS = `#version 300 es
 precision highp float;
 uniform sampler2D u_tex;
+uniform sampler2D u_mask;
 uniform float u_opacity;
 uniform float u_flipY;
+uniform float u_useMask;
+uniform float u_maskFlipY;
 in vec2 v_uv;
+in vec2 v_destUv;
 out vec4 o;
 void main() {
     vec2 uv = vec2(v_uv.x, u_flipY > 0.5 ? 1.0 - v_uv.y : v_uv.y);
     vec4 c = texture(u_tex, uv);
-    o = vec4(c.rgb, c.a * u_opacity);
+    float ma = 1.0;
+    if (u_useMask > 0.5) {
+        vec2 muv = vec2(v_destUv.x, u_maskFlipY > 0.5 ? 1.0 - v_destUv.y : v_destUv.y);
+        ma = texture(u_mask, muv).a;
+    }
+    o = vec4(c.rgb, c.a * u_opacity * ma);
 }`
 
 const QUAD = new Float32Array([
@@ -149,6 +160,10 @@ export class GlContext {
     private layerTex: WebGLTexture | null = null
     private layerW = 0
     private layerH = 0
+    private clipMaskTex: WebGLTexture | null = null
+    private clipMaskW = 0
+    private clipMaskH = 0
+    private whiteTex: WebGLTexture | null = null
 
     constructor() {
         this.canvas = document.createElement('canvas')
@@ -300,10 +315,19 @@ export class GlContext {
         destFlipY: boolean,
         layer: HTMLCanvasElement,
         opacity = 1,
+        clipMask?: HTMLCanvasElement | null,
     ): void => {
-        const tex = this.ensureLayer(width, height)
-        this.uploadCanvas(layer, tex)
-        this.compositeTextureOver(tex, dest, width, height, destFlipY, opacity, true)
+        const layerTex = this.ensureLayer(width, height)
+        this.uploadCanvas(layer, layerTex)
+
+        if (clipMask) {
+            const maskTex = this.uploadClipMask(clipMask)
+            const clipped = this.compositeMasked(layerTex, maskTex, width, height, false, false, true)
+            this.compositeTextureOver(clipped, dest, width, height, destFlipY, opacity, false)
+            return
+        }
+
+        this.compositeTextureOver(layerTex, dest, width, height, destFlipY, opacity, true)
     }
 
     compositeMasked = (
@@ -313,6 +337,7 @@ export class GlContext {
         height: number,
         inverted: boolean,
         maskFlipY: boolean,
+        sourceFlipY = false,
     ): WebGLTexture => {
         const dest = this.ensureMaskScratch(width, height)
         const {gl} = this
@@ -328,7 +353,7 @@ export class GlContext {
         gl.bindTexture(gl.TEXTURE_2D, mask)
         gl.uniform1i(gl.getUniformLocation(this.maskProgram, 'u_mask'), 1)
         gl.uniform1f(gl.getUniformLocation(this.maskProgram, 'u_invert'), inverted ? 1 : 0)
-        gl.uniform1f(gl.getUniformLocation(this.maskProgram, 'u_flipY'), 0)
+        gl.uniform1f(gl.getUniformLocation(this.maskProgram, 'u_flipY'), sourceFlipY ? 1 : 0)
         gl.uniform1f(gl.getUniformLocation(this.maskProgram, 'u_maskFlipY'), maskFlipY ? 1 : 0)
         this.bindQuad(this.maskProgram)
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
@@ -365,6 +390,7 @@ export class GlContext {
         sourceFlipY: boolean,
         stamps: StampDrawParams[],
         opacity: number,
+        clipMask?: HTMLCanvasElement | null,
     ): void => {
         if (!stamps.length) {
             return
@@ -378,9 +404,14 @@ export class GlContext {
         gl.activeTexture(gl.TEXTURE0)
         gl.bindTexture(gl.TEXTURE_2D, source)
         gl.uniform1i(gl.getUniformLocation(this.stampProgram, 'u_tex'), 0)
+        gl.activeTexture(gl.TEXTURE1)
+        gl.bindTexture(gl.TEXTURE_2D, clipMask ? this.uploadClipMask(clipMask) : this.ensureWhiteTex())
+        gl.uniform1i(gl.getUniformLocation(this.stampProgram, 'u_mask'), 1)
         gl.uniform2f(gl.getUniformLocation(this.stampProgram, 'u_destSize'), destW, destH)
         gl.uniform1f(gl.getUniformLocation(this.stampProgram, 'u_opacity'), opacity)
         gl.uniform1f(gl.getUniformLocation(this.stampProgram, 'u_flipY'), sourceFlipY ? 1 : 0)
+        gl.uniform1f(gl.getUniformLocation(this.stampProgram, 'u_useMask'), clipMask ? 1 : 0)
+        gl.uniform1f(gl.getUniformLocation(this.stampProgram, 'u_maskFlipY'), 0)
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.stampBuffer)
         const aCorner = gl.getAttribLocation(this.stampProgram, 'a_corner')
@@ -396,6 +427,9 @@ export class GlContext {
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
         }
 
+        gl.activeTexture(gl.TEXTURE1)
+        gl.bindTexture(gl.TEXTURE_2D, null)
+        gl.activeTexture(gl.TEXTURE0)
         gl.disable(gl.BLEND)
         gl.bindFramebuffer(gl.FRAMEBUFFER, null)
     }
@@ -456,6 +490,38 @@ export class GlContext {
         }
 
         return this.layerTex
+    }
+
+    private uploadClipMask = (canvas: HTMLCanvasElement): WebGLTexture => {
+        const {width, height} = canvas
+        if (!this.clipMaskTex || this.clipMaskW !== width || this.clipMaskH !== height) {
+            if (this.clipMaskTex) {
+                this.gl.deleteTexture(this.clipMaskTex)
+            }
+            this.clipMaskTex = this.createTexture2D(width, height)
+            this.clipMaskW = width
+            this.clipMaskH = height
+        }
+        this.uploadCanvas(canvas, this.clipMaskTex)
+        return this.clipMaskTex
+    }
+
+    private ensureWhiteTex = (): WebGLTexture => {
+        if (!this.whiteTex) {
+            const {gl} = this
+            const tex = gl.createTexture()
+            if (!tex) {
+                throw new Error('texture')
+            }
+            gl.bindTexture(gl.TEXTURE_2D, tex)
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]))
+            this.whiteTex = tex
+        }
+        return this.whiteTex
     }
 
     uploadCanvasSized = (canvas: HTMLCanvasElement): WebGLTexture => {

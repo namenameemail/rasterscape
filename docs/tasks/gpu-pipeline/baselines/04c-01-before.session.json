@@ -1,0 +1,8620 @@
+{
+  "label": "session",
+  "startedAt": "2026-09-09T10:47:29.630Z",
+  "stoppedAt": "2026-09-09T10:47:40.282Z",
+  "entries": [
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 3.699999988079071,
+      "ts": 6897561.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.30000001192092896,
+      "ts": 6897561.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 1,
+      "ts": 6897587.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 0.4000000059604645,
+      "frame": 1,
+      "ts": 6897588.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 3,
+      "frame": 1,
+      "ts": 6897591.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.29999999701976776,
+      "frame": 1,
+      "ts": 6897591.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 1,
+      "ts": 6897591.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 3.7999999970197678,
+      "frame": 1,
+      "ts": 6897591.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.3999999910593033,
+      "frame": 1,
+      "ts": 6897594.099999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 50.07000000029802,
+      "frame": 1,
+      "ts": 6897629.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.8999999910593033,
+      "frame": 2,
+      "ts": 6897631.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 3.0999999940395355,
+      "frame": 2,
+      "ts": 6897634.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 2,
+      "ts": 6897635.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 2,
+      "ts": 6897635.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 2,
+      "ts": 6897635.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 3.5999999940395355,
+      "frame": 2,
+      "ts": 6897635.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 2,
+      "ts": 6897637.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.799999999813735,
+      "frame": 2,
+      "ts": 6897652.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2999999970197678,
+      "frame": 3,
+      "ts": 6897654.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5999999940395355,
+      "frame": 3,
+      "ts": 6897656.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 3,
+      "ts": 6897656.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 3,
+      "ts": 6897656.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 3,
+      "ts": 6897656.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.8999999910593033,
+      "frame": 3,
+      "ts": 6897656.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2,
+      "frame": 3,
+      "ts": 6897658.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 3,
+      "ts": 6897673.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 4,
+      "ts": 6897674.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.3999999910593033,
+      "frame": 4,
+      "ts": 6897676.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 4,
+      "ts": 6897676.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 4,
+      "ts": 6897676.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 4,
+      "ts": 6897676.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7000000029802322,
+      "frame": 4,
+      "ts": 6897676.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.5999999940395355,
+      "frame": 4,
+      "ts": 6897679
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.40000000037253,
+      "frame": 4,
+      "ts": 6897694
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 3,
+      "frame": 5,
+      "ts": 6897697.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2.7000000029802322,
+      "frame": 5,
+      "ts": 6897700.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 5,
+      "ts": 6897700.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 5,
+      "ts": 6897700.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0.09999999403953552,
+      "frame": 5,
+      "ts": 6897700.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 3.2999999970197678,
+      "frame": 5,
+      "ts": 6897700.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 5,
+      "ts": 6897702.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 5,
+      "ts": 6897719
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 6,
+      "ts": 6897720.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1,
+      "frame": 6,
+      "ts": 6897721.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 6,
+      "ts": 6897721.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 6,
+      "ts": 6897721.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 6,
+      "ts": 6897721.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.2999999970197678,
+      "frame": 6,
+      "ts": 6897721.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 6,
+      "ts": 6897723.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.30000000074506,
+      "frame": 6,
+      "ts": 6897743.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.3999999910593033,
+      "frame": 7,
+      "ts": 6897744.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5999999940395355,
+      "frame": 7,
+      "ts": 6897746.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 7,
+      "ts": 6897746.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 7,
+      "ts": 6897746.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0.09999999403953552,
+      "frame": 7,
+      "ts": 6897747
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.0999999940395355,
+      "frame": 7,
+      "ts": 6897747
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.5,
+      "frame": 7,
+      "ts": 6897750.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.699999999254942,
+      "frame": 7,
+      "ts": 6898818.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 8,
+      "ts": 6898819.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.6000000089406967,
+      "frame": 8,
+      "ts": 6898821.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 8,
+      "ts": 6898821.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 8,
+      "ts": 6898821.5
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 8,
+      "ts": 6898821.5
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.9000000059604645,
+      "frame": 8,
+      "ts": 6898821.5
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 8,
+      "ts": 6898823.700000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 1066.7000000001863,
+      "frame": 8,
+      "ts": 6898837.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2999999970197678,
+      "frame": 9,
+      "ts": 6898838.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 9,
+      "ts": 6898840.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 9,
+      "ts": 6898840.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 9,
+      "ts": 6898840.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 9,
+      "ts": 6898840.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.8999999910593033,
+      "frame": 9,
+      "ts": 6898840.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2999999970197678,
+      "frame": 9,
+      "ts": 6898843
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.600000000558794,
+      "frame": 9,
+      "ts": 6898858.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2999999970197678,
+      "frame": 10,
+      "ts": 6898859.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.7999999970197678,
+      "frame": 10,
+      "ts": 6898861.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 10,
+      "ts": 6898862
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 10,
+      "ts": 6898862
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 10,
+      "ts": 6898862
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.0999999940395355,
+      "frame": 10,
+      "ts": 6898862
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 10,
+      "ts": 6898864.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.299999999813735,
+      "frame": 10,
+      "ts": 6898880.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 11,
+      "ts": 6898882
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.800000011920929,
+      "frame": 11,
+      "ts": 6898883.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 11,
+      "ts": 6898884.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 11,
+      "ts": 6898884.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 11,
+      "ts": 6898884.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.2000000029802322,
+      "frame": 11,
+      "ts": 6898884.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.7000000029802322,
+      "frame": 11,
+      "ts": 6898887.099999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 11,
+      "ts": 6898966.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 12,
+      "ts": 6898967.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1,
+      "frame": 12,
+      "ts": 6898969
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 12,
+      "ts": 6898969.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 12,
+      "ts": 6898969.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 12,
+      "ts": 6898969.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.2000000029802322,
+      "frame": 12,
+      "ts": 6898969.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.0999999940395355,
+      "frame": 12,
+      "ts": 6898971.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 84.29999999981374,
+      "frame": 12,
+      "ts": 6898985.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.199999988079071,
+      "frame": 13,
+      "ts": 6898987.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2000000029802322,
+      "frame": 13,
+      "ts": 6898988.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 13,
+      "ts": 6898988.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 13,
+      "ts": 6898988.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 13,
+      "ts": 6898988.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.6000000089406967,
+      "frame": 13,
+      "ts": 6898988.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.0999999940395355,
+      "frame": 13,
+      "ts": 6898990.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 13,
+      "ts": 6899013
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 14,
+      "ts": 6899014.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 14,
+      "ts": 6899015.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 14,
+      "ts": 6899015.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 14,
+      "ts": 6899015.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0.10000000894069672,
+      "frame": 14,
+      "ts": 6899015.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.6000000089406967,
+      "frame": 14,
+      "ts": 6899015.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.3999999910593033,
+      "frame": 14,
+      "ts": 6899018.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.40000000037253,
+      "frame": 14,
+      "ts": 6899036.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 4.5,
+      "frame": 15,
+      "ts": 6899040.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 3.6000000089406967,
+      "frame": 15,
+      "ts": 6899044.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 15,
+      "ts": 6899044.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 15,
+      "ts": 6899044.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 15,
+      "ts": 6899044.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 4,
+      "frame": 15,
+      "ts": 6899044.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.4000000059604645,
+      "frame": 15,
+      "ts": 6899047.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.200000000186265,
+      "frame": 15,
+      "ts": 6899083.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.9000000059604645,
+      "frame": 16,
+      "ts": 6899085.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 16,
+      "ts": 6899086.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 16,
+      "ts": 6899086.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 16,
+      "ts": 6899087
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0.09999999403953552,
+      "frame": 16,
+      "ts": 6899087.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.8999999910593033,
+      "frame": 16,
+      "ts": 6899087.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 4.100000008940697,
+      "frame": 16,
+      "ts": 6899091.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 50.09999999962747,
+      "frame": 16,
+      "ts": 6899113.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.8999999910593033,
+      "frame": 17,
+      "ts": 6899117.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5999999940395355,
+      "frame": 17,
+      "ts": 6899118.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 17,
+      "ts": 6899119.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 17,
+      "ts": 6899119.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 17,
+      "ts": 6899119.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.1000000089406967,
+      "frame": 17,
+      "ts": 6899119.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.8999999910593033,
+      "frame": 17,
+      "ts": 6899123.099999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.5,
+      "frame": 17,
+      "ts": 6899145.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2999999970197678,
+      "frame": 18,
+      "ts": 6899147.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2,
+      "frame": 18,
+      "ts": 6899149.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 18,
+      "ts": 6899149.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 18,
+      "ts": 6899149.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 18,
+      "ts": 6899149.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.300000011920929,
+      "frame": 18,
+      "ts": 6899149.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.5,
+      "frame": 18,
+      "ts": 6899151.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 18,
+      "ts": 6899171.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2999999970197678,
+      "frame": 19,
+      "ts": 6899173
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 19,
+      "ts": 6899174.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 19,
+      "ts": 6899174.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 19,
+      "ts": 6899174.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 19,
+      "ts": 6899174.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7000000029802322,
+      "frame": 19,
+      "ts": 6899174.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.0999999940395355,
+      "frame": 19,
+      "ts": 6899176.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.30000000074506,
+      "frame": 19,
+      "ts": 6899193.5
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 2.2999999970197678,
+      "frame": 20,
+      "ts": 6899196
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.7000000029802322,
+      "frame": 20,
+      "ts": 6899197.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 20,
+      "ts": 6899197.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 20,
+      "ts": 6899197.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 20,
+      "ts": 6899197.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2,
+      "frame": 20,
+      "ts": 6899198
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.7000000029802322,
+      "frame": 20,
+      "ts": 6899200.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.699999999254942,
+      "frame": 20,
+      "ts": 6899217.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.199999988079071,
+      "frame": 21,
+      "ts": 6899218.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5999999940395355,
+      "frame": 21,
+      "ts": 6899220.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 21,
+      "ts": 6899220.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 21,
+      "ts": 6899220.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 21,
+      "ts": 6899220.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2,
+      "frame": 21,
+      "ts": 6899220.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2999999970197678,
+      "frame": 21,
+      "ts": 6899223
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.600000000558794,
+      "frame": 21,
+      "ts": 6899239.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.5999999940395355,
+      "frame": 22,
+      "ts": 6899240.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 22,
+      "ts": 6899242.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 22,
+      "ts": 6899242.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 22,
+      "ts": 6899242.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 22,
+      "ts": 6899242.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7999999970197678,
+      "frame": 22,
+      "ts": 6899242.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.0999999940395355,
+      "frame": 22,
+      "ts": 6899244.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.39999999944121,
+      "frame": 22,
+      "ts": 6899262.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.7999999970197678,
+      "frame": 23,
+      "ts": 6899264.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 23,
+      "ts": 6899266.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 23,
+      "ts": 6899266.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 23,
+      "ts": 6899266.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 23,
+      "ts": 6899266.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.9000000059604645,
+      "frame": 23,
+      "ts": 6899266.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.3999999910593033,
+      "frame": 23,
+      "ts": 6899269.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.600000000558794,
+      "frame": 23,
+      "ts": 6899285.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1,
+      "frame": 24,
+      "ts": 6899287.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.0999999940395355,
+      "frame": 24,
+      "ts": 6899288.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 24,
+      "ts": 6899288.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 24,
+      "ts": 6899288.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 24,
+      "ts": 6899288.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.3999999910593033,
+      "frame": 24,
+      "ts": 6899288.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.4000000059604645,
+      "frame": 24,
+      "ts": 6899291.099999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 24,
+      "ts": 6899308.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 25,
+      "ts": 6899309.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.9000000059604645,
+      "frame": 25,
+      "ts": 6899311.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 25,
+      "ts": 6899312
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 25,
+      "ts": 6899312.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 25,
+      "ts": 6899312.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.2999999970197678,
+      "frame": 25,
+      "ts": 6899312.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 5,
+      "frame": 25,
+      "ts": 6899317.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.299999999813735,
+      "frame": 25,
+      "ts": 6899343.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 2.0999999940395355,
+      "frame": 26,
+      "ts": 6899345.5
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2.4000000059604645,
+      "frame": 26,
+      "ts": 6899348.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 26,
+      "ts": 6899349
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 26,
+      "ts": 6899349.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 26,
+      "ts": 6899349.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 3.5999999940395355,
+      "frame": 26,
+      "ts": 6899349.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.2000000029802322,
+      "frame": 26,
+      "ts": 6899352.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.39999999944121,
+      "frame": 26,
+      "ts": 6899373.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 27,
+      "ts": 6899375.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.6000000089406967,
+      "frame": 27,
+      "ts": 6899376.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 27,
+      "ts": 6899377.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 27,
+      "ts": 6899377.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 27,
+      "ts": 6899377.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2,
+      "frame": 27,
+      "ts": 6899377.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.6000000089406967,
+      "frame": 27,
+      "ts": 6899379.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 26.200000000186265,
+      "frame": 27,
+      "ts": 6899404.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 3.0999999940395355,
+      "frame": 28,
+      "ts": 6899408.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 28,
+      "ts": 6899409.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 28,
+      "ts": 6899409.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 28,
+      "ts": 6899409.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 28,
+      "ts": 6899409.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5999999940395355,
+      "frame": 28,
+      "ts": 6899409.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 4.299999997019768,
+      "frame": 28,
+      "ts": 6899414.099999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 49.90000000037253,
+      "frame": 28,
+      "ts": 6899440.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 29,
+      "ts": 6899442.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.7999999970197678,
+      "frame": 29,
+      "ts": 6899444.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 29,
+      "ts": 6899444.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 29,
+      "ts": 6899444.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 29,
+      "ts": 6899444.5
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.2000000029802322,
+      "frame": 29,
+      "ts": 6899444.5
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.4000000059604645,
+      "frame": 29,
+      "ts": 6899446.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 24,
+      "frame": 29,
+      "ts": 6899467.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.7999999970197678,
+      "frame": 30,
+      "ts": 6899469.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.3999999910593033,
+      "frame": 30,
+      "ts": 6899470.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 30,
+      "ts": 6899471.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 30,
+      "ts": 6899471.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 30,
+      "ts": 6899471.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.9000000059604645,
+      "frame": 30,
+      "ts": 6899471.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 30,
+      "ts": 6899473.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.39999999944121,
+      "frame": 30,
+      "ts": 6899496.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.4000000059604645,
+      "frame": 31,
+      "ts": 6899498.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.6000000089406967,
+      "frame": 31,
+      "ts": 6899499.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 31,
+      "ts": 6899500.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 31,
+      "ts": 6899500.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 31,
+      "ts": 6899500.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.9000000059604645,
+      "frame": 31,
+      "ts": 6899500.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.2000000029802322,
+      "frame": 31,
+      "ts": 6899503.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 31,
+      "ts": 6899519.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.5,
+      "frame": 32,
+      "ts": 6899521.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.6000000089406967,
+      "frame": 32,
+      "ts": 6899523.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.4000000059604645,
+      "frame": 32,
+      "ts": 6899523.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 32,
+      "ts": 6899523.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 32,
+      "ts": 6899523.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.300000011920929,
+      "frame": 32,
+      "ts": 6899523.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.5999999940395355,
+      "frame": 32,
+      "ts": 6899526.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 32,
+      "ts": 6899541.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1,
+      "frame": 33,
+      "ts": 6899542.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 0.8999999910593033,
+      "frame": 33,
+      "ts": 6899543.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 33,
+      "ts": 6899543.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 33,
+      "ts": 6899543.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 33,
+      "ts": 6899543.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.199999988079071,
+      "frame": 33,
+      "ts": 6899543.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 33,
+      "ts": 6899545.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 33,
+      "ts": 6899561.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.199999988079071,
+      "frame": 34,
+      "ts": 6899562.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2000000029802322,
+      "frame": 34,
+      "ts": 6899563.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 34,
+      "ts": 6899564.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 34,
+      "ts": 6899564.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 34,
+      "ts": 6899564.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 34,
+      "ts": 6899564.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.5,
+      "frame": 34,
+      "ts": 6899566.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 28.700000000186265,
+      "frame": 34,
+      "ts": 6899581
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 35,
+      "ts": 6899582.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.199999988079071,
+      "frame": 35,
+      "ts": 6899583.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 35,
+      "ts": 6899583.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 35,
+      "ts": 6899583.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 35,
+      "ts": 6899583.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.6000000089406967,
+      "frame": 35,
+      "ts": 6899583.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.3999999910593033,
+      "frame": 35,
+      "ts": 6899586.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 21.40000000037253,
+      "frame": 35,
+      "ts": 6899604.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.199999988079071,
+      "frame": 36,
+      "ts": 6899606.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.0999999940395355,
+      "frame": 36,
+      "ts": 6899607.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 36,
+      "ts": 6899607.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 36,
+      "ts": 6899607.5
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 36,
+      "ts": 6899607.5
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.3999999910593033,
+      "frame": 36,
+      "ts": 6899607.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.1000000089406967,
+      "frame": 36,
+      "ts": 6899609.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 36,
+      "ts": 6899622.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 37,
+      "ts": 6899623.5
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.1000000089406967,
+      "frame": 37,
+      "ts": 6899624.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 37,
+      "ts": 6899624.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 37,
+      "ts": 6899624.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 37,
+      "ts": 6899625
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.4000000059604645,
+      "frame": 37,
+      "ts": 6899625
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 37,
+      "ts": 6899627.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.699999999254942,
+      "frame": 37,
+      "ts": 6899641.5
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 0.8999999910593033,
+      "frame": 38,
+      "ts": 6899642.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1,
+      "frame": 38,
+      "ts": 6899643.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 38,
+      "ts": 6899643.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 38,
+      "ts": 6899643.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0.10000000894069672,
+      "frame": 38,
+      "ts": 6899643.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.300000011920929,
+      "frame": 38,
+      "ts": 6899643.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2999999970197678,
+      "frame": 38,
+      "ts": 6899646.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.40000000037253,
+      "frame": 38,
+      "ts": 6899660.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2999999970197678,
+      "frame": 39,
+      "ts": 6899662.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.1000000089406967,
+      "frame": 39,
+      "ts": 6899663.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 39,
+      "ts": 6899663.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 39,
+      "ts": 6899663.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 39,
+      "ts": 6899663.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 39,
+      "ts": 6899663.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2999999970197678,
+      "frame": 39,
+      "ts": 6899666.099999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.5,
+      "frame": 39,
+      "ts": 6899678.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.4000000059604645,
+      "frame": 40,
+      "ts": 6899680.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.0999999940395355,
+      "frame": 40,
+      "ts": 6899681.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 40,
+      "ts": 6899681.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 40,
+      "ts": 6899681.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 40,
+      "ts": 6899681.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 40,
+      "ts": 6899681.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 4,
+      "frame": 40,
+      "ts": 6899685.700000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.799999999813735,
+      "frame": 40,
+      "ts": 6899699.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 41,
+      "ts": 6899701
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2000000029802322,
+      "frame": 41,
+      "ts": 6899702.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 41,
+      "ts": 6899702.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 41,
+      "ts": 6899702.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 41,
+      "ts": 6899702.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7000000029802322,
+      "frame": 41,
+      "ts": 6899702.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 41,
+      "ts": 6899704.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 41,
+      "ts": 6899717.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1,
+      "frame": 42,
+      "ts": 6899718.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1,
+      "frame": 42,
+      "ts": 6899719.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 42,
+      "ts": 6899719.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 42,
+      "ts": 6899720
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 42,
+      "ts": 6899720
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.2999999970197678,
+      "frame": 42,
+      "ts": 6899720
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.0999999940395355,
+      "frame": 42,
+      "ts": 6899723.099999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 42,
+      "ts": 6899737
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 43,
+      "ts": 6899738.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.300000011920929,
+      "frame": 43,
+      "ts": 6899739.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 43,
+      "ts": 6899740.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 43,
+      "ts": 6899740.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 43,
+      "ts": 6899740.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.8999999910593033,
+      "frame": 43,
+      "ts": 6899740.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 43,
+      "ts": 6899742.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.600000000558794,
+      "frame": 43,
+      "ts": 6899757.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 44,
+      "ts": 6899758.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.199999988079071,
+      "frame": 44,
+      "ts": 6899760.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 44,
+      "ts": 6899760.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 44,
+      "ts": 6899760.5
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 44,
+      "ts": 6899760.5
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5999999940395355,
+      "frame": 44,
+      "ts": 6899760.5
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2,
+      "frame": 44,
+      "ts": 6899762.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.39999999944121,
+      "frame": 44,
+      "ts": 6899779.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 45,
+      "ts": 6899780.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.0999999940395355,
+      "frame": 45,
+      "ts": 6899782
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 45,
+      "ts": 6899782.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 45,
+      "ts": 6899782.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 45,
+      "ts": 6899782.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 45,
+      "ts": 6899782.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 1.9000000059604645,
+      "frame": 45,
+      "ts": 6899784.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.600000000558794,
+      "frame": 45,
+      "ts": 6899802.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.4000000059604645,
+      "frame": 46,
+      "ts": 6899803.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.0999999940395355,
+      "frame": 46,
+      "ts": 6899804.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 46,
+      "ts": 6899804.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 46,
+      "ts": 6899805
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 46,
+      "ts": 6899805
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.2999999970197678,
+      "frame": 46,
+      "ts": 6899805
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2999999970197678,
+      "frame": 46,
+      "ts": 6899807.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.799999999813735,
+      "frame": 46,
+      "ts": 6899823.5
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 47,
+      "ts": 6899825.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.300000011920929,
+      "frame": 47,
+      "ts": 6899826.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 47,
+      "ts": 6899826.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 47,
+      "ts": 6899826.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 47,
+      "ts": 6899826.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.6000000089406967,
+      "frame": 47,
+      "ts": 6899826.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2999999970197678,
+      "frame": 47,
+      "ts": 6899829
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.299999999813735,
+      "frame": 47,
+      "ts": 6899846
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 48,
+      "ts": 6899847.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1,
+      "frame": 48,
+      "ts": 6899848.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 1.199999988079071,
+      "frame": 48,
+      "ts": 6899849.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.20000000298023224,
+      "frame": 48,
+      "ts": 6899849.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 48,
+      "ts": 6899849.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.3999999910593033,
+      "frame": 48,
+      "ts": 6899849.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.4000000059604645,
+      "frame": 48,
+      "ts": 6899852.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 48,
+      "ts": 6899868.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.300000011920929,
+      "frame": 49,
+      "ts": 6899869.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 3.0999999940395355,
+      "frame": 49,
+      "ts": 6899873
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 49,
+      "ts": 6899873.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.20000000298023224,
+      "frame": 49,
+      "ts": 6899873.5
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 49,
+      "ts": 6899873.5
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 3.5999999940395355,
+      "frame": 49,
+      "ts": 6899873.5
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.7000000029802322,
+      "frame": 49,
+      "ts": 6899876.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 49,
+      "ts": 6899894.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 50,
+      "ts": 6899895.5
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2000000029802322,
+      "frame": 50,
+      "ts": 6899896.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 50,
+      "ts": 6899897
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 50,
+      "ts": 6899897
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 50,
+      "ts": 6899897
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 50,
+      "ts": 6899897
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.4000000059604645,
+      "frame": 50,
+      "ts": 6899899.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.30000000074506,
+      "frame": 50,
+      "ts": 6899912.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 51,
+      "ts": 6899913.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 51,
+      "ts": 6899915.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 51,
+      "ts": 6899915.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 51,
+      "ts": 6899915.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 51,
+      "ts": 6899915.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 51,
+      "ts": 6899915.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.2000000029802322,
+      "frame": 51,
+      "ts": 6899918.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 23.199999999254942,
+      "frame": 51,
+      "ts": 6899931.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2999999970197678,
+      "frame": 52,
+      "ts": 6899933.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 52,
+      "ts": 6899934.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 52,
+      "ts": 6899934.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 52,
+      "ts": 6899934.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 52,
+      "ts": 6899934.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 52,
+      "ts": 6899934.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 52,
+      "ts": 6899937
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 10.400000000372529,
+      "frame": 52,
+      "ts": 6899949.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 53,
+      "ts": 6899950.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 0.9000000059604645,
+      "frame": 53,
+      "ts": 6899951.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 53,
+      "ts": 6899951.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 53,
+      "ts": 6899951.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 53,
+      "ts": 6899951.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.1000000089406967,
+      "frame": 53,
+      "ts": 6899951.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.0999999940395355,
+      "frame": 53,
+      "ts": 6899954
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 53,
+      "ts": 6899967.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 54,
+      "ts": 6899968.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1,
+      "frame": 54,
+      "ts": 6899969.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 54,
+      "ts": 6899969.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 54,
+      "ts": 6899969.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 54,
+      "ts": 6899969.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.2000000029802322,
+      "frame": 54,
+      "ts": 6899969.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2,
+      "frame": 54,
+      "ts": 6899971.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 54,
+      "ts": 6899988.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 55,
+      "ts": 6899989.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.300000011920929,
+      "frame": 55,
+      "ts": 6899990.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 55,
+      "ts": 6899991
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 55,
+      "ts": 6899991.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 55,
+      "ts": 6899991.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 55,
+      "ts": 6899991.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 55,
+      "ts": 6899993.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.600000000558794,
+      "frame": 55,
+      "ts": 6900007.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 56,
+      "ts": 6900008.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.0999999940395355,
+      "frame": 56,
+      "ts": 6900010.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 56,
+      "ts": 6900010.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 56,
+      "ts": 6900010.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0.10000000894069672,
+      "frame": 56,
+      "ts": 6900010.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 56,
+      "ts": 6900010.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.8999999910593033,
+      "frame": 56,
+      "ts": 6900013.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.39999999944121,
+      "frame": 56,
+      "ts": 6900028.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.3999999910593033,
+      "frame": 57,
+      "ts": 6900029.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.6000000089406967,
+      "frame": 57,
+      "ts": 6900031.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.4000000059604645,
+      "frame": 57,
+      "ts": 6900031.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 57,
+      "ts": 6900032
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 57,
+      "ts": 6900032
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.2000000029802322,
+      "frame": 57,
+      "ts": 6900032
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.5999999940395355,
+      "frame": 57,
+      "ts": 6900034.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 57,
+      "ts": 6900049.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 57,
+      "ts": 6900050
+    },
+    {
+      "type": "span",
+      "name": "values.updateMasked",
+      "durationMs": 0,
+      "frame": 57,
+      "ts": 6900050
+    },
+    {
+      "type": "span",
+      "name": "values.updateSelected",
+      "durationMs": 0.09999999403953552,
+      "frame": 57,
+      "ts": 6900050.099999994
+    },
+    {
+      "type": "span",
+      "name": "values.updateMasked",
+      "durationMs": 0,
+      "frame": 57,
+      "ts": 6900083.299999997
+    },
+    {
+      "type": "span",
+      "name": "values.updateSelected",
+      "durationMs": 0.4000000059604645,
+      "frame": 57,
+      "ts": 6900083.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 4,
+      "frame": 57,
+      "ts": 6900260.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 57,
+      "ts": 6900260.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 0.7999999970197678,
+      "frame": 58,
+      "ts": 6900282.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 0.20000000298023224,
+      "frame": 58,
+      "ts": 6900282.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 2.5,
+      "frame": 58,
+      "ts": 6900285.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.20000000298023224,
+      "frame": 58,
+      "ts": 6900285.5
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 58,
+      "ts": 6900285.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 3,
+      "frame": 58,
+      "ts": 6900285.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 58,
+      "ts": 6900287.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.701999999582767,
+      "frame": 58,
+      "ts": 6900301.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.199999988079071,
+      "frame": 59,
+      "ts": 6900303.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2.2000000029802322,
+      "frame": 59,
+      "ts": 6900305.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 59,
+      "ts": 6900306.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 59,
+      "ts": 6900306.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 59,
+      "ts": 6900306.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.5,
+      "frame": 59,
+      "ts": 6900306.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.0999999940395355,
+      "frame": 59,
+      "ts": 6900308.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 59,
+      "ts": 6900324.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 60,
+      "ts": 6900325.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.6000000089406967,
+      "frame": 60,
+      "ts": 6900327.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 60,
+      "ts": 6900327.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 60,
+      "ts": 6900327.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 60,
+      "ts": 6900327.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.9000000059604645,
+      "frame": 60,
+      "ts": 6900327.5
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.0999999940395355,
+      "frame": 60,
+      "ts": 6900330.599999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.40000000037253,
+      "frame": 60,
+      "ts": 6900348.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.4000000059604645,
+      "frame": 61,
+      "ts": 6900349.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.3999999910593033,
+      "frame": 61,
+      "ts": 6900351.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 61,
+      "ts": 6900351.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 61,
+      "ts": 6900351.5
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0.09999999403953552,
+      "frame": 61,
+      "ts": 6900351.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.699999988079071,
+      "frame": 61,
+      "ts": 6900351.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.4000000059604645,
+      "frame": 61,
+      "ts": 6900354
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 61,
+      "ts": 6900370.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 62,
+      "ts": 6900371.5
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 0.7999999970197678,
+      "frame": 62,
+      "ts": 6900372.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 62,
+      "ts": 6900372.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 62,
+      "ts": 6900372.5
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 62,
+      "ts": 6900372.5
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1,
+      "frame": 62,
+      "ts": 6900372.5
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2,
+      "frame": 62,
+      "ts": 6900374.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 62,
+      "ts": 6900389
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.5,
+      "frame": 63,
+      "ts": 6900390.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 63,
+      "ts": 6900392.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 63,
+      "ts": 6900392.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 63,
+      "ts": 6900392.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 63,
+      "ts": 6900392.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.8999999910593033,
+      "frame": 63,
+      "ts": 6900392.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.1000000089406967,
+      "frame": 63,
+      "ts": 6900394.700000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 30.40000000037253,
+      "frame": 63,
+      "ts": 6900412.5
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 2.1000000089406967,
+      "frame": 64,
+      "ts": 6900416.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.699999988079071,
+      "frame": 64,
+      "ts": 6900418.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 64,
+      "ts": 6900418.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 64,
+      "ts": 6900418.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 64,
+      "ts": 6900418.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.0999999940395355,
+      "frame": 64,
+      "ts": 6900419
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.7000000029802322,
+      "frame": 64,
+      "ts": 6900422.700000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 36.59999999962747,
+      "frame": 64,
+      "ts": 6900446.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 9.099999994039536,
+      "frame": 65,
+      "ts": 6900455.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 65,
+      "ts": 6900457.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 65,
+      "ts": 6900457.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 65,
+      "ts": 6900457.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 65,
+      "ts": 6900457.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7999999970197678,
+      "frame": 65,
+      "ts": 6900457.5
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.7999999970197678,
+      "frame": 65,
+      "ts": 6900460.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.299999999813735,
+      "frame": 65,
+      "ts": 6900484.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.7999999970197678,
+      "frame": 66,
+      "ts": 6900486.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 66,
+      "ts": 6900488.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 66,
+      "ts": 6900488.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 66,
+      "ts": 6900488.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 66,
+      "ts": 6900488.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7999999970197678,
+      "frame": 66,
+      "ts": 6900488.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3,
+      "frame": 66,
+      "ts": 6900491.700000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 66,
+      "ts": 6900509.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.4000000059604645,
+      "frame": 67,
+      "ts": 6900511
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.7000000029802322,
+      "frame": 67,
+      "ts": 6900512.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 67,
+      "ts": 6900512.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.19999998807907104,
+      "frame": 67,
+      "ts": 6900513.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 67,
+      "ts": 6900513.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.0999999940395355,
+      "frame": 67,
+      "ts": 6900513.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.9000000059604645,
+      "frame": 67,
+      "ts": 6900516
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.299999999813735,
+      "frame": 67,
+      "ts": 6900535.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.5,
+      "frame": 68,
+      "ts": 6900537.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5999999940395355,
+      "frame": 68,
+      "ts": 6900539.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.30000001192092896,
+      "frame": 68,
+      "ts": 6900539.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 68,
+      "ts": 6900539.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 68,
+      "ts": 6900539.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.3999999910593033,
+      "frame": 68,
+      "ts": 6900539.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 4.700000002980232,
+      "frame": 68,
+      "ts": 6900544.599999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.30000000074506,
+      "frame": 68,
+      "ts": 6900570.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 69,
+      "ts": 6900571.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2,
+      "frame": 69,
+      "ts": 6900574
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 69,
+      "ts": 6900574.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 69,
+      "ts": 6900574.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 69,
+      "ts": 6900574.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.2999999970197678,
+      "frame": 69,
+      "ts": 6900574.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.2999999970197678,
+      "frame": 69,
+      "ts": 6900577.599999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.39999999944121,
+      "frame": 69,
+      "ts": 6900612.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.300000011920929,
+      "frame": 70,
+      "ts": 6900615.5
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2,
+      "frame": 70,
+      "ts": 6900617.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 70,
+      "ts": 6900617.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 70,
+      "ts": 6900617.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0.4000000059604645,
+      "frame": 70,
+      "ts": 6900618.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.7000000029802322,
+      "frame": 70,
+      "ts": 6900618.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3,
+      "frame": 70,
+      "ts": 6900621.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.299999999813735,
+      "frame": 70,
+      "ts": 6900641.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.3999999910593033,
+      "frame": 71,
+      "ts": 6900642.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2000000029802322,
+      "frame": 71,
+      "ts": 6900644
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 71,
+      "ts": 6900644.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 71,
+      "ts": 6900644.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0.09999999403953552,
+      "frame": 71,
+      "ts": 6900644.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 71,
+      "ts": 6900644.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 71,
+      "ts": 6900646.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.30000000074506,
+      "frame": 71,
+      "ts": 6900667.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.5,
+      "frame": 72,
+      "ts": 6900668.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 72,
+      "ts": 6900670.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 72,
+      "ts": 6900670.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 72,
+      "ts": 6900670.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 72,
+      "ts": 6900670.5
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7000000029802322,
+      "frame": 72,
+      "ts": 6900670.5
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.4000000059604645,
+      "frame": 72,
+      "ts": 6900673.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.699999999254942,
+      "frame": 72,
+      "ts": 6900690.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 73,
+      "ts": 6900691.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2000000029802322,
+      "frame": 73,
+      "ts": 6900692.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 73,
+      "ts": 6900693.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 73,
+      "ts": 6900693.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 73,
+      "ts": 6900693.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7000000029802322,
+      "frame": 73,
+      "ts": 6900693.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.1000000089406967,
+      "frame": 73,
+      "ts": 6900695.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.40000000037253,
+      "frame": 73,
+      "ts": 6900712.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 2,
+      "frame": 74,
+      "ts": 6900714.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 74,
+      "ts": 6900716.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 74,
+      "ts": 6900716.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.19999998807907104,
+      "frame": 74,
+      "ts": 6900716.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 74,
+      "ts": 6900716.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.699999988079071,
+      "frame": 74,
+      "ts": 6900716.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.300000011920929,
+      "frame": 74,
+      "ts": 6900718.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.799999999813735,
+      "frame": 74,
+      "ts": 6900735.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.300000011920929,
+      "frame": 75,
+      "ts": 6900737.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.3999999910593033,
+      "frame": 75,
+      "ts": 6900738.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 75,
+      "ts": 6900739.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 75,
+      "ts": 6900739.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 75,
+      "ts": 6900739.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.699999988079071,
+      "frame": 75,
+      "ts": 6900739.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 75,
+      "ts": 6900741.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.600000000558794,
+      "frame": 75,
+      "ts": 6900757.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.300000011920929,
+      "frame": 76,
+      "ts": 6900758.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2,
+      "frame": 76,
+      "ts": 6900760.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 76,
+      "ts": 6900761.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 76,
+      "ts": 6900761.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 76,
+      "ts": 6900761.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.5,
+      "frame": 76,
+      "ts": 6900761.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.0999999940395355,
+      "frame": 76,
+      "ts": 6900764.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.39999999944121,
+      "frame": 76,
+      "ts": 6900779.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2999999970197678,
+      "frame": 77,
+      "ts": 6900781.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 77,
+      "ts": 6900782.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 77,
+      "ts": 6900783.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 77,
+      "ts": 6900783.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 77,
+      "ts": 6900783.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.9000000059604645,
+      "frame": 77,
+      "ts": 6900783.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.7000000029802322,
+      "frame": 77,
+      "ts": 6900785.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 77,
+      "ts": 6900804.5
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.5999999940395355,
+      "frame": 78,
+      "ts": 6900806.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.3999999910593033,
+      "frame": 78,
+      "ts": 6900807.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 78,
+      "ts": 6900808
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 78,
+      "ts": 6900808
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 78,
+      "ts": 6900808
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5999999940395355,
+      "frame": 78,
+      "ts": 6900808.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.1000000089406967,
+      "frame": 78,
+      "ts": 6900811.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 78,
+      "ts": 6900827.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.7000000029802322,
+      "frame": 79,
+      "ts": 6900829.5
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.300000011920929,
+      "frame": 79,
+      "ts": 6900830.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 79,
+      "ts": 6900831
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 79,
+      "ts": 6900831.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 79,
+      "ts": 6900831.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 79,
+      "ts": 6900831.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.1000000089406967,
+      "frame": 79,
+      "ts": 6900834.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.40000000037253,
+      "frame": 79,
+      "ts": 6900852.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2999999970197678,
+      "frame": 80,
+      "ts": 6900854.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.7999999970197678,
+      "frame": 80,
+      "ts": 6900856
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 80,
+      "ts": 6900856.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 80,
+      "ts": 6900856.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 80,
+      "ts": 6900856.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.2000000029802322,
+      "frame": 80,
+      "ts": 6900856.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.4000000059604645,
+      "frame": 80,
+      "ts": 6900858.700000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 80,
+      "ts": 6900876.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 81,
+      "ts": 6900877.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.3999999910593033,
+      "frame": 81,
+      "ts": 6900879.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 81,
+      "ts": 6900879.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 81,
+      "ts": 6900879.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 81,
+      "ts": 6900879.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.8999999910593033,
+      "frame": 81,
+      "ts": 6900879.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.4000000059604645,
+      "frame": 81,
+      "ts": 6900882.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.299999999813735,
+      "frame": 81,
+      "ts": 6900896.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 82,
+      "ts": 6900897.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.0999999940395355,
+      "frame": 82,
+      "ts": 6900899
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 82,
+      "ts": 6900899.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 82,
+      "ts": 6900899.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 82,
+      "ts": 6900899.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.2999999970197678,
+      "frame": 82,
+      "ts": 6900899.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 82,
+      "ts": 6900901.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.799999999813735,
+      "frame": 82,
+      "ts": 6900916.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 83,
+      "ts": 6900917.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.9000000059604645,
+      "frame": 83,
+      "ts": 6900919.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 83,
+      "ts": 6900919.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 83,
+      "ts": 6900920
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 83,
+      "ts": 6900920
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.2000000029802322,
+      "frame": 83,
+      "ts": 6900920
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.0999999940395355,
+      "frame": 83,
+      "ts": 6900922.099999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 83,
+      "ts": 6900937.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1,
+      "frame": 84,
+      "ts": 6900938.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.199999988079071,
+      "frame": 84,
+      "ts": 6900939.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 84,
+      "ts": 6900939.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 84,
+      "ts": 6900939.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 84,
+      "ts": 6900939.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.3999999910593033,
+      "frame": 84,
+      "ts": 6900939.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 84,
+      "ts": 6900942
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.200000000186265,
+      "frame": 84,
+      "ts": 6900961.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 85,
+      "ts": 6900963.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5999999940395355,
+      "frame": 85,
+      "ts": 6900964.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 85,
+      "ts": 6900965
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 85,
+      "ts": 6900965.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 85,
+      "ts": 6900965.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.8999999910593033,
+      "frame": 85,
+      "ts": 6900965.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.6000000089406967,
+      "frame": 85,
+      "ts": 6900967.700000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 85,
+      "ts": 6900983
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 86,
+      "ts": 6900984.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.0999999940395355,
+      "frame": 86,
+      "ts": 6900985.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 86,
+      "ts": 6900985.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 86,
+      "ts": 6900985.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 86,
+      "ts": 6900985.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.2999999970197678,
+      "frame": 86,
+      "ts": 6900985.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2,
+      "frame": 86,
+      "ts": 6900987.700000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.699999999254942,
+      "frame": 86,
+      "ts": 6901002.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.199999988079071,
+      "frame": 87,
+      "ts": 6901003.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 87,
+      "ts": 6901005
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 87,
+      "ts": 6901005.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 87,
+      "ts": 6901005.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 87,
+      "ts": 6901005.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.6000000089406967,
+      "frame": 87,
+      "ts": 6901005.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 1.8999999910593033,
+      "frame": 87,
+      "ts": 6901007.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.600000000558794,
+      "frame": 87,
+      "ts": 6901024.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.5,
+      "frame": 88,
+      "ts": 6901026.5
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.6000000089406967,
+      "frame": 88,
+      "ts": 6901028.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 88,
+      "ts": 6901028.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 88,
+      "ts": 6901028.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 88,
+      "ts": 6901028.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2,
+      "frame": 88,
+      "ts": 6901028.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 88,
+      "ts": 6901030.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.39999999944121,
+      "frame": 88,
+      "ts": 6901048
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 89,
+      "ts": 6901049.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.7000000029802322,
+      "frame": 89,
+      "ts": 6901051.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 89,
+      "ts": 6901051.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 89,
+      "ts": 6901051.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 89,
+      "ts": 6901051.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.9000000059604645,
+      "frame": 89,
+      "ts": 6901051.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2999999970197678,
+      "frame": 89,
+      "ts": 6901053.700000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 19.5,
+      "frame": 89,
+      "ts": 6901075.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.5999999940395355,
+      "frame": 90,
+      "ts": 6901077
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 90,
+      "ts": 6901078.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 90,
+      "ts": 6901078.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 90,
+      "ts": 6901078.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 90,
+      "ts": 6901078.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7999999970197678,
+      "frame": 90,
+      "ts": 6901078.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.1000000089406967,
+      "frame": 90,
+      "ts": 6901080.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.40000000037253,
+      "frame": 90,
+      "ts": 6901103.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.4000000059604645,
+      "frame": 91,
+      "ts": 6901105.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 91,
+      "ts": 6901106.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 91,
+      "ts": 6901106.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 91,
+      "ts": 6901106.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 91,
+      "ts": 6901106.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.6000000089406967,
+      "frame": 91,
+      "ts": 6901106.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 1.8999999910593033,
+      "frame": 91,
+      "ts": 6901108.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 13.900000000372529,
+      "frame": 91,
+      "ts": 6901123.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.9000000059604645,
+      "frame": 92,
+      "ts": 6901126
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 92,
+      "ts": 6901127.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 92,
+      "ts": 6901127.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 92,
+      "ts": 6901127.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0.10000000894069672,
+      "frame": 92,
+      "ts": 6901127.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.9000000059604645,
+      "frame": 92,
+      "ts": 6901127.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.2999999970197678,
+      "frame": 92,
+      "ts": 6901131.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 38.39999999944121,
+      "frame": 92,
+      "ts": 6901148.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 93,
+      "ts": 6901149.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2000000029802322,
+      "frame": 93,
+      "ts": 6901151
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 93,
+      "ts": 6901151.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 93,
+      "ts": 6901151.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 93,
+      "ts": 6901151.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 93,
+      "ts": 6901151.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.1000000089406967,
+      "frame": 93,
+      "ts": 6901153.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 11.600000000558794,
+      "frame": 93,
+      "ts": 6901170.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.4000000059604645,
+      "frame": 94,
+      "ts": 6901171.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2,
+      "frame": 94,
+      "ts": 6901173.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 94,
+      "ts": 6901174.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 94,
+      "ts": 6901174.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 94,
+      "ts": 6901174.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.2999999970197678,
+      "frame": 94,
+      "ts": 6901174.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2999999970197678,
+      "frame": 94,
+      "ts": 6901176.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.699999999254942,
+      "frame": 94,
+      "ts": 6901191.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 95,
+      "ts": 6901193
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2.7999999970197678,
+      "frame": 95,
+      "ts": 6901195.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 95,
+      "ts": 6901196.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 95,
+      "ts": 6901196.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 95,
+      "ts": 6901196.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 3.2000000029802322,
+      "frame": 95,
+      "ts": 6901196.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2,
+      "frame": 95,
+      "ts": 6901198.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.30000000074506,
+      "frame": 95,
+      "ts": 6901217.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.699999988079071,
+      "frame": 96,
+      "ts": 6901219.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2000000029802322,
+      "frame": 96,
+      "ts": 6901220.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 96,
+      "ts": 6901220.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 96,
+      "ts": 6901220.5
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 96,
+      "ts": 6901220.5
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.4000000059604645,
+      "frame": 96,
+      "ts": 6901220.5
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.2999999970197678,
+      "frame": 96,
+      "ts": 6901223.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.699999999254942,
+      "frame": 96,
+      "ts": 6901239.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 0.9000000059604645,
+      "frame": 97,
+      "ts": 6901240.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 0.9000000059604645,
+      "frame": 97,
+      "ts": 6901241.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 97,
+      "ts": 6901241.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 97,
+      "ts": 6901241.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 97,
+      "ts": 6901241.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.2000000029802322,
+      "frame": 97,
+      "ts": 6901241.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2,
+      "frame": 97,
+      "ts": 6901243.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 23.600000000558794,
+      "frame": 97,
+      "ts": 6901258
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 98,
+      "ts": 6901259.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 98,
+      "ts": 6901260.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 98,
+      "ts": 6901260.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 98,
+      "ts": 6901260.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0.09999999403953552,
+      "frame": 98,
+      "ts": 6901261
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.9000000059604645,
+      "frame": 98,
+      "ts": 6901261
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.4000000059604645,
+      "frame": 98,
+      "ts": 6901263.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 98,
+      "ts": 6901280
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 99,
+      "ts": 6901281.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.199999988079071,
+      "frame": 99,
+      "ts": 6901282.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 99,
+      "ts": 6901282.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 99,
+      "ts": 6901282.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 99,
+      "ts": 6901282.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.3999999910593033,
+      "frame": 99,
+      "ts": 6901282.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2,
+      "frame": 99,
+      "ts": 6901284.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 17,
+      "frame": 99,
+      "ts": 6901297.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.3999999910593033,
+      "frame": 100,
+      "ts": 6901299.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 0.9000000059604645,
+      "frame": 100,
+      "ts": 6901300
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 100,
+      "ts": 6901300.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 100,
+      "ts": 6901300.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 100,
+      "ts": 6901300.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.2000000029802322,
+      "frame": 100,
+      "ts": 6901300.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2999999970197678,
+      "frame": 100,
+      "ts": 6901302.599999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.600000000558794,
+      "frame": 100,
+      "ts": 6901317.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 2.2999999970197678,
+      "frame": 101,
+      "ts": 6901320.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.199999988079071,
+      "frame": 101,
+      "ts": 6901321.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 101,
+      "ts": 6901321.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 101,
+      "ts": 6901321.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 101,
+      "ts": 6901321.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.6000000089406967,
+      "frame": 101,
+      "ts": 6901321.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.3999999910593033,
+      "frame": 101,
+      "ts": 6901324.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 26.299999999813735,
+      "frame": 101,
+      "ts": 6901339
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 102,
+      "ts": 6901340.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 0.9000000059604645,
+      "frame": 102,
+      "ts": 6901341.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 102,
+      "ts": 6901341.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 102,
+      "ts": 6901341.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 102,
+      "ts": 6901341.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.1000000089406967,
+      "frame": 102,
+      "ts": 6901341.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 1.8999999910593033,
+      "frame": 102,
+      "ts": 6901343.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 102,
+      "ts": 6901358
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1,
+      "frame": 103,
+      "ts": 6901359.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 0.800000011920929,
+      "frame": 103,
+      "ts": 6901359.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0,
+      "frame": 103,
+      "ts": 6901359.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 103,
+      "ts": 6901360
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 103,
+      "ts": 6901360
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 0.9000000059604645,
+      "frame": 103,
+      "ts": 6901360
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 1.7000000029802322,
+      "frame": 103,
+      "ts": 6901361.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 103,
+      "ts": 6901377.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1,
+      "frame": 104,
+      "ts": 6901378.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1,
+      "frame": 104,
+      "ts": 6901379.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 104,
+      "ts": 6901379.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 104,
+      "ts": 6901379.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 104,
+      "ts": 6901380
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.2999999970197678,
+      "frame": 104,
+      "ts": 6901380
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 1.7999999970197678,
+      "frame": 104,
+      "ts": 6901381.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.40000000037253,
+      "frame": 104,
+      "ts": 6901395.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 105,
+      "ts": 6901397
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2,
+      "frame": 105,
+      "ts": 6901399.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 105,
+      "ts": 6901399.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 105,
+      "ts": 6901399.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 105,
+      "ts": 6901399.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.300000011920929,
+      "frame": 105,
+      "ts": 6901399.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.5,
+      "frame": 105,
+      "ts": 6901401.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 105,
+      "ts": 6901420.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.300000011920929,
+      "frame": 106,
+      "ts": 6901421.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.199999988079071,
+      "frame": 106,
+      "ts": 6901423.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.4000000059604645,
+      "frame": 106,
+      "ts": 6901423.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 106,
+      "ts": 6901423.5
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 106,
+      "ts": 6901423.5
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5999999940395355,
+      "frame": 106,
+      "ts": 6901423.5
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 1.800000011920929,
+      "frame": 106,
+      "ts": 6901425.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 106,
+      "ts": 6901441.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 107,
+      "ts": 6901442.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 0.8999999910593033,
+      "frame": 107,
+      "ts": 6901443.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 107,
+      "ts": 6901443.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 107,
+      "ts": 6901443.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 107,
+      "ts": 6901443.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.2000000029802322,
+      "frame": 107,
+      "ts": 6901443.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.199999988079071,
+      "frame": 107,
+      "ts": 6901446.099999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 107,
+      "ts": 6901459.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 108,
+      "ts": 6901461.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.7999999970197678,
+      "frame": 108,
+      "ts": 6901463
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 108,
+      "ts": 6901463.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 108,
+      "ts": 6901463.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 108,
+      "ts": 6901463.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2,
+      "frame": 108,
+      "ts": 6901463.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 108,
+      "ts": 6901465.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.19999999925494,
+      "frame": 108,
+      "ts": 6901482
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.300000011920929,
+      "frame": 109,
+      "ts": 6901483.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.0999999940395355,
+      "frame": 109,
+      "ts": 6901484.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 109,
+      "ts": 6901484.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 109,
+      "ts": 6901484.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 109,
+      "ts": 6901484.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.3999999910593033,
+      "frame": 109,
+      "ts": 6901484.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 1.7999999970197678,
+      "frame": 109,
+      "ts": 6901486.599999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 109,
+      "ts": 6901500.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 110,
+      "ts": 6901502.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2000000029802322,
+      "frame": 110,
+      "ts": 6901503.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 110,
+      "ts": 6901503.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.20000000298023224,
+      "frame": 110,
+      "ts": 6901503.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 110,
+      "ts": 6901503.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.6000000089406967,
+      "frame": 110,
+      "ts": 6901503.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 1.8999999910593033,
+      "frame": 110,
+      "ts": 6901505.599999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 110,
+      "ts": 6901519.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 111,
+      "ts": 6901520.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 111,
+      "ts": 6901521.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 111,
+      "ts": 6901521.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 111,
+      "ts": 6901521.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 111,
+      "ts": 6901521.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 111,
+      "ts": 6901521.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.3999999910593033,
+      "frame": 111,
+      "ts": 6901524.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 111,
+      "ts": 6901538.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 112,
+      "ts": 6901539.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 0.8999999910593033,
+      "frame": 112,
+      "ts": 6901540.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 112,
+      "ts": 6901541
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 112,
+      "ts": 6901541.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 112,
+      "ts": 6901541.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.199999988079071,
+      "frame": 112,
+      "ts": 6901541.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 1.9000000059604645,
+      "frame": 112,
+      "ts": 6901543
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 112,
+      "ts": 6901556.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 0.7999999970197678,
+      "frame": 113,
+      "ts": 6901557.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1,
+      "frame": 113,
+      "ts": 6901558.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 113,
+      "ts": 6901558.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 113,
+      "ts": 6901558.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 113,
+      "ts": 6901558.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.2000000029802322,
+      "frame": 113,
+      "ts": 6901558.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 1.7999999970197678,
+      "frame": 113,
+      "ts": 6901560.700000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.5,
+      "frame": 113,
+      "ts": 6901577.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 114,
+      "ts": 6901578.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1,
+      "frame": 114,
+      "ts": 6901580
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 114,
+      "ts": 6901580.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 114,
+      "ts": 6901580.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 114,
+      "ts": 6901580.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 114,
+      "ts": 6901580.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.0999999940395355,
+      "frame": 114,
+      "ts": 6901582.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 3.7000000029802322,
+      "frame": 114,
+      "ts": 6902180.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 114,
+      "ts": 6902180.900000006
+    },
+    {
+      "type": "span",
+      "name": "values.updateMasked",
+      "durationMs": 0,
+      "frame": 114,
+      "ts": 6902181
+    },
+    {
+      "type": "span",
+      "name": "values.updateSelected",
+      "durationMs": 0.09999999403953552,
+      "frame": 114,
+      "ts": 6902181.099999994
+    },
+    {
+      "type": "span",
+      "name": "values.updateMasked",
+      "durationMs": 0,
+      "frame": 114,
+      "ts": 6902195.299999997
+    },
+    {
+      "type": "span",
+      "name": "values.updateSelected",
+      "durationMs": 0.29999999701976776,
+      "frame": 114,
+      "ts": 6902195.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 2.6000000089406967,
+      "frame": 114,
+      "ts": 6902281.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.29999999701976776,
+      "frame": 114,
+      "ts": 6902281.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.1000000089406967,
+      "frame": 115,
+      "ts": 6902304.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 0.3999999910593033,
+      "frame": 115,
+      "ts": 6902304.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 2.2000000029802322,
+      "frame": 115,
+      "ts": 6902307.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 115,
+      "ts": 6902307.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 115,
+      "ts": 6902307.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.8999999910593033,
+      "frame": 115,
+      "ts": 6902307.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 1.7999999970197678,
+      "frame": 115,
+      "ts": 6902309.099999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 28.002000000327826,
+      "frame": 115,
+      "ts": 6902331.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.3999999910593033,
+      "frame": 116,
+      "ts": 6902333.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 3.5,
+      "frame": 116,
+      "ts": 6902336.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 116,
+      "ts": 6902336.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 116,
+      "ts": 6902337
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 116,
+      "ts": 6902337
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 3.9000000059604645,
+      "frame": 116,
+      "ts": 6902337
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2999999970197678,
+      "frame": 116,
+      "ts": 6902339.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.799999999813735,
+      "frame": 116,
+      "ts": 6902356.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.4000000059604645,
+      "frame": 117,
+      "ts": 6902357.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 117,
+      "ts": 6902359.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 117,
+      "ts": 6902359.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 117,
+      "ts": 6902359.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 117,
+      "ts": 6902359.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.699999988079071,
+      "frame": 117,
+      "ts": 6902359.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.300000011920929,
+      "frame": 117,
+      "ts": 6902361.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 117,
+      "ts": 6902380
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 118,
+      "ts": 6902381.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5999999940395355,
+      "frame": 118,
+      "ts": 6902383.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.30000001192092896,
+      "frame": 118,
+      "ts": 6902383.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 118,
+      "ts": 6902383.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 118,
+      "ts": 6902383.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.9000000059604645,
+      "frame": 118,
+      "ts": 6902383.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.199999988079071,
+      "frame": 118,
+      "ts": 6902385.599999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.299999999813735,
+      "frame": 118,
+      "ts": 6902404
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 119,
+      "ts": 6902405.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2000000029802322,
+      "frame": 119,
+      "ts": 6902406.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 119,
+      "ts": 6902406.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 119,
+      "ts": 6902406.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 119,
+      "ts": 6902406.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.6000000089406967,
+      "frame": 119,
+      "ts": 6902406.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.199999988079071,
+      "frame": 119,
+      "ts": 6902410.099999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.700000000186265,
+      "frame": 119,
+      "ts": 6902430.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 3.5,
+      "frame": 120,
+      "ts": 6902434.5
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 120,
+      "ts": 6902435.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 120,
+      "ts": 6902436
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.20000000298023224,
+      "frame": 120,
+      "ts": 6902436.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 120,
+      "ts": 6902436.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7000000029802322,
+      "frame": 120,
+      "ts": 6902436.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 4,
+      "frame": 120,
+      "ts": 6902440.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.299999999813735,
+      "frame": 120,
+      "ts": 6902463.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.3999999910593033,
+      "frame": 121,
+      "ts": 6902465.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 121,
+      "ts": 6902466.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 121,
+      "ts": 6902466.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 121,
+      "ts": 6902466.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 121,
+      "ts": 6902466.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 121,
+      "ts": 6902466.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.5999999940395355,
+      "frame": 121,
+      "ts": 6902469.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.299999999813735,
+      "frame": 121,
+      "ts": 6902491.5
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.4000000059604645,
+      "frame": 122,
+      "ts": 6902493
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 122,
+      "ts": 6902494.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 122,
+      "ts": 6902494.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 122,
+      "ts": 6902494.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 122,
+      "ts": 6902494.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5999999940395355,
+      "frame": 122,
+      "ts": 6902494.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 4.300000011920929,
+      "frame": 122,
+      "ts": 6902498.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.299999999813735,
+      "frame": 122,
+      "ts": 6902522.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2999999970197678,
+      "frame": 123,
+      "ts": 6902524.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.7000000029802322,
+      "frame": 123,
+      "ts": 6902525.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 123,
+      "ts": 6902526.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 123,
+      "ts": 6902526.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 123,
+      "ts": 6902526.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2,
+      "frame": 123,
+      "ts": 6902526.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3,
+      "frame": 123,
+      "ts": 6902529.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.60000000055879,
+      "frame": 123,
+      "ts": 6902548.5
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 3.2000000029802322,
+      "frame": 124,
+      "ts": 6902551.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.8999999910593033,
+      "frame": 124,
+      "ts": 6902553.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 124,
+      "ts": 6902554
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 124,
+      "ts": 6902554.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 124,
+      "ts": 6902554.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.2999999970197678,
+      "frame": 124,
+      "ts": 6902554.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.0999999940395355,
+      "frame": 124,
+      "ts": 6902556.299999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 124,
+      "ts": 6902574.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.199999988079071,
+      "frame": 125,
+      "ts": 6902575.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.1000000089406967,
+      "frame": 125,
+      "ts": 6902576.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 125,
+      "ts": 6902576.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 125,
+      "ts": 6902576.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 125,
+      "ts": 6902576.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.300000011920929,
+      "frame": 125,
+      "ts": 6902576.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2,
+      "frame": 125,
+      "ts": 6902578.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.299999999813735,
+      "frame": 125,
+      "ts": 6902599.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 5.300000011920929,
+      "frame": 126,
+      "ts": 6902604.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.199999988079071,
+      "frame": 126,
+      "ts": 6902606.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 126,
+      "ts": 6902606.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 126,
+      "ts": 6902606.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 126,
+      "ts": 6902606.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 126,
+      "ts": 6902606.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 7.199999988079071,
+      "frame": 126,
+      "ts": 6902613.599999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.40000000037253,
+      "frame": 126,
+      "ts": 6902633.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.9000000059604645,
+      "frame": 127,
+      "ts": 6902635.5
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.4000000059604645,
+      "frame": 127,
+      "ts": 6902637
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 127,
+      "ts": 6902637.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 127,
+      "ts": 6902637.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 127,
+      "ts": 6902637.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7000000029802322,
+      "frame": 127,
+      "ts": 6902637.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.6000000089406967,
+      "frame": 127,
+      "ts": 6902639.900000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 20.90000000037253,
+      "frame": 127,
+      "ts": 6902657
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2999999970197678,
+      "frame": 128,
+      "ts": 6902658.5
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2.9000000059604645,
+      "frame": 128,
+      "ts": 6902661.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 128,
+      "ts": 6902661.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 128,
+      "ts": 6902661.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 128,
+      "ts": 6902661.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 3.4000000059604645,
+      "frame": 128,
+      "ts": 6902661.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.5999999940395355,
+      "frame": 128,
+      "ts": 6902664.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 29.09999999962747,
+      "frame": 128,
+      "ts": 6902690.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 3.2000000029802322,
+      "frame": 129,
+      "ts": 6902693.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2,
+      "frame": 129,
+      "ts": 6902695.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 129,
+      "ts": 6902695.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 129,
+      "ts": 6902695.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 129,
+      "ts": 6902695.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.5,
+      "frame": 129,
+      "ts": 6902696
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.7999999970197678,
+      "frame": 129,
+      "ts": 6902698.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.40000000037253,
+      "frame": 129,
+      "ts": 6902715.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2999999970197678,
+      "frame": 130,
+      "ts": 6902716.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.4000000059604645,
+      "frame": 130,
+      "ts": 6902718.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 130,
+      "ts": 6902718.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 130,
+      "ts": 6902718.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 130,
+      "ts": 6902718.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7999999970197678,
+      "frame": 130,
+      "ts": 6902718.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.4000000059604645,
+      "frame": 130,
+      "ts": 6902721
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.59999999962747,
+      "frame": 130,
+      "ts": 6902737
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 131,
+      "ts": 6902738.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2999999970197678,
+      "frame": 131,
+      "ts": 6902739.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 131,
+      "ts": 6902739.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 131,
+      "ts": 6902740
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 131,
+      "ts": 6902740
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5999999940395355,
+      "frame": 131,
+      "ts": 6902740
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2,
+      "frame": 131,
+      "ts": 6902742
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.799999999813735,
+      "frame": 131,
+      "ts": 6902761.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 132,
+      "ts": 6902762.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.2000000029802322,
+      "frame": 132,
+      "ts": 6902764
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 132,
+      "ts": 6902764.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 132,
+      "ts": 6902764.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 132,
+      "ts": 6902764.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.5,
+      "frame": 132,
+      "ts": 6902764.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 132,
+      "ts": 6902766.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 46.90000000037253,
+      "frame": 132,
+      "ts": 6902805.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.0999999940395355,
+      "frame": 133,
+      "ts": 6902806.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 133,
+      "ts": 6902808.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 133,
+      "ts": 6902808.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 133,
+      "ts": 6902808.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 133,
+      "ts": 6902808.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.9000000059604645,
+      "frame": 133,
+      "ts": 6902808.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.5999999940395355,
+      "frame": 133,
+      "ts": 6902812.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 36.39999999944121,
+      "frame": 133,
+      "ts": 6902834.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 9.700000002980232,
+      "frame": 134,
+      "ts": 6902844.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.4000000059604645,
+      "frame": 134,
+      "ts": 6902845.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 134,
+      "ts": 6902845.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 134,
+      "ts": 6902845.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 134,
+      "ts": 6902845.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.6000000089406967,
+      "frame": 134,
+      "ts": 6902845.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 6.5,
+      "frame": 134,
+      "ts": 6902852.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 50.10000000055879,
+      "frame": 134,
+      "ts": 6902905.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 4.5,
+      "frame": 135,
+      "ts": 6902910.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 6.699999988079071,
+      "frame": 135,
+      "ts": 6902917.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 135,
+      "ts": 6902917.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 135,
+      "ts": 6902917.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 135,
+      "ts": 6902917.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 7.299999997019768,
+      "frame": 135,
+      "ts": 6902917.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 6.100000008940697,
+      "frame": 135,
+      "ts": 6902923.700000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 83.29999999981374,
+      "frame": 135,
+      "ts": 6902973.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 2.3999999910593033,
+      "frame": 136,
+      "ts": 6902975.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 9.099999994039536,
+      "frame": 136,
+      "ts": 6902985
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 136,
+      "ts": 6902985.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 136,
+      "ts": 6902985.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 136,
+      "ts": 6902985.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 9.399999991059303,
+      "frame": 136,
+      "ts": 6902985.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 9.799999997019768,
+      "frame": 136,
+      "ts": 6902995.099999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 100.09999999962747,
+      "frame": 136,
+      "ts": 6903074.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 2,
+      "frame": 137,
+      "ts": 6903076.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.1000000089406967,
+      "frame": 137,
+      "ts": 6903077.5
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 137,
+      "ts": 6903077.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 137,
+      "ts": 6903077.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 137,
+      "ts": 6903077.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.4000000059604645,
+      "frame": 137,
+      "ts": 6903077.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.6000000089406967,
+      "frame": 137,
+      "ts": 6903080.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.600000000558794,
+      "frame": 137,
+      "ts": 6903111.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 7.4000000059604645,
+      "frame": 138,
+      "ts": 6903118.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2.0999999940395355,
+      "frame": 138,
+      "ts": 6903121
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 138,
+      "ts": 6903121.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 138,
+      "ts": 6903121.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 138,
+      "ts": 6903121.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.3999999910593033,
+      "frame": 138,
+      "ts": 6903121.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 4.799999997019768,
+      "frame": 138,
+      "ts": 6903126.099999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 50,
+      "frame": 138,
+      "ts": 6903147
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 5.4000000059604645,
+      "frame": 139,
+      "ts": 6903152.5
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 139,
+      "ts": 6903154
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 139,
+      "ts": 6903154.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 139,
+      "ts": 6903154.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 139,
+      "ts": 6903154.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7999999970197678,
+      "frame": 139,
+      "ts": 6903154.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 7.9000000059604645,
+      "frame": 139,
+      "ts": 6903162.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 50.09999999962747,
+      "frame": 139,
+      "ts": 6903182.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 3.2999999970197678,
+      "frame": 140,
+      "ts": 6903185.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 140,
+      "ts": 6903187.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.19999998807907104,
+      "frame": 140,
+      "ts": 6903187.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 140,
+      "ts": 6903187.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 140,
+      "ts": 6903187.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7999999970197678,
+      "frame": 140,
+      "ts": 6903187.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.8999999910593033,
+      "frame": 140,
+      "ts": 6903190.599999994
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.600000000558794,
+      "frame": 140,
+      "ts": 6903214.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 3.3999999910593033,
+      "frame": 141,
+      "ts": 6903218.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 6,
+      "frame": 141,
+      "ts": 6903224.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 141,
+      "ts": 6903224.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 141,
+      "ts": 6903224.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 141,
+      "ts": 6903224.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 6.200000002980232,
+      "frame": 141,
+      "ts": 6903224.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 7.100000008940697,
+      "frame": 141,
+      "ts": 6903231.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 83.29999999981374,
+      "frame": 141,
+      "ts": 6903281.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 7,
+      "frame": 142,
+      "ts": 6903288.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 142,
+      "ts": 6903289.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 142,
+      "ts": 6903290.099999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 142,
+      "ts": 6903290.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 142,
+      "ts": 6903290.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.8999999910593033,
+      "frame": 142,
+      "ts": 6903290.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 11.100000008940697,
+      "frame": 142,
+      "ts": 6903301.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 50.09999999962747,
+      "frame": 142,
+      "ts": 6903334.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 143,
+      "ts": 6903336.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 4.199999988079071,
+      "frame": 143,
+      "ts": 6903340.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.4000000059604645,
+      "frame": 143,
+      "ts": 6903341
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 143,
+      "ts": 6903341
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0.09999999403953552,
+      "frame": 143,
+      "ts": 6903341.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 4.699999988079071,
+      "frame": 143,
+      "ts": 6903341.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 4.200000002980232,
+      "frame": 143,
+      "ts": 6903345.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.600000000558794,
+      "frame": 143,
+      "ts": 6903366.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 3,
+      "frame": 144,
+      "ts": 6903370.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 4.200000002980232,
+      "frame": 144,
+      "ts": 6903374.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.10000000894069672,
+      "frame": 144,
+      "ts": 6903374.400000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 144,
+      "ts": 6903374.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 144,
+      "ts": 6903374.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 4.5,
+      "frame": 144,
+      "ts": 6903374.599999994
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 7.100000008940697,
+      "frame": 144,
+      "ts": 6903381.700000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 66.8999999994412,
+      "frame": 144,
+      "ts": 6903421.099999994
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 11,
+      "frame": 145,
+      "ts": 6903432.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 145,
+      "ts": 6903433.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 2.9000000059604645,
+      "frame": 145,
+      "ts": 6903436.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.20000000298023224,
+      "frame": 145,
+      "ts": 6903437.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 145,
+      "ts": 6903437.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 4.799999997019768,
+      "frame": 145,
+      "ts": 6903437.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 11,
+      "frame": 145,
+      "ts": 6903448.200000003
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 66.70000000018626,
+      "frame": 145,
+      "ts": 6903495.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 2.2000000029802322,
+      "frame": 146,
+      "ts": 6903497.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 2.0999999940395355,
+      "frame": 146,
+      "ts": 6903500
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 146,
+      "ts": 6903500.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 146,
+      "ts": 6903500.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 146,
+      "ts": 6903500.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 2.5,
+      "frame": 146,
+      "ts": 6903500.400000006
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 2.3999999910593033,
+      "frame": 146,
+      "ts": 6903502.799999997
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 33.40000000037253,
+      "frame": 146,
+      "ts": 6903520.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.2000000029802322,
+      "frame": 147,
+      "ts": 6903522
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 147,
+      "ts": 6903523.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 147,
+      "ts": 6903523.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0,
+      "frame": 147,
+      "ts": 6903523.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 147,
+      "ts": 6903524
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.9000000059604645,
+      "frame": 147,
+      "ts": 6903524
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.5,
+      "frame": 147,
+      "ts": 6903527.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 16.699999999254942,
+      "frame": 147,
+      "ts": 6903545.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 1.5999999940395355,
+      "frame": 148,
+      "ts": 6903547.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 3.4000000059604645,
+      "frame": 148,
+      "ts": 6903551.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.29999999701976776,
+      "frame": 148,
+      "ts": 6903551.599999994
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 148,
+      "ts": 6903551.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 148,
+      "ts": 6903551.700000003
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 4,
+      "frame": 148,
+      "ts": 6903551.799999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 9.700000002980232,
+      "frame": 148,
+      "ts": 6903561.5
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 66.70000000018626,
+      "frame": 148,
+      "ts": 6903611.900000006
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 7.299999997019768,
+      "frame": 149,
+      "ts": 6903619.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 14.5,
+      "frame": 149,
+      "ts": 6903633.900000006
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 149,
+      "ts": 6903634.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 149,
+      "ts": 6903634.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 149,
+      "ts": 6903634.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 14.899999991059303,
+      "frame": 149,
+      "ts": 6903634.299999997
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 11.100000008940697,
+      "frame": 149,
+      "ts": 6903645.400000006
+    },
+    {
+      "type": "value",
+      "name": "frame.interval",
+      "value": 66.6000000005588,
+      "frame": 149,
+      "ts": 6903681.5
+    },
+    {
+      "type": "span",
+      "name": "draw.resolveEvent",
+      "durationMs": 2.5,
+      "frame": 150,
+      "ts": 6903685.200000003
+    },
+    {
+      "type": "span",
+      "name": "draw.tool",
+      "durationMs": 1.5,
+      "frame": 150,
+      "ts": 6903686.700000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.09999999403953552,
+      "frame": 150,
+      "ts": 6903686.799999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.09999999403953552,
+      "frame": 150,
+      "ts": 6903687
+    },
+    {
+      "type": "span",
+      "name": "draw.valuesMasked",
+      "durationMs": 0,
+      "frame": 150,
+      "ts": 6903687
+    },
+    {
+      "type": "span",
+      "name": "draw.onDraw",
+      "durationMs": 1.7999999970197678,
+      "frame": 150,
+      "ts": 6903687
+    },
+    {
+      "type": "span",
+      "name": "draw.pushFrameRelatedEvent",
+      "durationMs": 3.2000000029802322,
+      "frame": 150,
+      "ts": 6903690.200000003
+    },
+    {
+      "type": "span",
+      "name": "canvas.uploadGpu",
+      "durationMs": 0.20000000298023224,
+      "frame": 150,
+      "ts": 6903705.299999997
+    },
+    {
+      "type": "span",
+      "name": "canvas.present",
+      "durationMs": 0.10000000894069672,
+      "frame": 150,
+      "ts": 6903705.400000006
+    },
+    {
+      "type": "span",
+      "name": "values.updateMasked",
+      "durationMs": 0,
+      "frame": 150,
+      "ts": 6903705.400000006
+    },
+    {
+      "type": "span",
+      "name": "values.updateSelected",
+      "durationMs": 0.09999999403953552,
+      "frame": 150,
+      "ts": 6903705.5
+    },
+    {
+      "type": "span",
+      "name": "values.updateMasked",
+      "durationMs": 0,
+      "frame": 150,
+      "ts": 6903741.299999997
+    },
+    {
+      "type": "span",
+      "name": "values.updateSelected",
+      "durationMs": 0.20000000298023224,
+      "frame": 150,
+      "ts": 6903741.5
+    }
+  ],
+  "summary": {
+    "spans": {
+      "canvas.uploadGpu": {
+        "count": 156,
+        "avgMs": 0.34230769272798134,
+        "maxMs": 4,
+        "minMs": 0
+      },
+      "canvas.present": {
+        "count": 156,
+        "avgMs": 0.06538461597684102,
+        "maxMs": 0.30000001192092896,
+        "minMs": 0
+      },
+      "draw.resolveEvent": {
+        "count": 150,
+        "avgMs": 1.8153333332141244,
+        "maxMs": 11,
+        "minMs": 0.7999999970197678
+      },
+      "draw.tool": {
+        "count": 150,
+        "avgMs": 1.7086666660507526,
+        "maxMs": 14.5,
+        "minMs": 0.20000000298023224
+      },
+      "draw.valuesMasked": {
+        "count": 150,
+        "avgMs": 0.01,
+        "maxMs": 0.4000000059604645,
+        "minMs": 0
+      },
+      "draw.onDraw": {
+        "count": 150,
+        "avgMs": 2.140666666328907,
+        "maxMs": 14.899999991059303,
+        "minMs": 0.9000000059604645
+      },
+      "draw.pushFrameRelatedEvent": {
+        "count": 150,
+        "avgMs": 2.9953333336114882,
+        "maxMs": 11.100000008940697,
+        "minMs": 1.7000000029802322
+      },
+      "values.updateMasked": {
+        "count": 6,
+        "avgMs": 0,
+        "maxMs": 0,
+        "minMs": 0
+      },
+      "values.updateSelected": {
+        "count": 6,
+        "avgMs": 0.1999999980131785,
+        "maxMs": 0.4000000059604645,
+        "minMs": 0.09999999403953552
+      }
+    },
+    "values": {
+      "frame.interval": {
+        "count": 147,
+        "avg": 34.79506122448872,
+        "max": 1066.7000000001863,
+        "min": 10.400000000372529
+      }
+    },
+    "logCount": 0,
+    "entryCount": 1221
+  }
+}

@@ -29,7 +29,7 @@
 
 `video.pushNewFrame` — этап 4a: source-паттерн `copyTex`, **0.21 ms** ([`baselines/04-after.md`](baselines/04-after.md)). Камера пока `texSubImage3D` с video.
 
-`video.drawImage` — только platformer world. Видимый монитор: `canvas.present` **0.08 ms** ([`baselines/04-gl-present.md`](baselines/04-gl-present.md)). `video.composite` — source-over на dest, **0.05 ms**. `canvas.downloadGpu` — GL→2D на жесте / `getImageData`. `canvas.uploadGpu` — после штриха.
+`video.drawImage` — только platformer world. Видимый монитор: `canvas.present` **0.08 ms** ([`baselines/04-gl-present.md`](baselines/04-gl-present.md)). `video.composite` — source-over на dest, **0.05 ms**. `canvas.downloadGpu` — GL→2D на жесте / `getImageData` (4b убрал с happy-path dest; остальное — [`04c/`](04c/README.md)). `canvas.uploadGpu` — после штриха / первого GPU-кадра.
 
 Внешний спан `video.getFrameData` / `video.valuesService` / `draw.valuesMasked` уже был — внутри них более узкие имена из таблиц.
 

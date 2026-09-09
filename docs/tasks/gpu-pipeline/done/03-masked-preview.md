@@ -67,7 +67,7 @@
 
 ### Ушло в этап 4
 
-[`04b-gpu-stamps.md`](../04b-gpu-stamps.md): masked/preview как шейдер по текстуре буфера; штамп сэмплит текстуру, не 2D-композит на полный размер. `createMaskedImageFromImageData` остаётся для clipboard / старого `patternValues`.
+[`04b-gpu-stamps.md`](04b-gpu-stamps.md): штамп сэмплит текстуру (срез закрыт). Preview / masked / selection — [`../04c/`](../04c/README.md). `createMaskedImageFromImageData` остаётся для clipboard / старого `patternValues`.
 
 ### Следующая задача
 

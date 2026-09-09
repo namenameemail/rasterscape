@@ -157,6 +157,7 @@ export class PatternBuffer {
         sourceFlipY: boolean,
         stamps: StampDrawParams[],
         opacity: number,
+        clipMask?: HTMLCanvasElement | null,
     ): void => {
         const dest = this.ensureGpu();
         profileLogger.time('canvas.stampGpu', () => {
@@ -168,6 +169,7 @@ export class PatternBuffer {
                 sourceFlipY,
                 stamps,
                 opacity,
+                clipMask,
             );
         });
         this.gpuInSync = true;
@@ -175,7 +177,11 @@ export class PatternBuffer {
         this.gpuFromCanvas = false;
     };
 
-    compositeLayerGpu = (layer: HTMLCanvasElement, opacity = 1): void => {
+    compositeLayerGpu = (
+        layer: HTMLCanvasElement,
+        opacity = 1,
+        clipMask?: HTMLCanvasElement | null,
+    ): void => {
         const dest = this.ensureGpu();
         profileLogger.time('canvas.compositeLayerGpu', () => {
             getGlContext().compositeCanvasOver(
@@ -185,6 +191,7 @@ export class PatternBuffer {
                 this.gpuFromCanvas,
                 layer,
                 opacity,
+                clipMask,
             );
         });
         this.gpuInSync = true;

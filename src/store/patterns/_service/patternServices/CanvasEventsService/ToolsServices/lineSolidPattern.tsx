@@ -88,11 +88,12 @@ export class LineSolidPattern implements ToolService {
         const newPrevPoints = {};
         const toolPattern = state.patterns[patternId];
         const selectionMask = this.patternService.selectionService.mask;
+        const clipMask = this.patternService.selectionService.maskCanvas;
         const dest = this.patternService.canvasService.buffer;
         const useGpu = compositeOperation === ECompositeOperation.SourceOver
-            && !selectionMask
             && !!dest
-            && brushEvent.canvas === dest.canvas;
+            && brushEvent.canvas === dest.canvas
+            && (!selectionMask || !!clipMask);
 
         patternsService.pattern[patternId]?.valuesService.updateMaskedIfNeeded(true);
         const linePatternImage = patternsService.pattern[patternId]?.valuesService.masked;
@@ -137,7 +138,7 @@ export class LineSolidPattern implements ToolService {
         });
 
         if (useGpu) {
-            dest.compositeLayerGpu(this.helperCanvas1.canvas, opacity);
+            dest.compositeLayerGpu(this.helperCanvas1.canvas, opacity, clipMask);
             this.helperCanvas1.clear();
             this.drewGpu = true;
             this.prevPoints = newPrevPoints;
