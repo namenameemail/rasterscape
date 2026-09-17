@@ -386,6 +386,7 @@ export class GlContext {
         dest: WebGLTexture,
         destW: number,
         destH: number,
+        destFlipY: boolean,
         source: WebGLTexture,
         sourceFlipY: boolean,
         stamps: StampDrawParams[],
@@ -397,19 +398,37 @@ export class GlContext {
         }
 
         const {gl} = this
+        let stampSource = source
+        let stampFlipY = sourceFlipY
+
+        if (destFlipY) {
+            const scratch = this.ensureScratch(destW, destH)
+            this.blitTexture(dest, scratch, destW, destH, true)
+            this.copyTexture2D(scratch, dest, destW, destH)
+            if (source === dest) {
+                stampSource = scratch
+                stampFlipY = true
+            }
+        } else if (source === dest) {
+            const scratch = this.ensureScratch(destW, destH)
+            this.copyTexture2D(dest, scratch, destW, destH)
+            stampSource = scratch
+            stampFlipY = true
+        }
+
         this.bindTexture2DTarget(dest, destW, destH)
         gl.enable(gl.BLEND)
         gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
         gl.useProgram(this.stampProgram)
         gl.activeTexture(gl.TEXTURE0)
-        gl.bindTexture(gl.TEXTURE_2D, source)
+        gl.bindTexture(gl.TEXTURE_2D, stampSource)
         gl.uniform1i(gl.getUniformLocation(this.stampProgram, 'u_tex'), 0)
         gl.activeTexture(gl.TEXTURE1)
         gl.bindTexture(gl.TEXTURE_2D, clipMask ? this.uploadClipMask(clipMask) : this.ensureWhiteTex())
         gl.uniform1i(gl.getUniformLocation(this.stampProgram, 'u_mask'), 1)
         gl.uniform2f(gl.getUniformLocation(this.stampProgram, 'u_destSize'), destW, destH)
         gl.uniform1f(gl.getUniformLocation(this.stampProgram, 'u_opacity'), opacity)
-        gl.uniform1f(gl.getUniformLocation(this.stampProgram, 'u_flipY'), sourceFlipY ? 1 : 0)
+        gl.uniform1f(gl.getUniformLocation(this.stampProgram, 'u_flipY'), stampFlipY ? 1 : 0)
         gl.uniform1f(gl.getUniformLocation(this.stampProgram, 'u_useMask'), clipMask ? 1 : 0)
         gl.uniform1f(gl.getUniformLocation(this.stampProgram, 'u_maskFlipY'), 0)
 
@@ -530,14 +549,42 @@ export class GlContext {
         return tex
     }
 
-    private blitToScratch = (source: WebGLTexture, width: number, height: number): WebGLTexture => {
+    private blitToScratch = (source: WebGLTexture, width: number, height: number, flipY = false): WebGLTexture => {
         const scratch = this.ensureScratch(width, height)
+        this.blitTexture(source, scratch, width, height, flipY)
+        return scratch
+    }
+
+    private blitTexture = (
+        source: WebGLTexture,
+        dest: WebGLTexture,
+        width: number,
+        height: number,
+        flipY = false,
+    ): void => {
         const {gl} = this
         gl.bindFramebuffer(gl.FRAMEBUFFER, this.copyFbo)
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, scratch, 0)
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, dest, 0)
         gl.viewport(0, 0, width, height)
-        this.drawTexture(source)
-        return scratch
+        gl.disable(gl.BLEND)
+        this.drawTexture(source, flipY)
+    }
+
+    private copyTexture2D = (
+        source: WebGLTexture,
+        dest: WebGLTexture,
+        width: number,
+        height: number,
+    ): void => {
+        const {gl} = this
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, null)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.copyFbo)
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, source, 0)
+        gl.bindTexture(gl.TEXTURE_2D, dest)
+        gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, width, height)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+        gl.bindTexture(gl.TEXTURE_2D, null)
     }
 
     private bindQuad = (program: WebGLProgram): void => {

@@ -165,6 +165,7 @@ export class PatternBuffer {
                 dest,
                 this.canvas.width,
                 this.canvas.height,
+                this.gpuFromCanvas,
                 source,
                 sourceFlipY,
                 stamps,
