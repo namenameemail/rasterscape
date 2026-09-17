@@ -73,7 +73,6 @@ export class BrushPattern implements ToolService {
             const masked = patternsService.pattern[toolPatternId]?.valuesService.ensureMaskedGpu();
             if (!masked) return;
 
-            const sourceService = patternsService.pattern[toolPatternId];
             const stamps: StampDrawParams[] = [];
             const width = patternSize * masked.width;
             const height = patternSize * masked.height;
@@ -96,7 +95,7 @@ export class BrushPattern implements ToolService {
 
             dest.stampGpu(
                 masked.texture,
-                sourceService.canvasService.buffer?.textureFromCanvas ?? true,
+                masked.stampFlipY,
                 stamps,
                 opacity,
                 clipMask,

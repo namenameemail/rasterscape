@@ -45,9 +45,20 @@ export class PatternToolService {
 
     }
 
-    pushPositionToStore = (e: MouseEvent) => {
+    pushCanvasPositionToStore = (e: MouseEvent) => {
+        if (this.maskCanvasEventsService.drawing) {
+            return;
+        }
         this.patternService.storeService.dispatchPushPosition(e);
-    }
+    };
+
+    pushMaskPositionToStore = (e: MouseEvent) => {
+        if (this.canvasEventsService.drawing) {
+            return;
+        }
+        this.patternService.storeService.dispatchPushPosition(e);
+    };
+
     resetPositionToStore = () => {
         this.patternService.storeService.dispatchResetPosition();
     }
@@ -100,7 +111,7 @@ export class PatternToolService {
             }
             this.patternService.valuesService.update();
         },
-        onPushPosition: this.pushPositionToStore,
+        onPushPosition: this.pushCanvasPositionToStore,
         onResetPosition: this.resetPositionToStore,
     };
 
@@ -127,7 +138,7 @@ export class PatternToolService {
             this.patternService.maskService.presentFromCpu();
             this.patternService.valuesService.update();
         },
-        onPushPosition: this.pushPositionToStore,
+        onPushPosition: this.pushMaskPositionToStore,
         onResetPosition: this.resetPositionToStore,
     };
 

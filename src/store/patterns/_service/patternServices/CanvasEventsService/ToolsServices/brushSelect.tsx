@@ -94,7 +94,7 @@ export class BrushSelect implements ToolService {
                 const selected = this.patternService.valuesService.ensureSelectedGpu();
                 if (!selected) return;
                 texture = selected.texture;
-                sourceFlipY = false;
+                sourceFlipY = true;
                 sw = selected.width;
                 sh = selected.height;
             }

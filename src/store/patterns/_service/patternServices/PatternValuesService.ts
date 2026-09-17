@@ -80,7 +80,7 @@ export class PatternValuesService {
         return this.patternService;
     };
 
-    ensureMaskedGpu = (): { texture: WebGLTexture, width: number, height: number } | null => {
+    ensureMaskedGpu = (): { texture: WebGLTexture, width: number, height: number, stampFlipY: boolean } | null => {
         const buffer = this.patternService.canvasService.buffer;
 
         if (!buffer?.width || !buffer.height) {
@@ -91,13 +91,23 @@ export class PatternValuesService {
         const maskService = this.patternService.maskService;
 
         if (!maskService.isMaskEnabled) {
-            return {texture: source, width: buffer.width, height: buffer.height};
+            return {
+                texture: source,
+                width: buffer.width,
+                height: buffer.height,
+                stampFlipY: buffer.textureFromCanvas,
+            };
         }
 
         const maskBuffer = maskService.buffer;
 
         if (!maskBuffer) {
-            return {texture: source, width: buffer.width, height: buffer.height};
+            return {
+                texture: source,
+                width: buffer.width,
+                height: buffer.height,
+                stampFlipY: buffer.textureFromCanvas,
+            };
         }
 
         const mask = maskBuffer.ensureGpu();
@@ -108,9 +118,10 @@ export class PatternValuesService {
             buffer.height,
             !!maskService.isMaskInverted,
             buffer.textureFromCanvas !== maskBuffer.textureFromCanvas,
+            buffer.textureFromCanvas,
         );
 
-        return {texture, width: buffer.width, height: buffer.height};
+        return {texture, width: buffer.width, height: buffer.height, stampFlipY: true};
     };
 
     ensureSelectedGpu = (): { texture: WebGLTexture, width: number, height: number } | null => {
@@ -131,6 +142,7 @@ export class PatternValuesService {
             buffer.height,
             false,
             !buffer.textureFromCanvas,
+            buffer.textureFromCanvas,
         );
 
         return {texture, width: buffer.width, height: buffer.height};
