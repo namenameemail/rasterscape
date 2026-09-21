@@ -90,6 +90,12 @@
   padding-bottom: 5px;
 }
 
+.projects-panel-header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .projects-panel-drop {
   flex: 1 1 auto;
   min-height: 0;

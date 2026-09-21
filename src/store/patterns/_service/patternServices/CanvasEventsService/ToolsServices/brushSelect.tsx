@@ -79,24 +79,24 @@ export class BrushSelect implements ToolService {
         ) ? targetPattern?.rotation?.value : null;
 
         if (useGpu) {
-            const selectedCanvas = this.patternService.valuesService.selected;
+            const selected = this.patternService.valuesService.ensureSelectedGpu();
             let texture: WebGLTexture;
             let sourceFlipY: boolean;
             let sw: number;
             let sh: number;
 
-            if (selectedCanvas) {
-                texture = getGlContext().uploadCanvasSized(selectedCanvas);
-                sourceFlipY = true;
-                sw = selectedCanvas.width;
-                sh = selectedCanvas.height;
-            } else {
-                const selected = this.patternService.valuesService.ensureSelectedGpu();
-                if (!selected) return;
+            if (selected) {
                 texture = selected.texture;
-                sourceFlipY = true;
+                sourceFlipY = selected.stampFlipY;
                 sw = selected.width;
                 sh = selected.height;
+            } else {
+                const selectedCanvas = this.patternService.valuesService.selected;
+                if (!selectedCanvas) return;
+                texture = getGlContext().uploadCanvasSized(selectedCanvas);
+                sourceFlipY = false;
+                sw = selectedCanvas.width;
+                sh = selectedCanvas.height;
             }
 
             const width = patternSize * sw;

@@ -92,10 +92,12 @@ const ProjectsPanelComponent: React.FC<ProjectsPanelProps> = (props) => {
     }, [list]);
 
     const handleOpen = React.useCallback((id: string) => {
-        if (id !== currentProjectId) {
-            switchProject(id);
+        if (id === currentProjectId) {
+            onClose();
+            return;
         }
-    }, [currentProjectId, switchProject]);
+        switchProject(id);
+    }, [currentProjectId, switchProject, onClose]);
 
     const handleRenameStart = React.useCallback((item: ProjectMeta) => {
         setRenamingId(item.id);
@@ -199,25 +201,30 @@ const ProjectsPanelComponent: React.FC<ProjectsPanelProps> = (props) => {
     return createPortal(
         <div className="projects-modal-root">
             <div className="projects-modal-backdrop" onClick={handleClose}/>
-            <div className="projects-modal">
+            <div className="projects-modal" onClick={handleClose}>
                 <DragAndDrop className="projects-panel-drop" onDrop={handleImportDrop}>
                     <div className="projects-panel">
                         <div className="projects-panel-header">
                             <div className="projects-panel-header-actions">
-                                <Button
-                                    className="projects-panel-header-button"
-                                    onClick={() => createProject()}
-                                    title={t('projects.new')}
+                                <div
+                                    className="projects-panel-header-buttons"
+                                    onClick={(e) => e.stopPropagation()}
                                 >
-                                    +
-                                </Button>
-                                <Button
-                                    className="projects-panel-header-button projects-panel-header-button--text"
-                                    onClick={handleImportClick}
-                                    title={t('projects.import')}
-                                >
-                                    {t('projects.import')}
-                                </Button>
+                                    <Button
+                                        className="projects-panel-header-button"
+                                        onClick={() => createProject()}
+                                        title={t('projects.new')}
+                                    >
+                                        +
+                                    </Button>
+                                    <Button
+                                        className="projects-panel-header-button projects-panel-header-button--text"
+                                        onClick={handleImportClick}
+                                        title={t('projects.import')}
+                                    >
+                                        {t('projects.import')}
+                                    </Button>
+                                </div>
                                 <span className="projects-panel-storage">
                                     {storagePercent === null
                                         ? '—'
@@ -243,6 +250,7 @@ const ProjectsPanelComponent: React.FC<ProjectsPanelProps> = (props) => {
                                 className={cn('projects-panel-item', {
                                     'projects-panel-item--active': item.id === currentProjectId,
                                 })}
+                                onClick={(e) => e.stopPropagation()}
                             >
                                 <div
                                     className="projects-panel-item-card"
