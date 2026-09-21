@@ -203,7 +203,6 @@ export const SelectButtons = React.forwardRef<SelectButtonsImperativeHandlers, S
                 isNextValue
             });
 
-            console.log(elRefs);
             (elRefs[nextValueIndex]?.current as any)?.focus();
         },
         prevValue: (e?) => {

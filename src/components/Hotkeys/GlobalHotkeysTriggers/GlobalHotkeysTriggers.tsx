@@ -182,7 +182,6 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
     }, [activePatternId]);
 
     const copyImageToClipboard = React.useCallback((e) => {
-        console.log(!window.getSelection().toString());
         if (!window.getSelection().toString()) {
             activePatternId && copyToClipboard(activePatternId);
         }

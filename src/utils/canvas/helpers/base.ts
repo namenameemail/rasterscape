@@ -14,7 +14,7 @@ export type HelperCanvas = {
     clear: Function
 }
 export const createHelperCanvas = (canvas: HTMLCanvasElement, context?: CanvasRenderingContext2D): HelperCanvas => {
-    context = context || canvas.getContext('2d');
+    context = context || canvas.getContext('2d', {willReadFrequently: true});
 
     const clear = () => context.clearRect(0, 0, canvas.width, canvas.height);
 

@@ -187,7 +187,6 @@ const fxyArrayFunctionByType: {
 const fxyFunctionByType = {
     [FxyType.Parab]: ({startValue, range, params, pattern, position}) => {
 
-        console.log(3, pattern);
         if (!pattern) return;
 
         const {x, y, end, zd} = params;

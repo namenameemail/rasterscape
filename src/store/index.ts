@@ -1,5 +1,4 @@
 import {createStore, combineReducers, applyMiddleware, compose, Store, AnyAction} from "redux";
-import logger from 'redux-logger';
 import thunk, {ThunkAction} from 'redux-thunk';
 import {TypedUseSelectorHook, useDispatch as useReduxDispatch, useSelector as useReduxSelector} from 'react-redux';
 import {configureStore} from '@reduxjs/toolkit'
@@ -100,8 +99,7 @@ const rootReducer = reduceReducers<AppState>(
 export const store: Store<AppState, any> = createStore(
     rootReducer,
     compose(
-        applyMiddleware(thunk, projectAutosaveMiddleware, logger),
-        // applyMiddleware(thunk),
+        applyMiddleware(thunk, projectAutosaveMiddleware),
         persistState(['hotkeys']), //, 'changeFunctions'
     )
 );

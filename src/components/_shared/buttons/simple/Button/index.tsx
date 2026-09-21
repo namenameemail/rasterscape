@@ -29,6 +29,12 @@ export interface ButtonProps {
 
     onFocus?(data?: ButtonEventData)
 
+    onKeyDown?(e?: any)
+
+    onKeyUp?(e?: any)
+
+    onKeyPress?(e?: any)
+
     value?: any
     name?: string
     data?: any
@@ -42,6 +48,7 @@ export interface ButtonProps {
     autoblur?: boolean
 
     pressed?: boolean
+    style?: React.CSSProperties
 
     ref?: React.RefObject<any>
 
@@ -58,7 +65,66 @@ export interface ButtonImperativeHandlers {
     click(e)
 }
 
-export const Button = B2;
+export const Button = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((props, ref) => {
+    const {
+        children,
+        className,
+        value,
+        name,
+        data,
+        disabled,
+        width,
+        height,
+        pressed,
+        autofocus,
+        autoblur,
+        style,
+        onClick,
+        onDoubleClick,
+        onMouseEnter,
+        onMouseLeave,
+        onMouseDown,
+        onMouseUp,
+        onMouseMove,
+        onBlur,
+        onFocus,
+        onKeyDown,
+        onKeyUp,
+        onKeyPress,
+    } = props;
+
+    return (
+        <B2
+            ref={ref}
+            className={className}
+            value={value}
+            name={name}
+            data={data}
+            disabled={disabled}
+            width={width}
+            height={height}
+            pressed={pressed}
+            autofocus={autofocus}
+            autoblur={autoblur}
+            style={style}
+            onClick={onClick}
+            onDoubleClick={onDoubleClick}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
+            onMouseMove={onMouseMove}
+            onBlur={onBlur}
+            onFocus={onFocus}
+            onKeyDown={onKeyDown}
+            onKeyUp={onKeyUp}
+            onKeyPress={onKeyPress}
+        >
+            {children}
+        </B2>
+    );
+});
+
 export const Button2 = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((props, ref) => {
 
     const {
@@ -82,7 +148,10 @@ export const Button2 = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((
         pressed,
         autofocus,
         autoblur,
-        ...otherProps
+        onKeyDown,
+        onKeyUp,
+        onKeyPress,
+        style: styleProp,
     } = props;
 
     const buttonRef = React.useRef<HTMLButtonElement>(null);
@@ -94,9 +163,6 @@ export const Button2 = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((
     }, [value, name, data]);
 
     const handleClick = React.useCallback(e => {
-
-
-        // console.log('Button handleClick', getButtonEventData(e));
         if (disabled) return;
 
         onClick && onClick(getButtonEventData(e))
@@ -154,7 +220,7 @@ export const Button2 = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((
         e => !disabled && onFocus?.(getButtonEventData(e)),
         [disabled, onFocus, getButtonEventData]);
 
-    const style = React.useMemo(() => ({width, height}), [width, height]);
+    const style = React.useMemo(() => ({width, height, ...styleProp}), [width, height, styleProp]);
 
     React.useImperativeHandle(ref, () => ({
         focus: () => {
@@ -166,9 +232,7 @@ export const Button2 = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((
         getElement: () => {
             return buttonRef.current
         },
-        click: (e, ...args) => {
-
-            console.log('Button click', e, ...args);
+        click: (e) => {
             return handleClick(e)
         }
     }), [buttonRef, handleClick]);
@@ -188,9 +252,11 @@ export const Button2 = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((
             onMouseMove={handleMove}
             onBlur={handleBlur}
             onFocus={handleFocus}
+            onKeyDown={onKeyDown}
+            onKeyUp={onKeyUp}
+            onKeyPress={onKeyPress}
             style={style}
             disabled={disabled}
-            {...otherProps}
         >
             {children}
         </button>

@@ -1,7 +1,6 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../../../store";
-import {useTranslation, WithTranslation, withTranslation} from "react-i18next";
 import {highlightHotkey} from "../../../../../store/hotkeys/actions";
 import {
     ButtonSelect,
@@ -16,12 +15,13 @@ import {HKLabelProps} from "../types";
 import {ButtonHotkeyInputs} from "../../../../Hotkeys/ButtonHotkeyInputs/ButtonHotkeyInputs";
 import {useRef} from "react";
 import {HotkeyControlType} from "../../../../../store/hotkeys/types";
-import {ButtonImperativeHandlers} from "../../simple/Button";
 
 export interface ButtonHKStateProps {
     isHotkeyed: boolean
     settingMode: boolean
     highlightedPath: string
+    autofocus?: boolean
+    autoblur?: boolean
 }
 
 export interface ButtonHKActionProps {
@@ -57,16 +57,14 @@ export interface ButtonHKImperativeHandlers extends ButtonSelectImperativeHandle
 
 const ButtonHKComponent = React.forwardRef<ButtonHKImperativeHandlers, ButtonHKProps>((props, ref) => {
 
-    const {t} = useTranslation();
     const {
-        // t,
         isHotkeyed,
-        highlightHotkey,
+        highlightHotkey: _highlightHotkey,
         path,
         maxKeysCount,
-        settingMode,
+        settingMode: _settingMode,
         containerClassName,
-        highlightedPath,
+        highlightedPath: _highlightedPath,
         hkLabel,
         hkLabelFormatter,
         hkData0,
@@ -78,6 +76,8 @@ const ButtonHKComponent = React.forwardRef<ButtonHKImperativeHandlers, ButtonHKP
         onMouseUp,
         onMouseEnter,
         onMouseLeave,
+        autofocus,
+        autoblur,
         ...buttonProps
     } = props;
 
@@ -97,25 +97,19 @@ const ButtonHKComponent = React.forwardRef<ButtonHKImperativeHandlers, ButtonHKP
     React.useImperativeHandle(ref, () => (buttonRef.current), [buttonRef]);
 
     const handleHotkeyTrigger = React.useCallback((e, _, __, isRelease) => {
-        console.log('ButtonHK trigger', path);
         buttonRef.current?.click(e);
-
         !isRelease && setTimeout(setPressed, 200, false);
+    }, [setPressed, buttonRef]);
 
-    }, [setPressed, buttonRef, path]);
-
-    const handlePress = React.useCallback((e) => {
-
+    const handlePress = React.useCallback((_e) => {
         setPressed(true);
     }, [setPressed]);
 
-    const handleRelease = React.useCallback((e) => {
+    const handleRelease = React.useCallback((_e) => {
         setPressed(false);
-
     }, [setPressed]);
 
     const handleClick = React.useCallback((data) => {
-        console.log('ButtonHK handleClick', {...data, path})
         onClick?.({...data, path})
     }, [path, onClick]);
 
@@ -136,9 +130,7 @@ const ButtonHKComponent = React.forwardRef<ButtonHKImperativeHandlers, ButtonHKP
     }, [path, onMouseLeave]);
 
     return (
-        <div className={classNames('hotkey-button', {
-            // ['hotkey-highlighted']: highlightedPath === path
-        }, containerClassName)}>
+        <div className={classNames('hotkey-button', containerClassName)}>
             <ButtonSelect
                 ref={buttonRef}
                 onClick={handleClick}
@@ -155,13 +147,12 @@ const ButtonHKComponent = React.forwardRef<ButtonHKImperativeHandlers, ButtonHKP
                         maxKeysCount={maxKeysCount}
                         path={path}
                         type={HotkeyControlType.Cycled}
-                        autoblur={buttonProps.autoblur}
-                        autofocus={buttonProps.autofocus}
+                        autoblur={autoblur}
+                        autofocus={autofocus}
                         {...hkLabelProps}
                     />
                     {isHotkeyed && (
                         <ButtonHotkeyTrigger
-                            // debug
                             path={path}
                             onRelease={handleRelease}
                             onEveryPress={handlePress}

@@ -15,6 +15,9 @@ export const DeleteButtonComponent: React.FC<DeleteButtonProps> = (props) => {
         title,
         deleteText,
         className,
+        t: _t,
+        tReady: _tReady,
+        i18n: _i18n,
         ...buttonProps
     } = props;
 

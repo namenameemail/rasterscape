@@ -363,7 +363,6 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         // valueD = ValueD.VerticalLinear(Math.pow(10, pres))
 
 
-        console.log(this.state.startValue, e.movementX + this.pre?.pageX - this.state.startPoint[0], e.movementY + this.pre?.pageY - this.state.startPoint[1])
         // let nextValue = valueD(this.state.startValue, e.clientX - this.state.redPoint1[0], e.clientY - this.state.redPoint1[1]);
         let nextValue = !locked
             ? valueD(this.state.startValue, e.clientX - this.state.startPoint[0], e.clientY - this.state.startPoint[1])
@@ -459,7 +458,6 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             width = DEFAULT_WIDTH,
             className,
             text,
-            // ----
             valueD,
             setValueInChangingList,
             deactivateValueChanging,
@@ -471,6 +469,13 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             addHotkey,
             precisionGain,
             getText,
+            hotkeyDisabled,
+            integer,
+            from,
+            to,
+            range: _range,
+            precision,
+            pres,
             ...otherProps
         } = this.props;
         const {value = 0, startValue, startPoint, range} = this.state;

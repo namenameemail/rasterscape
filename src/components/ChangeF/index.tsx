@@ -98,8 +98,6 @@ const ChangeFComponent: React.FC<ChangeFProps> = (props) => {
     const getTypeText = React.useMemo(() => type => t('cf.type.' + type), [t]);
     const getModeText = React.useMemo(() => ({value}) => t('cf.mode.' + value), [t]);
 
-    console.log('CF RENDERR CF RENDERR CF RENDERR CF RENDERR CF RENDERR CF RENDERR CF RENDERR ');
-
     return (
         <div className="change-functions">
             <div className="control-buttons">
@@ -126,6 +124,7 @@ const ChangeFComponent: React.FC<ChangeFProps> = (props) => {
             <div className="functions-list">
                 {cfs.slice().reverse().map(cf => {
                     return <ChangeFItem
+                        key={cf}
                         id={cf}
                         highlighted={highlighted === cf}
                     />

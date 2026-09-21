@@ -20,7 +20,7 @@ export class PatternBuffer {
         this.canvas = document.createElement('canvas');
         this.canvas.width = width;
         this.canvas.height = height;
-        this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+        this.context = this.canvas.getContext('2d', {willReadFrequently: true}) as CanvasRenderingContext2D;
     }
 
     get width(): number {

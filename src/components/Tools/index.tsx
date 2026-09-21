@@ -42,7 +42,6 @@ const ToolsComponent: React.FC<ToolsProps> = (props) => {
     const ToolControls = ToolsParams[currentTool].component;
 
     const handleToolClick = React.useCallback((data) => {
-        console.log('handleToolClick', data);
         setCurrentTool(ToolsParams[data.value].type)
     }, [setCurrentTool]);
 

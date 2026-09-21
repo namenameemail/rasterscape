@@ -1,6 +1,7 @@
 import {AppState, patternsService} from '../store';
 import {PatternHistoryItem} from '../store/patterns/history/types';
 import {PatternState} from '../store/patterns/pattern/types';
+import {toSelectionBBox} from '../store/patterns/selection/types';
 import {cloneImageBuffer} from '../utils/imageDataBinary';
 import {profileLogger} from '../utils/profiling/ProfileLogger';
 import {
@@ -111,11 +112,22 @@ function buildPatternPayload(pattern: PatternState, patternId: string): ProjectS
         };
     }
 
-    const {history: _history, error: _error, ...rest} = pattern;
+    const {history: _history, error: _error, selection, ...rest} = pattern;
 
     return {
         state: {
             ...rest,
+            selection: selection
+                ? {
+                    ...selection,
+                    value: selection.value
+                        ? {
+                            ...selection.value,
+                            bBox: toSelectionBBox(selection.value.bBox),
+                        }
+                        : selection.value,
+                }
+                : selection,
             history,
         },
     };

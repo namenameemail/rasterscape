@@ -13,10 +13,30 @@ export interface SelectionParams {
 
 export type Segments = Segment[];
 
+export type SelectionBBox = {
+    x: number
+    y: number
+    width: number
+    height: number
+}
+
 export interface SelectionValue {
     segments: Segments
-    bBox?: SVGRect
+    bBox?: SelectionBBox | null
     mask?: any
 }
 
 export type SelectionState = FunctionState<SelectionValue, SelectionParams>;
+
+export const toSelectionBBox = (bBox?: SVGRect | SelectionBBox | null): SelectionBBox | null => {
+    if (!bBox) {
+        return null;
+    }
+
+    return {
+        x: bBox.x,
+        y: bBox.y,
+        width: bBox.width,
+        height: bBox.height,
+    };
+};

@@ -44,5 +44,6 @@ export function cloneImageBuffer(imageData: ImageData | null | undefined): Array
         return null;
     }
 
-    return imageData.data.slice().buffer;
+    const {data} = imageData;
+    return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
 }

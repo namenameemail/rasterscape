@@ -1,5 +1,5 @@
 import {PatternAction, PatternState} from "../pattern/types";
-import {Segments} from "./types";
+import {Segments, SelectionBBox, toSelectionBBox} from "./types";
 import {AppState, patternsService} from "../../index";
 import {addPattern} from "../actions";
 import {copyPatternToClipboard, updateImage} from "../pattern/actions";
@@ -18,21 +18,21 @@ export enum ESelectionAction {
 
 export interface UpdatePatternSelectionAction extends PatternAction {
     value: Segments
-    bBox: SVGRect
+    bBox: SelectionBBox | null
 }
 
 export interface CreatePatternFromSelection extends PatternAction {
 }
 
-export const updateSelection = (id: string, value: Segments, bBox: SVGRect) =>
+export const updateSelection = (id: string, value: Segments, bBox?: SVGRect | SelectionBBox | null) =>
     (dispatch) => {
+        const plainBBox = toSelectionBBox(bBox);
 
-        dispatch({type: ESelectionAction.UPDATE_SELECTION, value, bBox, id});
+        dispatch({type: ESelectionAction.UPDATE_SELECTION, value, bBox: plainBBox, id});
 
         patternsService.pattern[id]
-            .selectionService.update(value, bBox)
+            .selectionService.update(value, plainBBox)
             .valuesService.update();
-        // dispatch(updateSelectionImage(id));
     };
 
 export const selectAll = (id: string) => (dispatch, getState: () => AppState) => {

@@ -1,13 +1,13 @@
 import * as React from "react";
-import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
+import { ButtonNumberCF } from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
 import "../../../styles/XYParaboloidChangeFunction.scss";
-import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
-import {HelpTooltip} from "../../tutorial/HelpTooltip";
-import {FxyType, ParabParams} from "../../../store/changeFunctions/functions/fxy";
-import {Paraboloid} from "../../_shared/canvases/WebWorkerCanvas";
-import {SinHelp} from "../../tutorial/tooltips/SinHelp";
-import {ChangeFunctionState} from "../../../store/changeFunctions/types";
-import {FxyTypeComponentProps, FxyTypeComponentPropsWithTranslation} from "./types";
+import { ValueD } from "../../_shared/buttons/complex/ButtonNumber";
+import { HelpTooltip } from "../../tutorial/HelpTooltip";
+import { FxyType, ParabParams } from "../../../store/changeFunctions/functions/fxy";
+import { Paraboloid } from "../../_shared/canvases/WebWorkerCanvas";
+import { SinHelp } from "../../tutorial/tooltips/SinHelp";
+import { ChangeFunctionState } from "../../../store/changeFunctions/types";
+import { FxyTypeComponentProps, FxyTypeComponentPropsWithTranslation } from "./types";
 
 export interface ParabCFProps {
     params: any
@@ -15,7 +15,7 @@ export interface ParabCFProps {
     name: string
     functionParams: ChangeFunctionState
 
-    onChange(value?: any, name?: string)
+    onChange(value?: any, name?: string): void
 
 }
 
@@ -28,12 +28,12 @@ const seValueD = ValueD.VerticalLinear(100);
 
 export class ParabCF extends React.PureComponent<FxyTypeComponentProps<ParabParams>, ParabCFState> {
 
-    handleParamChange = ({value, name}) => {
-        this.props.onChange({...this.props.params, [name.split('.').reverse()[0]]: value}, this.props.name)
+    handleParamChange = ({ value, name }) => {
+        this.props.onChange({ ...this.props.params, [name.split('.').reverse()[0]]: value }, this.props.name)
     };
 
     render() {
-        const {params, name, functionParams} = this.props;
+        const { params, name, functionParams } = this.props;
         return (
             <div className={"parab-change-function"}>
 
@@ -41,7 +41,7 @@ export class ParabCF extends React.PureComponent<FxyTypeComponentProps<ParabPara
                     <div className={'canvas-container'}>
                         <Paraboloid
                             params={params}
-                            width={68} height={58}/>
+                            width={68} height={58} />
                     </div>
                 </div>
                 <div className={'parab-controls'}>

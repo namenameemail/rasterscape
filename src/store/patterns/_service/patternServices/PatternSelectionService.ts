@@ -1,5 +1,5 @@
 import {pathDataToString} from "../../../../utils/path";
-import {Segments} from "../../selection/types";
+import {Segments, SelectionBBox} from "../../selection/types";
 import {PatternService} from "../PatternService";
 import {HelperCanvas} from "../../../../utils/canvas/helpers/base";
 import {ensureCanvas} from "../../../../utils/canvas/helpers/composite";
@@ -12,7 +12,7 @@ export class PatternSelectionService {
 
     mask?: ImageData;
     maskCanvas?: HTMLCanvasElement;
-    bBox?: SVGRect;
+    bBox?: SelectionBBox | null;
 
     private maskBuffer?: HelperCanvas;
 
@@ -20,7 +20,7 @@ export class PatternSelectionService {
         this.patternService = patternService;
     }
 
-    update = (segments: Segments, bBox?: SVGRect): PatternService => {
+    update = (segments: Segments, bBox?: SelectionBBox | null): PatternService => {
         const canvas = this.patternService.canvasService.canvas;
 
         if (segments.length && canvas) {

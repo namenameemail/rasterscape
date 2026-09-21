@@ -1,5 +1,5 @@
 import {Middleware} from 'redux';
-import {AppState} from '../store';
+import {AppState, patternsService} from '../store';
 import {saveCurrentProject, setProjectDirty} from '../store/projects/actions';
 import {EVideoAction} from '../store/patterns/video/consts';
 import {profileAutosave} from '../utils/projectProfile';
@@ -57,6 +57,17 @@ function isAnyVideoUpdating(state: AppState | null | undefined): boolean {
     return Object.values(state.patterns).some(pattern => pattern?.video?.params?.updatingOn);
 }
 
+function isAnyPatternDrawing(): boolean {
+    return Object.values(patternsService.pattern).some(pattern =>
+        pattern?.patternToolService?.canvasEventsService?.drawing
+        || pattern?.patternToolService?.maskCanvasEventsService?.drawing
+    );
+}
+
+function shouldDeferAutosave(state: AppState | null | undefined): boolean {
+    return isAnyVideoUpdating(state) || isAnyPatternDrawing();
+}
+
 function autosaveSnapshot(state: AppState | null | undefined) {
     if (!state) {
         return {};
@@ -102,8 +113,13 @@ export function resumeProjectAutosave(): void {
 function runAutosaveDispatch(dispatch, source: 'debounce' | 'retry') {
     const state = readAppState?.();
 
-    if (isAnyVideoUpdating(state)) {
-        profileAutosave(`${source} deferred video`, autosaveSnapshot(state));
+    if (shouldDeferAutosave(state)) {
+        profileAutosave(`${source} deferred busy`, {
+            ...autosaveSnapshot(state),
+            drawing: isAnyPatternDrawing(),
+            videoUpdating: isAnyVideoUpdating(state),
+        });
+        scheduleAutosaveRetry(dispatch);
         return;
     }
 
@@ -131,9 +147,13 @@ function scheduleAutosave(dispatch) {
         return;
     }
 
-    if (isAnyVideoUpdating(readAppState?.())) {
+    if (shouldDeferAutosave(readAppState?.())) {
         cancelScheduledProjectAutosave();
-        profileAutosave('debounce deferred video', autosaveSnapshot(readAppState?.()));
+        profileAutosave('debounce deferred busy', {
+            ...autosaveSnapshot(readAppState?.()),
+            drawing: isAnyPatternDrawing(),
+        });
+        scheduleAutosaveRetry(dispatch);
         return;
     }
 
@@ -160,11 +180,6 @@ export function scheduleAutosaveRetry(dispatch): void {
     const state = readAppState?.();
     if (!state?.projects.isDirty) {
         profileAutosave('retry skipped', {reason: 'clean'});
-        return;
-    }
-
-    if (isAnyVideoUpdating(state)) {
-        profileAutosave('retry deferred video', autosaveSnapshot(state));
         return;
     }
 
@@ -214,13 +229,17 @@ export const projectAutosaveMiddleware: Middleware = (store) => {
             profileAutosave('still dirty', {action: action.type, dirtyGeneration});
         }
 
-        if (action.type === EVideoAction.START_UPDATING || isAnyVideoUpdating(state)) {
+        if (action.type === EVideoAction.START_UPDATING || shouldDeferAutosave(state)) {
             cancelScheduledProjectAutosave();
-            profileAutosave('deferred while video', {
+            profileAutosave('deferred while busy', {
                 action: action.type,
                 dirtyGeneration,
+                drawing: isAnyPatternDrawing(),
                 ...autosaveSnapshot(store.getState() as AppState),
             });
+            if (isAnyPatternDrawing()) {
+                scheduleAutosaveRetry(store.dispatch);
+            }
             return result;
         }
 

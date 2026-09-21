@@ -173,7 +173,6 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
             this.selectToolHandlers[prevProps.selectToolParams.mode].exit(this.props.selectToolParams.mode)
         }
 
-        console.log(!!this.maskPathRef.current?.setPathData, this.state.path);
         this.maskPathRef.current && this.maskPathRef.current.setPathData(this.state.path);
         this.pathRef.current && this.pathRef.current.setPathData(this.state.path);
         this.pathRefWhiteDash.current && this.pathRefWhiteDash.current.setPathData(this.state.path);

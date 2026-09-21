@@ -13,22 +13,18 @@ import {setActivePattern, stopPatternDeleteHold} from "../activePattern";
 
 
 export const addPattern = (config?: PatternConfig, params?: PatternParams) => (dispatch, getState: () => AppState) => {
-
-    console.log(1);
     const state = getState();
     const id = patternId(Object.keys(state.patterns));
     const startImage = config.startImage || new ImageData(config.width || 400, config.height || 400);
     const startMask = config.startMask || new ImageData(config.width || 400, config.height || 400);
     const width = startImage.width;
     const height = startImage.height;
-    console.log(1);
 
     const tool = state.tool.current;
     const toolType = {
         [EToolType.Brush]: state.brush.params.brushType,
         [EToolType.Line]: state.line.params.type,
     }[tool];
-    console.log(1);
 
     patternsService.addPattern(id)
         .maskService.setEnabled(config.mask)
@@ -37,9 +33,6 @@ export const addPattern = (config?: PatternConfig, params?: PatternParams) => (d
         .canvasService.setImageData(startImage)
         .valuesService.update()
         .patternToolService.bindTool(tool, toolType, width, height)
-        // .setRotationAngle(params.rotation.);
-
-    console.log(1);
 
     dispatch({
         type: EPatternsAction.ADD_PATTERN,
@@ -51,10 +44,8 @@ export const addPattern = (config?: PatternConfig, params?: PatternParams) => (d
             height
         }
     });
-    console.log(1);
 
     dispatch(initHistory(id))
-    console.log(1);
 
     dispatch(setActivePattern(id));
 }
@@ -66,16 +57,11 @@ export const removePattern = (id: string) => (dispatch, getState) => {
     const deletedIndex = patternIds.indexOf(id);
     const remainingIds = patternIds.filter(patternId => patternId !== id);
 
-    console.log(1)
     dispatch(leaveRoom(id));
 
-    console.log(2)
     dispatch({type: EPatternsAction.REMOVE_PATTERN, id});
 
-    console.log(3)
     patternsService.deletePattern(id);
-
-    console.log(4)
 
     if (activePatternId === id) {
         const nextIndex = Math.min(deletedIndex, remainingIds.length - 1);

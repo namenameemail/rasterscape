@@ -53,17 +53,14 @@ export const  ButtonSelect = React.forwardRef<ButtonSelectImperativeHandlers, Bu
             return buttonRef.current.getElement();
         },
         click: (e, ...args) => {
-
-            console.log('ButtonSelect click', value, e, ...args);
             !disabled && buttonRef.current.click(e);
         }
     }), [buttonRef, disabled, value]);
 
 
     const handleClick = React.useCallback((data) => {
-        console.log('ButtonSelect handleClick', data, value);
         onClick?.({...data, selected})
-    }, [selected, onClick, value]);
+    }, [selected, onClick]);
 
     const handleMouseDown = React.useCallback((data) => {
         onMouseDown?.({...data, selected})

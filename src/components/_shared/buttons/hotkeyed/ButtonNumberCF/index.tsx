@@ -3,7 +3,6 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "store";
 import classNames from "classnames";
 import {ButtonNumber, ButtonNumberProps} from "../../complex/ButtonNumber";
-import {SelectItem} from "utils/utils";
 import {SelectDrop, SelectDropImperativeHandlers} from "../../complex/SelectDrop";
 import {
     activateValueChanging,
@@ -60,6 +59,7 @@ export interface ButtonNumberCFOwnProps extends ButtonNumberProps, HKLabelProps 
     path: string
     buttonWrapper?
     withoutCF?: boolean
+    hkByValue?: boolean
 }
 
 export interface ButtonNumberCFProps extends ButtonNumberCFStateProps, ButtonNumberCFActionProps, ButtonNumberCFOwnProps, WithTranslation {
@@ -72,21 +72,44 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
 
     const {
         onChange,
-        setStartValue, path, isHotkeyed, value,
+        onMouseDown,
+        onMouseUp,
+        onPress,
+        onRelease,
+        setStartValue,
+        path,
+        isHotkeyed,
+        value,
         deactivateValueChanging,
         activateValueChanging,
         setValueInChangingList,
         range,
-        from, to,
-        setCFHighlights, setCFTypeHighlights,
+        from,
+        to,
+        setCFHighlights,
+        setCFTypeHighlights,
         t,
+        tReady: _tReady,
+        i18n: _i18n,
         settingMode,
         hkLabel,
         hkLabelFormatter,
-        hkData0, hkData1, hkData2, hkData3,
-        highlightedPath,
+        hkData0,
+        hkData1,
+        hkData2,
+        hkData3,
+        hkByValue: _hkByValue,
+        highlightedPath: _highlightedPath,
         autoblur,
-        autofocus
+        autofocus,
+        changeFunction,
+        changeFunctionsSelectItems,
+        changingValue,
+        className,
+        buttonWrapper: ButtonWrapper,
+        withoutCF,
+        toStartValue: _toStartValue,
+        ...buttonNumberProps
     } = props;
 
     const hkLabelProps: HKLabelProps = {
@@ -98,30 +121,6 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         hkData3,
     };
 
-    const {
-        changeFunction,
-        changeFunctionsSelectItems,
-        changingValue,
-        className,
-        buttonWrapper: ButtonWrapper,
-        withoutCF,
-        ...buttonNumberProps
-    } = props;
-
-    const {
-        // onChange,
-        onMouseDown,
-        onMouseUp,
-        onPress,
-        onRelease,
-        ...othersButtonNumberProps
-    } = buttonNumberProps;
-    //
-    // React.useEffect(() => coordHelper2.writeln('changeFunctionsSelectItems'), [changeFunctionsSelectItems]);
-    // React.useEffect(() => coordHelper2.writeln('changeFunction'), [changeFunction]);
-    // React.useEffect(() => coordHelper2.writeln('changingValue'), [changingValue]);
-    // React.useEffect(() => coordHelper2.writeln('hotkey'), [hotkey]);
-
     const selectDropRef = React.useRef<SelectDropImperativeHandlers>(null);
 
     const [_redOpen, setRedOpen] = React.useState(false);
@@ -130,37 +129,33 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
     const [active, setActive] = React.useState<boolean>();
 
     const handleCFChange = React.useCallback(({value: changeFunctionId}) => {
-
         setValueInChangingList(path, changeFunctionId, range || [from, to], value);
-
     }, [setValueInChangingList, path, range, from, to, value]);
 
     const handleChange = React.useCallback((data) => {
-
         onChange(data);
-
         setStartValue(path, value);
     }, [onChange, setStartValue, path, value]);
 
-    const handleMouseDown = React.useCallback((e) => { //handleStartManualChanging
+    const handleMouseDown = React.useCallback((e) => {
         deactivateValueChanging(path);
         setActive(true);
         onMouseDown?.(e);
     }, [deactivateValueChanging, path, onMouseDown]);
 
-    const handleMouseUp = React.useCallback((e) => { //handleStopManualChanging
+    const handleMouseUp = React.useCallback((e) => {
         activateValueChanging(path);
         setActive(false);
         onMouseUp?.(e);
     }, [activateValueChanging, path, onMouseUp]);
 
-    const handlePress = React.useCallback((e) => { //handleStartManualChanging
+    const handlePress = React.useCallback((e) => {
         deactivateValueChanging(path);
         setActive(true);
         onPress?.(e);
     }, [deactivateValueChanging, path, onPress]);
 
-    const handleRelease = React.useCallback((e) => { //handleStopManualChanging
+    const handleRelease = React.useCallback((e) => {
         activateValueChanging(path);
         setActive(false);
         onRelease?.(e);
@@ -169,7 +164,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
     const handleCFMouseEnter = React.useCallback((data: SelectButtonsEventData) => {
         setCFHighlights(data?.value?.id);
     }, [setCFHighlights]);
-    const handleCFMouseLeave = React.useCallback((data: SelectButtonsEventData) => {
+    const handleCFMouseLeave = React.useCallback((_data: SelectButtonsEventData) => {
         setCFHighlights(null);
     }, [setCFHighlights]);
 
@@ -181,16 +176,11 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         setCFTypeHighlights(null);
     }, [setCFTypeHighlights]);
 
-
-    // console.log("render b cf", buttonNumberProps.name, changeFunctionsSelectItems);
-
     const changingValueData = changingValue;
     const changingStartValue = changingValueData && changingValueData.startValue;
     const changeFunctionId = changingValueData && changingValue.changeFunctionId;
     const changingParams = changingValueData && changeFunction.params;
     const changingType = changingValueData && changeFunction.type;
-    const cfNumber = changeFunction?.number;
-
 
     const buttonClassName = React.useMemo(() => classNames('button-number-cf-value', {
         ["button-number-cf-value-active"]: active
@@ -210,20 +200,19 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         <>
             <ButtonNumber
                 ref={buttonNumberRef}
-                {...othersButtonNumberProps}
-
+                {...buttonNumberProps}
+                value={value}
+                range={range}
+                from={from}
+                to={to}
                 hotkeyDisabled={settingMode}
-
                 className={buttonClassName}
-
                 changeFunction={changeFunction}
                 changeFunctionId={changeFunctionId}
                 changeFunctionType={changingType}
                 changingStartValue={changingStartValue}
                 changeFunctionParams={changingParams}
-
                 onChange={handleChange}
-
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
                 onPress={handlePress}
@@ -261,39 +250,17 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
             e.stopPropagation();
             setRedOpen(true);
             setMenuOpen(true);
-
-            //это можно коментить чтобы не открывалось автоматм
             setTimeout(selectDropRef.current?.focus, 0);
         }
     }, []);
 
-    // const handleCFSelectDropFocus = React.useCallback(() => {
-    //
-    // }, []);
-    // const timer = React.useRef(null);
     const handleCFSelectDropBlur = React.useCallback(() => {
-        // console.log('SELECT DROP BLUR')
         setTimeout(() => {
             setRedOpen(false);
             setMenuOpen(false);
         }, 150)
         buttonNumberRef.current?.focus();
     }, [setRedOpen, setMenuOpen]);
-    //
-    //
-    //
-    // const handleContainerFocus = React.useCallback(() => {
-    //     setRedOpen(false);
-    //     setMenuOpen(false);
-    //
-    // }, [setRedOpen, setMenuOpen]);
-    //
-    // const handleContainerBlur = React.useCallback(() => {
-    //     setRedOpen(false);
-    //     setMenuOpen(false);
-    //
-    // }, [setRedOpen, setMenuOpen]);
-
 
     const cfGetText = React.useMemo(() => (item: ChangeFunctionState) => {
         return Translations.cfName(t)(item);
@@ -307,9 +274,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         <HoverHideable
             open={_redOpen}
             onKeyPress={handleKeyPress}
-            className={classNames("button-number-cf", {
-                // ['hotkey-highlighted']: highlightedPath === path
-            }, className)}
+            className={classNames("button-number-cf", className)}
             button={buttonElement}>
             {!active && (
                 <HoverHideable
@@ -321,20 +286,15 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
                     <SelectDrop
                         ref={selectDropRef}
                         onBlur={handleCFSelectDropBlur}
-                        // onFocus={}
                         name={buttonNumberProps.name + '-select-cf'}
                         nullAble
                         nullText={'-'}
-
                         hkByValue={false}
                         hkLabel={hkLabel}
                         hkLabelFormatter={LabelFormatter.ChangeFunction}
                         hkData1={hkData1}
                         hkData2={hkData2}
                         hkData3={hkData3}
-
-                        //     hkLabel,
-                        // hkData1, hkData2, hkData3,
                         onValueMouseEnter={handleCFValueMouseEnter}
                         onValueMouseLeave={handleCFValueMouseLeave}
                         className={"button-number-cf-select"}
