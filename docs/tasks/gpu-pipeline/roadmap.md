@@ -37,11 +37,13 @@ flowchart LR
 | [done/03-masked-preview.md](done/03-masked-preview.md) | Этап 3 закрыт: `updateMasked` 45 ms → 0.1 ms, не на кадре видео |
 | [done/04-tools.md](done/04-tools.md) | Этап 4 закрыт: общий GL, source `copyTex`, монитор с GL, кисть 2D→GPU |
 | [done/04b-gpu-stamps.md](done/04b-gpu-stamps.md) | 4b закрыт (срез): штампы/слой на GPU с видео и без; хвосты → 4c |
-| [04c/](04c/README.md) | 4c: подзадачи по оставшимся CPU-местам |
+| [done/04c-01-selection-clip.md](done/04c-01-selection-clip.md) | 4c.01 закрыт: GPU-clip штриха по выделению |
+| [04c/](04c/README.md) | 4c: оставшийся CPU по местам |
 | [names.md](names.md) | Как называть UI ↔ код в задачах пайплайна |
 | [05-cook-graph.md](05-cook-graph.md) | Считать картинку только если она нужна; на экран — только видимое |
+| [06-frame-hitches.md](06-frame-hitches.md) | Диагностика зависаний кадра: Rec All, hitch-log, CDP Profiler |
 
-Порядок: 0–4 и 4b закрыты. Дальше **4c** (по одной подзадаче) и/или **5**; 4c не блокер 5.
+Порядок: 0–4 и 4b закрыты. Дальше **4c** (по одной подзадаче) и/или **5**; 4c не блокер 5. **6** — параллельно, по симптомам hitch (не блокер 4c/5).
 
 ## Объекты
 

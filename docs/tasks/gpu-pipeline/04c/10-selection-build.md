@@ -4,7 +4,7 @@
 
 ## Сделать
 
-Держать selection mask как текстуру (или canvas без полного `getImageData`, пока не нужен CPU). Потребители жеста — [01](01-selection-clip.md).
+Держать selection mask как текстуру (или canvas без полного `getImageData`, пока не нужен CPU). Потребители жеста — [`../done/04c-01-selection-clip.md`](../done/04c-01-selection-clip.md).
 
 ## Где
 

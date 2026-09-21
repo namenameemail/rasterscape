@@ -8,14 +8,16 @@
 
 Этап 5 ([`../05-cook-graph.md`](../05-cook-graph.md)) параллельно: «считать кадр или нет», не «где пиксели».
 
+**Закрытие подзадачи:** дописать After/проверку → перенести файл в [`../done/04c-NN-….md`](../done/) → в таблице ниже ссылка на `done`, не на живой `04c/`.
+
 ## Подзадачи
 
 ### Пока рисуешь
 
 | # | Задача | Суть |
 |---|--------|------|
-| [01](01-selection-clip.md) | Обрезка штриха по выделению | **в работе / код:** GPU clip; ждать профиль after |
-| [02](02-blend-modes.md) | Не source-over | multiply и т.п. → снова 2D |
+| [01](../done/04c-01-selection-clip.md) | Обрезка штриха по выделению | **закрыт** — stamp+layer GPU clip; [`../baselines/04c-01-after.md`](../baselines/04c-01-after.md) |
+| [02](02-blend-modes.md) | Режимы наложения | **ТЗ:** единый шейдерный blend на все `ECompositeOperation`; сейчас gate SourceOver → 2D |
 | [03](03-mask-draw.md) | Рисование в маску паттерна | mask-слой всегда CPU |
 | [04](04-helper-layer.md) | Helper перед GPU | Shape/Solid сначала полный 2D-слой |
 | [05](05-line-back-source.md) | Line «фон» / back fill | `createPattern` с CPU `.masked` |

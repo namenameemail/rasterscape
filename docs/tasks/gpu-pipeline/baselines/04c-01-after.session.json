@@ -1,0 +1,85 @@
+{
+  "label": "session",
+  "startedAt": "2026-09-21T21:50:09.755Z",
+  "stoppedAt": "2026-09-21T21:50:27.751Z",
+  "summary": {
+    "spans": {
+      "canvas.uploadGpu": {
+        "count": 2,
+        "avgMs": 0,
+        "maxMs": 0,
+        "minMs": 0
+      },
+      "canvas.present": {
+        "count": 845,
+        "avgMs": 0.12520710057937168,
+        "maxMs": 0.5,
+        "minMs": 0
+      },
+      "draw.resolveEvent": {
+        "count": 843,
+        "avgMs": 0.5620403320816916,
+        "maxMs": 1.5,
+        "minMs": 0
+      },
+      "draw.tool": {
+        "count": 843,
+        "avgMs": 2.957413997677897,
+        "maxMs": 6.200000002980232,
+        "minMs": 0.19999999925494194
+      },
+      "draw.valuesMasked": {
+        "count": 1,
+        "avgMs": 0,
+        "maxMs": 0,
+        "minMs": 0
+      },
+      "draw.onDraw": {
+        "count": 843,
+        "avgMs": 3.1236061684451433,
+        "maxMs": 6.400000002235174,
+        "minMs": 0.30000000074505806
+      },
+      "draw.pushFrameRelatedEvent": {
+        "count": 843,
+        "avgMs": 1.1325029655893297,
+        "maxMs": 2.199999999254942,
+        "minMs": 0.6999999992549419
+      },
+      "canvas.compositeLayerGpu": {
+        "count": 842,
+        "avgMs": 2.1410926365937306,
+        "maxMs": 4.300000000745058,
+        "minMs": 1.7999999970197678
+      },
+      "values.updateMasked": {
+        "count": 2,
+        "avgMs": 0,
+        "maxMs": 0,
+        "minMs": 0
+      },
+      "values.updateSelected": {
+        "count": 2,
+        "avgMs": 0.10000000149011612,
+        "maxMs": 0.20000000298023224,
+        "minMs": 0
+      },
+      "canvas.downloadGpu": {
+        "count": 1,
+        "avgMs": 0.30000000074505806,
+        "maxMs": 0.30000000074505806,
+        "minMs": 0.30000000074505806
+      }
+    },
+    "values": {
+      "frame.interval": {
+        "count": 842,
+        "avg": 18.500593824228023,
+        "max": 466.09999999962747,
+        "min": 16.5
+      }
+    },
+    "logCount": 0,
+    "entryCount": 5909
+  }
+}
