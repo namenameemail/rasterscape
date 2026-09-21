@@ -106,7 +106,7 @@ export const Button = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((p
             pressed={pressed}
             autofocus={autofocus}
             autoblur={autoblur}
-            style={style}
+            {...(style ? {style} : null)}
             onClick={onClick}
             onDoubleClick={onDoubleClick}
             onMouseEnter={onMouseEnter}
