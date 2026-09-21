@@ -3,6 +3,7 @@ import {PatternService} from '../store/patterns/_service/PatternService';
 import {PatternState} from '../store/patterns/pattern/types';
 import {PatternHistoryItem} from '../store/patterns/history/types';
 import {decodeImageData, encodeImageData} from '../utils/imageDataCodec';
+import {int32ArrayJsonReplacer, reviveValuesArraysDeep} from '../utils/int32ArrayJson';
 import {
     ProjectExportFile,
     ProjectPayloadV1,
@@ -203,7 +204,7 @@ export function deserializeProjectPayload(payload: ProjectPayloadV1): {
         activePatternId: payload.activePatternId && patterns[payload.activePatternId]
             ? payload.activePatternId
             : (payload.patternOrder.find(id => patterns[id]) ?? null),
-        changeFunctions: payload.changeFunctions || {functions: {}, functionsConstants: {}, namesList: []},
+        changeFunctions: reviveValuesArraysDeep(payload.changeFunctions || {functions: {}, functionsConstants: {}, namesList: []}),
         changingValues: payload.changingValues || {},
         dependencies: payload.dependencies || {changeFunctionToPattern: {}, patternToChangeFunction: {}},
         tool: payload.tool,
@@ -215,7 +216,7 @@ export function deserializeProjectPayload(payload: ProjectPayloadV1): {
 }
 
 export function encodePayload(payload: ProjectPayloadV1): ArrayBuffer {
-    return new TextEncoder().encode(JSON.stringify(payload)).buffer;
+    return new TextEncoder().encode(JSON.stringify(payload, int32ArrayJsonReplacer)).buffer;
 }
 
 export function decodePayload(buffer: ArrayBuffer): ProjectPayloadV1 {

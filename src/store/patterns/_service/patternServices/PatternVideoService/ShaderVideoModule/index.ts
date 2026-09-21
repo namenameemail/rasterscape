@@ -24,7 +24,7 @@ import {ECFType} from '../../../../../changeFunctions/types'
 import {CfDepthParams} from '../../../../../changeFunctions/functions/depth'
 import {AppState, patternsService} from '../../../../../index'
 import {profileLogger} from '../../../../../../utils/profiling/ProfileLogger'
-
+import {toInt32Array} from '../../../../../../utils/int32ArrayJson'
 
 export class ShaderVideoModule {
 
@@ -487,7 +487,7 @@ export class ShaderVideoModule {
             this.gl.uniform1f(u_CFParamF2, typeParams.to)
             this.gl.uniform1i(u_CFParamI3, typeParams.drawWidth)
             this.gl.uniform1i(u_CFParamI4, typeParams.drawHeight)
-            this.gl.uniform1iv(u_CFParamIV0, typeParams.valuesArray)
+            this.gl.uniform1iv(u_CFParamIV0, toInt32Array(typeParams.valuesArray))
 
         },
         [ECFType.DEPTH]: (state: AppState) => {

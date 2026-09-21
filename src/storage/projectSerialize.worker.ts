@@ -1,4 +1,5 @@
 import {encodeRawImage} from '../utils/imageDataBinary';
+import {int32ArrayJsonReplacer} from '../utils/int32ArrayJson';
 import {
     ProjectPayloadV1,
     SerializedHistoryState,
@@ -82,7 +83,7 @@ self.onmessage = (event: MessageEvent<ProjectSerializeRequest>) => {
 
     try {
         const payload = buildPayload(request);
-        const buffer = new TextEncoder().encode(JSON.stringify(payload)).buffer;
+        const buffer = new TextEncoder().encode(JSON.stringify(payload, int32ArrayJsonReplacer)).buffer;
         const response: ProjectSerializeResponse = {id: request.id, buffer};
 
         self.postMessage(response, [buffer]);
