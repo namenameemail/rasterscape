@@ -8,6 +8,7 @@ import {PatternService} from "../../../PatternService";
 import {EBrushType} from "../../../../../brush/types";
 import {StampDrawParams} from "../../../../../../gl/stampMat";
 import {getGlContext} from "../../../../../../gl/GlContext";
+import {bufferForDrawCanvas} from "../drawTarget";
 
 export class BrushSelect implements ToolService {
     patternService: PatternService;
@@ -67,10 +68,8 @@ export class BrushSelect implements ToolService {
             compositeOperation,
         } = state.brush.params.paramsByType[EBrushType.Select];
         const coordinates = state.position.coordinates;
-        const dest = this.patternService.canvasService.buffer;
-        const useGpu = compositeOperation === ECompositeOperation.SourceOver
-            && !!dest
-            && brushEvent.canvas === dest.canvas;
+        const dest = bufferForDrawCanvas(this.patternService, brushEvent.canvas);
+        const useGpu = !!dest;
 
         const brushRotation = targetPattern?.config?.rotation ? targetPattern?.rotation?.value : null;
         const destinationRotation = (
@@ -120,12 +119,12 @@ export class BrushSelect implements ToolService {
                 });
             });
 
-            dest.stampGpu(texture, sourceFlipY, stamps, opacity);
+            dest.stampGpu(texture, sourceFlipY, stamps, opacity, null, compositeOperation);
             this.drewGpu = true;
             return;
         }
 
-        this.patternService.canvasService.buffer?.ensureCpu();
+        dest?.ensureCpu();
 
         const brushPatternImage = this.patternService.valuesService.selected;
         if (!brushPatternImage) return;

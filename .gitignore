@@ -15,6 +15,7 @@ dist-ssr
 # Profiling sessions (written by dev server Save button)
 profiling/sessions/*.json
 profiling/latest.json
+profiling/cdp-*.json
 
 # Editor directories and files
 .vscode/*

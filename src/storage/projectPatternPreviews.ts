@@ -9,7 +9,12 @@ export type ProjectPatternPreview = {
 };
 
 function getCanvasFromSerializedPattern(pattern: ProjectPayloadV1['patterns'][string] | undefined): ImageData | null {
-    const serialized = pattern?.state.history?.value?.current?.canvasImageData;
+    const current = pattern?.state.history?.value?.current;
+    if (!current || 'frameId' in current && !('canvasImageData' in current)) {
+        return null;
+    }
+
+    const serialized = (current as {canvasImageData?: Parameters<typeof decodeImageData>[0]}).canvasImageData;
     return decodeImageData(serialized);
 }
 
@@ -17,7 +22,7 @@ function getCanvasFromLivePattern(patternId: string, patterns: Record<string, Pa
     const service = patternsService.pattern[patternId];
 
     if (service) {
-        return service.canvasService.getImageData();
+        return service.canvasService.getImageData() ?? null;
     }
 
     return patterns[patternId]?.history?.value?.current?.canvasImageData ?? null;

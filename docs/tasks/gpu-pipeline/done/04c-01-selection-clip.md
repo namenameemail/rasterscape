@@ -34,7 +34,7 @@ Baseline: [`../baselines/04c-01-before.md`](../baselines/04c-01-before.md) — `
 
 Критерий выполнен: GPU-span ≈ `draw.tool`; upload/download не на жест.
 
-Единичный hitch ~467 ms — вне clip; диагностика → [`../06-frame-hitches.md`](../06-frame-hitches.md).
+Единичный hitch ~467 ms — вне clip; диагностика → [`06-frame-hitches.md`](06-frame-hitches.md).
 
 ## Проверено
 
@@ -53,4 +53,4 @@ Frame Rec + непустое выделение:
 
 ## Не входило
 
-Построение selection ([`../04c/10-selection-build.md`](../04c/10-selection-build.md)), кисть Select ([`../04c/06-brush-select-source.md`](../04c/06-brush-select-source.md)), blend modes ([`../04c/02-blend-modes.md`](../04c/02-blend-modes.md)), hitch/GC ([`../06-frame-hitches.md`](../06-frame-hitches.md)).
+Построение selection ([`../04c/10-selection-build.md`](../04c/10-selection-build.md)), кисть Select ([`../04c/06-brush-select-source.md`](../04c/06-brush-select-source.md)), blend modes ([`04c-02-blend-modes.md`](04c-02-blend-modes.md)), hitch/GC ([`06-frame-hitches.md`](06-frame-hitches.md)).

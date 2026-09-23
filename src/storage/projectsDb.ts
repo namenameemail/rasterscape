@@ -2,53 +2,66 @@ import {
     decodePayload,
     encodePayload,
 } from './projectSerializer';
-import {ProjectMeta, ProjectPayloadV1} from './projectTypes';
+import {
+    isSerializedFrameRef,
+    ProjectMeta,
+    ProjectPayloadV1,
+    SerializedInlineHistoryItem,
+    SerializedPatternHistoryItem,
+} from './projectTypes';
+import {encodeRawImage} from '../utils/imageDataBinary';
+import type {RawStoredImageData as CodecRawImage} from '../utils/imageDataCodec';
+import {
+    FRAMES_PROJECT_INDEX,
+    FRAMES_STORE,
+    STORE_NAME,
+    StoredFrameImage,
+    ProjectFrameRecord,
+    ProjectRecord,
+    frameBytesSize,
+    listProjectFrames,
+    openDb,
+    putProjectBuffer,
+    txDone,
+} from './projectsIdb';
 
-const DB_NAME = 'rasterscape-projects';
-const DB_VERSION = 1;
-const STORE_NAME = 'projects';
+export {
+    ensureProjectFrames,
+    getProjectFrame,
+    listProjectFrames,
+    putProjectBuffer,
+    resetProjectsDbForTests,
+    type ProjectFrameRecord,
+    type ProjectRecord,
+    type StoredFrameImage,
+} from './projectsIdb';
 
-export interface ProjectRecord extends ProjectMeta {
-    payload: ArrayBuffer
-}
-
-let dbPromise: Promise<IDBDatabase> | null = null;
-
-function openDb(): Promise<IDBDatabase> {
-    if (dbPromise) {
-        return dbPromise;
-    }
-
-    dbPromise = new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-        request.onupgradeneeded = () => {
-            const db = request.result;
-            if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME, {keyPath: 'id'});
-            }
-        };
-
-        request.onsuccess = () => resolve(request.result);
+export async function listProjects(): Promise<ProjectMeta[]> {
+    const db = await openDb();
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.getAll();
+    const records = await new Promise<ProjectRecord[]>((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result as ProjectRecord[]);
         request.onerror = () => reject(request.error);
     });
+    await txDone(tx);
 
-    return dbPromise;
+    return records
+        .map(({id, name, updatedAt, sizeBytes}) => ({id, name, updatedAt, sizeBytes}))
+        .sort((a, b) => b.updatedAt - a.updatedAt);
 }
 
-function runTransaction<T>(
-    mode: IDBTransactionMode,
-    fn: (store: IDBObjectStore) => IDBRequest<T>,
-): Promise<T> {
-    return openDb().then(db => new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_NAME, mode);
-        const store = tx.objectStore(STORE_NAME);
-        const request = fn(store);
-
-        request.onsuccess = () => resolve(request.result);
+export async function getProject(id: string): Promise<ProjectRecord | null> {
+    const db = await openDb();
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const request = tx.objectStore(STORE_NAME).get(id);
+    const record = await new Promise<ProjectRecord | undefined>((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result as ProjectRecord | undefined);
         request.onerror = () => reject(request.error);
-        tx.onerror = () => reject(tx.error);
-    }));
+    });
+    await txDone(tx);
+    return record || null;
 }
 
 export function createProjectId(): string {
@@ -59,17 +72,151 @@ export function createProjectId(): string {
     return `project-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export async function listProjects(): Promise<ProjectMeta[]> {
-    const records = await runTransaction<ProjectRecord[]>('readonly', store => store.getAll());
+function storedToDecodable(image: StoredFrameImage | null): CodecRawImage | null {
+    if (!image) {
+        return null;
+    }
 
-    return records
-        .map(({id, name, updatedAt, sizeBytes}) => ({id, name, updatedAt, sizeBytes}))
-        .sort((a, b) => b.updatedAt - a.updatedAt);
+    return {
+        width: image.width,
+        height: image.height,
+        bytes: image.bytes,
+    };
 }
 
-export async function getProject(id: string): Promise<ProjectRecord | null> {
-    const record = await runTransaction<ProjectRecord | undefined>('readonly', store => store.get(id));
-    return record || null;
+export async function resolveProjectPayloadFrames(
+    payload: ProjectPayloadV1,
+    projectId: string,
+): Promise<ProjectPayloadV1> {
+    const frames = await listProjectFrames(projectId);
+    const byId = new Map(frames.map(frame => [frame.frameId, frame]));
+
+    const resolveItem = (
+        item: SerializedPatternHistoryItem | null,
+    ): (SerializedInlineHistoryItem & {frameId?: string}) | null => {
+        if (!item) {
+            return null;
+        }
+
+        if (!isSerializedFrameRef(item)) {
+            return item;
+        }
+
+        const frame = byId.get(item.frameId);
+        if (!frame) {
+            return null;
+        }
+
+        return {
+            frameId: item.frameId,
+            canvasImageData: storedToDecodable(frame.canvas) as any,
+            maskImageData: storedToDecodable(frame.mask) as any,
+        };
+    };
+
+    const patterns: ProjectPayloadV1['patterns'] = {};
+
+    payload.patternOrder.forEach((patternId) => {
+        const serialized = payload.patterns[patternId];
+        if (!serialized) {
+            return;
+        }
+
+        const history = serialized.state.history;
+        if (!history) {
+            patterns[patternId] = serialized;
+            return;
+        }
+
+        patterns[patternId] = {
+            state: {
+                ...serialized.state,
+                history: {
+                    params: history.params,
+                    value: {
+                        before: history.value.before.map(resolveItem).filter(Boolean) as SerializedPatternHistoryItem[],
+                        after: history.value.after.map(resolveItem).filter(Boolean) as SerializedPatternHistoryItem[],
+                        current: resolveItem(history.value.current),
+                    },
+                },
+            },
+        };
+    });
+
+    return {
+        ...payload,
+        patterns,
+    };
+}
+
+export function encodeResolvedPayloadForExport(payload: ProjectPayloadV1): ProjectPayloadV1 {
+    const encodeImage = (image: any) => {
+        if (!image) {
+            return null;
+        }
+
+        if (typeof image.data === 'string') {
+            return image;
+        }
+
+        if (image.bytes instanceof ArrayBuffer) {
+            return encodeRawImage(image.width, image.height, image.bytes);
+        }
+
+        return image;
+    };
+
+    const encodeItem = (
+        item: SerializedPatternHistoryItem | null,
+    ): SerializedInlineHistoryItem | null => {
+        if (!item) {
+            return null;
+        }
+
+        if (isSerializedFrameRef(item)) {
+            return {canvasImageData: null, maskImageData: null};
+        }
+
+        const inline = item as SerializedInlineHistoryItem & {frameId?: string};
+        return {
+            canvasImageData: encodeImage(inline.canvasImageData),
+            maskImageData: encodeImage(inline.maskImageData),
+        };
+    };
+
+    const patterns: ProjectPayloadV1['patterns'] = {};
+
+    payload.patternOrder.forEach((patternId) => {
+        const serialized = payload.patterns[patternId];
+        if (!serialized) {
+            return;
+        }
+
+        const history = serialized.state.history;
+        if (!history) {
+            patterns[patternId] = serialized;
+            return;
+        }
+
+        patterns[patternId] = {
+            state: {
+                ...serialized.state,
+                history: {
+                    params: history.params,
+                    value: {
+                        before: history.value.before.map(encodeItem).filter(Boolean) as SerializedPatternHistoryItem[],
+                        after: history.value.after.map(encodeItem).filter(Boolean) as SerializedPatternHistoryItem[],
+                        current: encodeItem(history.value.current),
+                    },
+                },
+            },
+        };
+    });
+
+    return {
+        ...payload,
+        patterns,
+    };
 }
 
 export async function getProjectPayload(id: string): Promise<ProjectPayloadV1 | null> {
@@ -78,42 +225,38 @@ export async function getProjectPayload(id: string): Promise<ProjectPayloadV1 | 
         return null;
     }
 
-    return decodePayload(record.payload);
-}
-
-export async function putProjectBuffer(
-    id: string,
-    name: string,
-    buffer: ArrayBuffer,
-): Promise<ProjectMeta> {
-    const record: ProjectRecord = {
-        id,
-        name,
-        updatedAt: Date.now(),
-        sizeBytes: buffer.byteLength,
-        payload: buffer,
-    };
-
-    await runTransaction('readwrite', store => store.put(record));
-
-    return {
-        id: record.id,
-        name: record.name,
-        updatedAt: record.updatedAt,
-        sizeBytes: record.sizeBytes,
-    };
+    const payload = decodePayload(record.payload);
+    return resolveProjectPayloadFrames(payload, id);
 }
 
 export async function putProject(
     id: string,
     name: string,
     payload: ProjectPayloadV1,
+    keepFrameIds?: Set<string>,
 ): Promise<ProjectMeta> {
-    return putProjectBuffer(id, name, encodePayload(payload));
+    return putProjectBuffer(id, name, encodePayload(payload), keepFrameIds);
 }
 
 export async function deleteProject(id: string): Promise<void> {
-    await runTransaction('readwrite', store => store.delete(id));
+    const db = await openDb();
+    const tx = db.transaction([STORE_NAME, FRAMES_STORE], 'readwrite');
+    tx.objectStore(STORE_NAME).delete(id);
+
+    const index = tx.objectStore(FRAMES_STORE).index(FRAMES_PROJECT_INDEX);
+    const listReq = index.getAll(id);
+    await new Promise<void>((resolve, reject) => {
+        listReq.onsuccess = () => {
+            const frames = listReq.result as ProjectFrameRecord[];
+            for (const frame of frames) {
+                tx.objectStore(FRAMES_STORE).delete([id, frame.frameId]);
+            }
+            resolve();
+        };
+        listReq.onerror = () => reject(listReq.error);
+    });
+
+    await txDone(tx);
 }
 
 export async function duplicateProject(id: string, newName: string): Promise<ProjectMeta> {
@@ -122,9 +265,38 @@ export async function duplicateProject(id: string, newName: string): Promise<Pro
         throw new Error('Project not found');
     }
 
+    const frames = await listProjectFrames(id);
     const newId = createProjectId();
+    const framesBytes = frames.reduce((sum, frame) => sum + frameBytesSize(frame), 0);
 
-    return putProjectBuffer(newId, newName, source.payload);
+    const db = await openDb();
+    const tx = db.transaction([STORE_NAME, FRAMES_STORE], 'readwrite');
+    const framesStore = tx.objectStore(FRAMES_STORE);
+
+    for (const frame of frames) {
+        framesStore.put({
+            ...frame,
+            projectId: newId,
+        });
+    }
+
+    const record: ProjectRecord = {
+        id: newId,
+        name: newName,
+        updatedAt: Date.now(),
+        sizeBytes: source.payload.byteLength + framesBytes,
+        payload: source.payload,
+    };
+
+    tx.objectStore(STORE_NAME).put(record);
+    await txDone(tx);
+
+    return {
+        id: record.id,
+        name: record.name,
+        updatedAt: record.updatedAt,
+        sizeBytes: record.sizeBytes,
+    };
 }
 
 export async function estimateStorage(): Promise<{quota: number, usage: number, free: number}> {

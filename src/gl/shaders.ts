@@ -77,17 +77,158 @@ void main() {
     v_destUv = vec2(p.x / u_destSize.x, p.y / u_destSize.y);
 }`
 
+export const BLEND_FN = `
+const int M_SRC_OVER = 0;
+const int M_DST_OUT = 1;
+const int M_SRC_ATOP = 2;
+const int M_DST_OVER = 3;
+const int M_LIGHTER = 4;
+const int M_XOR = 5;
+const int M_MULTIPLY = 6;
+const int M_SCREEN = 7;
+const int M_OVERLAY = 8;
+const int M_DARKEN = 9;
+const int M_LIGHTEN = 10;
+const int M_DODGE = 11;
+const int M_BURN = 12;
+const int M_HARD = 13;
+const int M_SOFT = 14;
+const int M_DIFF = 15;
+const int M_EXCL = 16;
+const int M_HUE = 17;
+const int M_SAT = 18;
+const int M_COLOR = 19;
+const int M_LUM = 20;
+
+float lum3(vec3 c) {
+    return dot(c, vec3(0.3, 0.59, 0.11));
+}
+
+vec3 clipColor(vec3 c) {
+    float l = lum3(c);
+    float n = min(min(c.r, c.g), c.b);
+    float x = max(max(c.r, c.g), c.b);
+    if (n < 0.0) {
+        c = l + (c - l) * (l / (l - n));
+    }
+    if (x > 1.0) {
+        c = l + (c - l) * ((1.0 - l) / (x - l));
+    }
+    return c;
+}
+
+vec3 setLum(vec3 c, float l) {
+    return clipColor(c + (l - lum3(c)));
+}
+
+float sat3(vec3 c) {
+    return max(max(c.r, c.g), c.b) - min(min(c.r, c.g), c.b);
+}
+
+vec3 setSat(vec3 c, float s) {
+    float mn = min(min(c.r, c.g), c.b);
+    float mx = max(max(c.r, c.g), c.b);
+    if (mx <= mn) {
+        return vec3(0.0);
+    }
+    return (c - mn) * (s / (mx - mn));
+}
+
+float softLight(float cb, float cs) {
+    if (cs <= 0.5) {
+        return cb - (1.0 - 2.0 * cs) * cb * (1.0 - cb);
+    }
+    float d = cb <= 0.25 ? ((16.0 * cb - 12.0) * cb + 4.0) * cb : sqrt(cb);
+    return cb + (2.0 * cs - 1.0) * (d - cb);
+}
+
+float colorDodge(float cb, float cs) {
+    if (cb <= 0.0) return 0.0;
+    if (cs >= 1.0) return 1.0;
+    return min(1.0, cb / (1.0 - cs));
+}
+
+float colorBurn(float cb, float cs) {
+    if (cb >= 1.0) return 1.0;
+    if (cs <= 0.0) return 0.0;
+    return 1.0 - min(1.0, (1.0 - cb) / cs);
+}
+
+float hardLight(float cb, float cs) {
+    return cs <= 0.5 ? 2.0 * cs * cb : 1.0 - 2.0 * (1.0 - cs) * (1.0 - cb);
+}
+
+vec3 separable(vec3 Cb, vec3 Cs, int mode) {
+    if (mode == M_MULTIPLY) return Cb * Cs;
+    if (mode == M_SCREEN) return Cb + Cs - Cb * Cs;
+    if (mode == M_OVERLAY) return vec3(hardLight(Cs.r, Cb.r), hardLight(Cs.g, Cb.g), hardLight(Cs.b, Cb.b));
+    if (mode == M_DARKEN) return min(Cb, Cs);
+    if (mode == M_LIGHTEN) return max(Cb, Cs);
+    if (mode == M_DODGE) return vec3(colorDodge(Cb.r, Cs.r), colorDodge(Cb.g, Cs.g), colorDodge(Cb.b, Cs.b));
+    if (mode == M_BURN) return vec3(colorBurn(Cb.r, Cs.r), colorBurn(Cb.g, Cs.g), colorBurn(Cb.b, Cs.b));
+    if (mode == M_HARD) return vec3(hardLight(Cb.r, Cs.r), hardLight(Cb.g, Cs.g), hardLight(Cb.b, Cs.b));
+    if (mode == M_SOFT) return vec3(softLight(Cb.r, Cs.r), softLight(Cb.g, Cs.g), softLight(Cb.b, Cs.b));
+    if (mode == M_DIFF) return abs(Cb - Cs);
+    if (mode == M_EXCL) return Cb + Cs - 2.0 * Cb * Cs;
+    if (mode == M_HUE) return setLum(setSat(Cs, sat3(Cb)), lum3(Cb));
+    if (mode == M_SAT) return setLum(setSat(Cb, sat3(Cs)), lum3(Cb));
+    if (mode == M_COLOR) return setLum(Cs, lum3(Cb));
+    return setLum(Cb, lum3(Cs));
+}
+
+vec4 compositeBlend(vec4 src, vec4 dst, int mode) {
+    float as = src.a;
+    float ab = dst.a;
+    vec3 Cs = src.rgb;
+    vec3 premulDst = dst.rgb;
+    vec3 Cb = ab > 1e-5 ? premulDst / ab : vec3(0.0);
+    vec3 co;
+    float ao;
+    if (mode >= M_MULTIPLY) {
+        vec3 B = separable(Cb, Cs, mode);
+        co = as * (1.0 - ab) * Cs + as * ab * B + (1.0 - as) * premulDst;
+        ao = as + ab * (1.0 - as);
+    } else {
+        float Fa = 1.0;
+        float Fb = 1.0 - as;
+        if (mode == M_DST_OUT) {
+            Fa = 0.0;
+            Fb = 1.0 - as;
+        } else if (mode == M_SRC_ATOP) {
+            Fa = ab;
+            Fb = 1.0 - as;
+        } else if (mode == M_DST_OVER) {
+            Fa = 1.0 - ab;
+            Fb = 1.0;
+        } else if (mode == M_LIGHTER) {
+            Fa = 1.0;
+            Fb = 1.0;
+        } else if (mode == M_XOR) {
+            Fa = 1.0 - ab;
+            Fb = 1.0 - as;
+        }
+        co = as * Fa * Cs + Fb * premulDst;
+        ao = as * Fa + ab * Fb;
+    }
+    return vec4(clamp(co, 0.0, 1.0), clamp(ao, 0.0, 1.0));
+}
+`
+
 export const STAMP_FS = `#version 300 es
 precision highp float;
 uniform sampler2D u_tex;
 uniform sampler2D u_mask;
+uniform sampler2D u_dst;
 uniform float u_opacity;
 uniform float u_flipY;
 uniform float u_useMask;
 uniform float u_maskFlipY;
+uniform int u_mode;
+uniform vec2 u_destSize;
 in vec2 v_uv;
 in vec2 v_destUv;
 out vec4 o;
+${BLEND_FN}
 void main() {
     vec2 uv = vec2(v_uv.x, u_flipY > 0.5 ? 1.0 - v_uv.y : v_uv.y);
     vec4 c = texture(u_tex, uv);
@@ -96,7 +237,28 @@ void main() {
         vec2 muv = vec2(v_destUv.x, u_maskFlipY > 0.5 ? 1.0 - v_destUv.y : v_destUv.y);
         ma = texture(u_mask, muv).a;
     }
-    o = vec4(c.rgb, c.a * u_opacity * ma);
+    c.a *= u_opacity * ma;
+    vec2 duv = gl_FragCoord.xy / u_destSize;
+    vec4 dst = texture(u_dst, duv);
+    o = compositeBlend(c, dst, u_mode);
+}`
+
+export const BLEND_FS = `#version 300 es
+precision highp float;
+uniform sampler2D u_src;
+uniform sampler2D u_dst;
+uniform float u_opacity;
+uniform float u_srcFlipY;
+uniform int u_mode;
+in vec2 v_uv;
+out vec4 o;
+${BLEND_FN}
+void main() {
+    vec2 suv = vec2(v_uv.x, u_srcFlipY > 0.5 ? 1.0 - v_uv.y : v_uv.y);
+    vec4 src = texture(u_src, suv);
+    src.a *= u_opacity;
+    vec4 dst = texture(u_dst, v_uv);
+    o = compositeBlend(src, dst, u_mode);
 }`
 
 export const QUAD = new Float32Array([

@@ -36,7 +36,6 @@ export class CanvasEventsService {
 
     private unsubscribeFrame: (() => void) | null = null;
     private readonly frameSubscriberId: string;
-    private readonly isMask: boolean;
 
     drawing: boolean = false;
     startFrameRelatedEvent: MouseEvent | null = null;
@@ -48,7 +47,6 @@ export class CanvasEventsService {
         this.handlers = handlers;
         this.storeService = storeService;
         this.frameSubscriberId = `draw:${storeService.patternService.patternId}:${frameSubscriberSuffix}`;
-        this.isMask = frameSubscriberSuffix === 'mask';
     }
 
     bindCanvas = (monitor: HTMLCanvasElement, buffer: PatternBuffer) => {
@@ -158,16 +156,6 @@ export class CanvasEventsService {
                 events: this.frameRelatedEvents,
                 context: platformer.getWorldContext(),
                 canvas: platformer.getWorldCanvas(),
-            }
-        }
-
-        if (this.isMask) {
-            this.buffer?.ensureCpu()
-            return {
-                events: this.frameRelatedEvents,
-                context: this.buffer?.context as CanvasRenderingContext2D,
-                canvas: this.buffer?.canvas as HTMLCanvasElement,
-                gpuAhead: false,
             }
         }
 

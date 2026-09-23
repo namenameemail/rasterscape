@@ -1,3 +1,5 @@
+import {ECompositeOperation} from '../store/compositeOperations'
+import {blendTextureOver} from './blend'
 import {bindQuad, drawTexture} from './draw'
 import type {GlContext} from './GlContext'
 
@@ -10,16 +12,9 @@ export const compositeTextureOver = (
     destFlipY: boolean,
     opacity = 1,
     layerFlipY = false,
+    mode: ECompositeOperation = ECompositeOperation.SourceOver,
 ): void => {
-    const {gl} = ctx
-    ctx.setSize(width, height)
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
-    drawTexture(ctx, dest, destFlipY)
-    gl.enable(gl.BLEND)
-    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
-    drawTexture(ctx, video, layerFlipY, opacity)
-    gl.disable(gl.BLEND)
-    ctx.copyFramebufferToTexture(dest, width, height)
+    blendTextureOver(ctx, dest, video, width, height, destFlipY, layerFlipY, mode, opacity)
 }
 
 export const compositeCanvasOver = (
@@ -31,6 +26,7 @@ export const compositeCanvasOver = (
     layer: HTMLCanvasElement,
     opacity = 1,
     clipMask?: HTMLCanvasElement | null,
+    mode: ECompositeOperation = ECompositeOperation.SourceOver,
 ): void => {
     const layerTex = ctx.ensureLayer(width, height)
     ctx.uploadCanvas(layer, layerTex)
@@ -38,11 +34,11 @@ export const compositeCanvasOver = (
     if (clipMask) {
         const maskTex = ctx.uploadClipMask(clipMask)
         const clipped = compositeMasked(ctx, layerTex, maskTex, width, height, false, false, true)
-        compositeTextureOver(ctx, clipped, dest, width, height, destFlipY, opacity, false)
+        compositeTextureOver(ctx, clipped, dest, width, height, destFlipY, opacity, false, mode)
         return
     }
 
-    compositeTextureOver(ctx, layerTex, dest, width, height, destFlipY, opacity, true)
+    compositeTextureOver(ctx, layerTex, dest, width, height, destFlipY, opacity, true, mode)
 }
 
 export const compositeMasked = (

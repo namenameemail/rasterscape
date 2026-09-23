@@ -1,5 +1,4 @@
 import {drawMasked, drawWithRotation} from "../../../../../../utils/canvas/helpers/draw";
-import {ECompositeOperation} from "../../../../../../store/compositeOperations";
 import {ToolService, ToolHandlers} from "../types";
 import {createCanvas, HelperCanvas} from "../../../../../../utils/canvas/helpers/base";
 import {CanvasServiceEvent} from "../types";
@@ -7,6 +6,7 @@ import {PatternService} from "../../../PatternService";
 import {EBrushType} from "../../../../../brush/types";
 import {getRandomColor} from "../../../../../../utils/utils";
 import {circle} from "../../../../../../utils/canvas/helpers/geometry";
+import {bufferForDrawCanvas} from "../drawTarget";
 
 export class BrushShape implements ToolService {
     patternService: PatternService;
@@ -51,11 +51,8 @@ export class BrushShape implements ToolService {
         const coordinates = state.position.coordinates;
         const selectionMask = this.patternService.selectionService.mask;
         const clipMask = this.patternService.selectionService.maskCanvas;
-        const dest = this.patternService.canvasService.buffer;
-        const useGpu = compositeOperation === ECompositeOperation.SourceOver
-            && !!dest
-            && brushEvent.canvas === dest.canvas
-            && (!selectionMask || !!clipMask);
+        const dest = bufferForDrawCanvas(this.patternService, brushEvent.canvas);
+        const useGpu = !!dest && (!selectionMask || !!clipMask);
 
         const rotation = pattern.rotation.value;
         const angle = rotation ? rotation.angle : 0;
@@ -73,13 +70,13 @@ export class BrushShape implements ToolService {
         });
 
         if (useGpu) {
-            dest.compositeLayerGpu(this.helperCanvas1.canvas, opacity, clipMask);
+            dest.compositeLayerGpu(this.helperCanvas1.canvas, opacity, clipMask, compositeOperation);
             this.helperCanvas1.clear();
             this.drewGpu = true;
             return;
         }
 
-        this.patternService.canvasService.buffer?.ensureCpu();
+        dest?.ensureCpu();
 
         context.globalCompositeOperation = compositeOperation;
         context.globalAlpha = opacity;

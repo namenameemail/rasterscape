@@ -4,6 +4,11 @@ import {PatternState} from '../store/patterns/pattern/types';
 import {toSelectionBBox} from '../store/patterns/selection/types';
 import {cloneImageBuffer} from '../utils/imageDataBinary';
 import {profileLogger} from '../utils/profiling/ProfileLogger';
+import {ensureHistoryItemId} from './historyFrameId';
+import {
+    ProjectFrameRecord,
+    StoredFrameImage,
+} from './projectsIdb';
 import {
     ProjectSerializeError,
     ProjectSerializeRequest,
@@ -11,13 +16,16 @@ import {
     RawHistoryItemPayload,
     RawImagePayload,
 } from './projectSerializeTypes';
+import {ProjectMeta} from './projectTypes';
 
 const SERIALIZE_WORKER_TIMEOUT_MS = 45000;
+
+type BuiltSerializeRequest = Omit<ProjectSerializeRequest, 'projectId' | 'name' | 'frames' | 'keepFrameIds'>
 
 let worker: Worker | null = null;
 let requestCounter = 0;
 const pending = new Map<number, {
-    resolve(buffer: ArrayBuffer): void
+    resolve(meta: ProjectMeta): void
     reject(error: Error): void
 }>();
 
@@ -45,7 +53,7 @@ function getWorker(): Worker {
                 return;
             }
 
-            handlers.resolve(message.buffer);
+            handlers.resolve(message.meta);
         };
 
         worker.onerror = (error) => {
@@ -73,41 +81,79 @@ function toRawImage(imageData: ImageData | null | undefined): RawImagePayload | 
     };
 }
 
-function toRawHistoryItem(item: PatternHistoryItem | null | undefined): RawHistoryItemPayload | null {
-    if (!item) {
+function toStoredImage(imageData: ImageData | null | undefined): StoredFrameImage | null {
+    if (!imageData) {
         return null;
     }
 
     return {
-        canvas: toRawImage(item.canvasImageData),
-        mask: toRawImage(item.maskImageData),
+        width: imageData.width,
+        height: imageData.height,
+        bytes: imageData.data.slice().buffer,
     };
 }
 
-function buildPatternPayload(pattern: PatternState, patternId: string): ProjectSerializeRequest['patterns'][string] {
-    let history = pattern.history
-        ? {
-            params: pattern.history.params,
-            value: {
-                before: pattern.history.value.before.map(item => toRawHistoryItem(item) || {canvas: null, mask: null}),
-                after: pattern.history.value.after.map(item => toRawHistoryItem(item) || {canvas: null, mask: null}),
-                current: toRawHistoryItem(pattern.history.value.current),
-            },
-        }
-        : undefined;
+function toRawHistoryRef(item: PatternHistoryItem | null | undefined): RawHistoryItemPayload | null {
+    if (!item) {
+        return null;
+    }
 
+    return {frameId: ensureHistoryItemId(item)};
+}
+
+function collectFrameRecord(
+    projectId: string,
+    item: PatternHistoryItem | null | undefined,
+    frames: ProjectFrameRecord[],
+    keepFrameIds: Set<string>,
+): void {
+    if (!item?.canvasImageData && !item?.maskImageData) {
+        return;
+    }
+
+    const frameId = ensureHistoryItemId(item);
+    keepFrameIds.add(frameId);
+    frames.push({
+        projectId,
+        frameId,
+        canvas: toStoredImage(item.canvasImageData),
+        mask: toStoredImage(item.maskImageData),
+    });
+}
+
+function buildPatternPayload(
+    pattern: PatternState,
+    patternId: string,
+    projectId: string,
+    frames: ProjectFrameRecord[],
+    keepFrameIds: Set<string>,
+): ProjectSerializeRequest['patterns'][string] {
     const patternService = patternsService.pattern[patternId];
 
-    if (patternService && pattern.history) {
+    let history: ProjectSerializeRequest['patterns'][string]['state']['history'];
+
+    if (pattern.history) {
+        pattern.history.value.before.forEach(item => {
+            collectFrameRecord(projectId, item, frames, keepFrameIds);
+        });
+        pattern.history.value.after.forEach(item => {
+            collectFrameRecord(projectId, item, frames, keepFrameIds);
+        });
+
         history = {
             params: pattern.history.params,
             value: {
-                before: pattern.history.value.before.map(item => toRawHistoryItem(item) || {canvas: null, mask: null}),
-                after: pattern.history.value.after.map(item => toRawHistoryItem(item) || {canvas: null, mask: null}),
-                current: {
-                    canvas: toRawImage(patternService.canvasService.getImageData()),
-                    mask: toRawImage(patternService.maskService.getImageData()),
-                },
+                before: pattern.history.value.before.map(item => toRawHistoryRef(item) || {canvas: null, mask: null}),
+                after: pattern.history.value.after.map(item => toRawHistoryRef(item) || {canvas: null, mask: null}),
+                current: patternService
+                    ? {
+                        canvas: toRawImage(patternService.canvasService.getImageData()),
+                        mask: toRawImage(patternService.maskService.getImageData()),
+                    }
+                    : {
+                        canvas: toRawImage(pattern.history.value.current?.canvasImageData),
+                        mask: toRawImage(pattern.history.value.current?.maskImageData),
+                    },
             },
         };
     }
@@ -133,41 +179,70 @@ function buildPatternPayload(pattern: PatternState, patternId: string): ProjectS
     };
 }
 
-export function buildProjectSerializeRequest(state: AppState): ProjectSerializeRequest {
+export function buildProjectSerializeRequest(
+    state: AppState,
+    projectId: string,
+): {
+    request: BuiltSerializeRequest
+    frames: ProjectFrameRecord[]
+    keepFrameIds: Set<string>
+} {
     const patternOrder = Object.keys(state.patterns);
     const patterns: ProjectSerializeRequest['patterns'] = {};
+    const frames: ProjectFrameRecord[] = [];
+    const keepFrameIds = new Set<string>();
 
     patternOrder.forEach((patternId) => {
-        patterns[patternId] = buildPatternPayload(state.patterns[patternId], patternId);
+        patterns[patternId] = buildPatternPayload(
+            state.patterns[patternId],
+            patternId,
+            projectId,
+            frames,
+            keepFrameIds,
+        );
     });
 
     return {
-        id: 0,
-        patternOrder,
-        activePatternId: state.activePattern.patternId,
-        patterns,
-        changeFunctions: state.changeFunctions,
-        changingValues: state.changingValues,
-        dependencies: state.dependencies,
-        tool: state.tool,
-        brush: state.brush,
-        line: state.line,
-        selectTool: state.selectTool,
-        color: state.color,
+        request: {
+            id: 0,
+            patternOrder,
+            activePatternId: state.activePattern.patternId,
+            patterns,
+            changeFunctions: state.changeFunctions,
+            changingValues: state.changingValues,
+            dependencies: state.dependencies,
+            tool: state.tool,
+            brush: state.brush,
+            line: state.line,
+            selectTool: state.selectTool,
+            color: state.color,
+        },
+        frames,
+        keepFrameIds,
     };
 }
 
 function collectTransferables(request: ProjectSerializeRequest): Transferable[] {
+    const seen = new Set<ArrayBuffer>();
     const transferables: Transferable[] = [];
 
-    const pushImage = (image: RawImagePayload | null) => {
+    const pushBuffer = (buffer: ArrayBuffer | null | undefined) => {
+        if (!buffer || seen.has(buffer)) {
+            return;
+        }
+
+        seen.add(buffer);
+        transferables.push(buffer);
+    };
+
+    const pushImage = (image: RawImagePayload | null | undefined) => {
         if (image) {
-            transferables.push(image.bytes);
+            pushBuffer(image.bytes);
         }
     };
 
     const pushHistoryItem = (item: RawHistoryItemPayload | null) => {
-        if (!item) {
+        if (!item || 'frameId' in item) {
             return;
         }
 
@@ -187,22 +262,39 @@ function collectTransferables(request: ProjectSerializeRequest): Transferable[] 
         pushHistoryItem(history.value.current);
     });
 
+    request.frames.forEach(frame => {
+        pushBuffer(frame.canvas?.bytes);
+        pushBuffer(frame.mask?.bytes);
+    });
+
     return transferables;
 }
 
-export function serializeProjectToBuffer(state: AppState): Promise<ArrayBuffer> {
-    const request = profileLogger.time('projects.autosave.serialize.build', () => {
-        const built = buildProjectSerializeRequest(state);
+export async function persistProjectViaWorker(
+    state: AppState,
+    projectId: string,
+    name: string,
+): Promise<ProjectMeta> {
+    const {request, frames, keepFrameIds} = profileLogger.time('projects.autosave.serialize.build', () => {
+        const built = buildProjectSerializeRequest(state, projectId);
         const id = ++requestCounter;
-        built.id = id;
+        built.request.id = id;
         return built;
     });
 
+    const message: ProjectSerializeRequest = {
+        ...request,
+        projectId,
+        name,
+        frames,
+        keepFrameIds: [...keepFrameIds],
+    };
+
     return profileLogger.timeAsync('projects.autosave.serialize.worker', () =>
-        new Promise<ArrayBuffer>((resolve, reject) => {
+        new Promise<ProjectMeta>((resolve, reject) => {
             let settled = false;
 
-            const finish = (ok: boolean, value?: ArrayBuffer, error?: Error) => {
+            const finish = (ok: boolean, value?: ProjectMeta, error?: Error) => {
                 if (settled) {
                     return;
                 }
@@ -212,7 +304,7 @@ export function serializeProjectToBuffer(state: AppState): Promise<ArrayBuffer> 
                 pending.delete(request.id);
 
                 if (ok) {
-                    resolve(value as ArrayBuffer);
+                    resolve(value as ProjectMeta);
                 } else {
                     reject(error ?? new Error('serialize worker failed'));
                 }
@@ -224,12 +316,12 @@ export function serializeProjectToBuffer(state: AppState): Promise<ArrayBuffer> 
             }, SERIALIZE_WORKER_TIMEOUT_MS);
 
             pending.set(request.id, {
-                resolve: buffer => finish(true, buffer),
+                resolve: meta => finish(true, meta),
                 reject: error => finish(false, undefined, error),
             });
 
             try {
-                getWorker().postMessage(request, collectTransferables(request));
+                getWorker().postMessage(message, collectTransferables(message));
             } catch (error) {
                 finish(false, undefined, error instanceof Error ? error : new Error(String(error)));
             }

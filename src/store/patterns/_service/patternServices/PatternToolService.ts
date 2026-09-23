@@ -115,27 +115,46 @@ export class PatternToolService {
         onResetPosition: this.resetPositionToStore,
     };
 
+    private presentMaskToolResult = () => {
+        const buffer = this.patternService.maskService.buffer;
+
+        if (this.maskToolService?.drewGpu) {
+            buffer?.presentGl();
+            this.maskToolService.drewGpu = false;
+            return;
+        }
+
+        if (buffer?.isGpuAhead) {
+            buffer.presentGl();
+            return;
+        }
+
+        this.patternService.maskService.presentFromCpu();
+    };
+
     maskCanvasEventHandlers: CanvasEventHandlers = {
         onClick: (...args) => {
             this.maskToolService?.handlers.onClick?.(...args);
-            this.patternService.maskService.presentFromCpu();
+            this.presentMaskToolResult();
         },
         onDown: (...args) => {
             this.maskToolService?.handlers.onDown?.(...args);
-            this.patternService.maskService.presentFromCpu();
+            this.presentMaskToolResult();
         },
         onDraw: (...args) => {
             profileLogger.time('draw.mask.tool', () => {
                 this.maskToolService?.handlers.onDraw?.(...args);
             });
-            this.patternService.maskService.presentFromCpu();
-            profileLogger.time('draw.mask.valuesMasked', () => {
-                this.patternService.valuesService.updateMaskedIfNeeded();
-            });
+            this.presentMaskToolResult();
+            if (!this.patternService.maskService.buffer?.isGpuAhead) {
+                profileLogger.time('draw.mask.valuesMasked', () => {
+                    this.patternService.valuesService.updateMaskedIfNeeded();
+                });
+            }
         },
         onRelease: (...args) => {
             this.maskToolService?.handlers.onRelease?.(...args);
-            this.patternService.maskService.presentFromCpu();
+            this.presentMaskToolResult();
             this.patternService.valuesService.update();
         },
         onPushPosition: this.pushMaskPositionToStore,

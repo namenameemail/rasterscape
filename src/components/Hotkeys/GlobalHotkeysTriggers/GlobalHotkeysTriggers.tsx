@@ -1,33 +1,33 @@
 import * as React from "react";
-import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
-import {AppState} from "../../../store";
-import {AppHotkeyTrigger} from "./AppHotkeyTrigger";
-import {redo, undo} from "../../../store/patterns/history/actions";
-import {settingMode} from "../../../store/hotkeys/actions";
-import {setFullScreen} from "../../../store/fullscreen";
-import {toggleDemonstration} from "../../../store/patterns/demonstration/actions";
-import {offOptimization, onOptimization} from "../../../store/optimization";
-import {getImageFromClipboard} from "../../../utils/clipboard";
-import {load, save} from "../../../store/patterns/import/actions";
-import {copyPatternToClipboard, doublePattern} from "../../../store/patterns/pattern/actions";
+import { connect, MapDispatchToProps, MapStateToProps } from "react-redux";
+import { AppState } from "../../../store";
+import { AppHotkeyTrigger } from "./AppHotkeyTrigger";
+import { redo, undo } from "../../../store/patterns/history/actions";
+import { settingMode } from "../../../store/hotkeys/actions";
+import { setFullScreen } from "../../../store/fullscreen";
+import { toggleDemonstration } from "../../../store/patterns/demonstration/actions";
+import { offOptimization, onOptimization } from "../../../store/optimization";
+import { getImageFromClipboard } from "../../../utils/clipboard";
+import { load, save } from "../../../store/patterns/import/actions";
+import { copyPatternToClipboard, doublePattern } from "../../../store/patterns/pattern/actions";
 import {
     clearSelectionIn,
     cutSelectionInToClipboard,
     selectAll,
     updateSelection
 } from "../../../store/patterns/selection/actions";
-import {PatternConfig} from "../../../store/patterns/pattern/types";
-import {addPattern, removePattern} from "../../../store/patterns/actions";
+import { PatternConfig } from "../../../store/patterns/pattern/types";
+import { addPattern, removePattern } from "../../../store/patterns/actions";
 import {
     setActivePattern,
     startPatternDeleteHold,
     stopPatternDeleteHold,
     PATTERN_DELETE_HOLD_MS,
 } from "../../../store/activePattern";
-import {setProjectsPanelOpen} from "../../../store/projects/actions";
-import {profileHotkeyAltP} from "../../../utils/profileHotkeys";
-import {imageToImageData} from "../../../utils/canvas/helpers/imageData";
-import {Segments} from "../../../store/patterns/selection/types";
+import { setProjectsPanelOpen } from "../../../store/projects/actions";
+import { profileHotkeyAltP } from "../../../utils/profileHotkeys";
+import { imageToImageData } from "../../../utils/canvas/helpers/imageData";
+import { Segments } from "../../../store/patterns/selection/types";
 
 export interface GlobalHotkeysStateProps {
     activePatternId: string | null
@@ -74,6 +74,21 @@ export interface GlobalHotkeysOwnProps {
 export interface GlobalHotkeysProps extends GlobalHotkeysStateProps, GlobalHotkeysActionProps, GlobalHotkeysOwnProps {
 
 }
+
+const KEYS_UNDO = ['command + z', 'ctrl + z']
+const KEYS_REDO = ['command + shift + z', 'ctrl + shift + z']
+const KEYS_HOTKEYS_PANEL = ['option + k', 'alt + k']
+const KEYS_PROJECTS_PANEL = ['option + p', 'alt + p']
+const KEYS_DEMONSTRATION = ['option + w', 'alt + w']
+const KEYS_OPTIMIZATION = ['option + o', 'alt + o']
+const KEYS_DELETE_SELECTION = ['backspace', 'del']
+const KEYS_CLEAR_SELECTION = ['option + d', 'alt + d']
+const KEYS_SELECT_ALL = ['option + a', 'alt + a']
+const KEYS_SAVE = ['option + s', 'alt + s']
+const KEYS_COPY_PATTERN = ['option + c', 'alt + c']
+const KEYS_SWITCH_PATTERN = '123456789'.split('')
+const KEY_ADD_PATTERN = '='
+const KEY_DELETE_PATTERN = '-'
 
 const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
     React.useEffect(() => {
@@ -293,7 +308,7 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
             return;
         }
         e.preventDefault();
-        addPattern({history: true, selection: true, repeating: false});
+        addPattern({ history: true, selection: true, repeating: false });
     }, [addPattern]);
 
     const handleDeleteHoldStart = React.useCallback((e) => {
@@ -327,20 +342,20 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
     return (
         <>
             <AppHotkeyTrigger
-                keys={['command + z', 'ctrl + z']}
+                keys={KEYS_UNDO}
                 onPress={handleUndo}
             />
             <AppHotkeyTrigger
-                keys={['command + shift + z', 'ctrl + shift + z']}
+                keys={KEYS_REDO}
                 onPress={handleRedo}
             />
             <AppHotkeyTrigger
-                keys={['option + k', 'alt + k']}
+                keys={KEYS_HOTKEYS_PANEL}
                 onPress={toggleHotkeys}
             />
             <AppHotkeyTrigger
                 name="projectsPanel"
-                keys={['option + p', 'alt + p']}
+                keys={KEYS_PROJECTS_PANEL}
                 onPress={toggleProjectsPanel}
             />
             {/*<AppHotkeyTrigger*/}
@@ -348,44 +363,44 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
             {/*    onPress={toggleFullscreen}*/}
             {/*/>*/}
             <AppHotkeyTrigger
-                keys={['option + w', 'alt + w']}
+                keys={KEYS_DEMONSTRATION}
                 onPress={handleToggleDemonstration}
             />
             <AppHotkeyTrigger
                 // buttons={['alt + 5']}
-                keys={['option + o', 'alt + o']}
+                keys={KEYS_OPTIMIZATION}
                 onPress={handleToggleOptimization}
             />
             <AppHotkeyTrigger
-                keys={['backspace', 'del']}
+                keys={KEYS_DELETE_SELECTION}
                 onPress={handleDeleteSelected}
             />
             <AppHotkeyTrigger
-                keys={['option + d', 'alt + d']}
+                keys={KEYS_CLEAR_SELECTION}
                 onPress={handleClearSelection}
             />
             <AppHotkeyTrigger
-                keys={['option + a', 'alt + a']}
+                keys={KEYS_SELECT_ALL}
                 onPress={handleSelectAll}
             />
             <AppHotkeyTrigger
-                keys={['option + s', 'alt + s']}
+                keys={KEYS_SAVE}
                 onPress={handleSave}
             />
             <AppHotkeyTrigger
-                keys={['option + c', 'alt + c']}
+                keys={KEYS_COPY_PATTERN}
                 onPress={handleCopy}
             />
             <AppHotkeyTrigger
-                keys={'123456789'.split('')}
+                keys={KEYS_SWITCH_PATTERN}
                 onPress={handleSwitchToPattern}
             />
             <AppHotkeyTrigger
-                keys={'='}
+                keys={KEY_ADD_PATTERN}
                 onPress={handleAddPattern}
             />
             <AppHotkeyTrigger
-                keys={'-'}
+                keys={KEY_DELETE_PATTERN}
                 onPress={handleDeleteHoldStart}
                 onRelease={handleDeleteHoldEnd}
             />
@@ -430,6 +445,6 @@ export const GlobalHotkeysTriggers = connect<GlobalHotkeysStateProps,
     GlobalHotkeysActionProps,
     GlobalHotkeysOwnProps,
     AppState>(
-    mapStateToProps,
-    mapDispatchToProps
-)(GlobalHotkeysComponent);
+        mapStateToProps,
+        mapDispatchToProps
+    )(GlobalHotkeysComponent);

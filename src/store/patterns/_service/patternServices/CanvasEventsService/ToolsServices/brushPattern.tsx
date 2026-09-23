@@ -7,6 +7,7 @@ import {patternsService} from "../../../../../../store";
 import {PatternService} from "../../../PatternService";
 import {EBrushType} from "../../../../../brush/types";
 import {StampDrawParams} from "../../../../../../gl/stampMat";
+import {bufferForDrawCanvas} from "../drawTarget";
 
 export class BrushPattern implements ToolService {
     patternService: PatternService;
@@ -57,11 +58,8 @@ export class BrushPattern implements ToolService {
         const coordinates = state.position.coordinates;
         const selectionMask = this.patternService.selectionService.mask;
         const clipMask = this.patternService.selectionService.maskCanvas;
-        const dest = this.patternService.canvasService.buffer;
-        const useGpu = compositeOperation === ECompositeOperation.SourceOver
-            && !!dest
-            && brushEvent.canvas === dest.canvas
-            && (!selectionMask || !!clipMask);
+        const dest = bufferForDrawCanvas(this.patternService, brushEvent.canvas);
+        const useGpu = !!dest && (!selectionMask || !!clipMask);
 
         const brushRotation = toolPattern?.config?.rotation ? toolPattern?.rotation?.value : null;
         const destinationRotation = (
@@ -99,12 +97,13 @@ export class BrushPattern implements ToolService {
                 stamps,
                 opacity,
                 clipMask,
+                compositeOperation,
             );
             this.drewGpu = true;
             return;
         }
 
-        this.patternService.canvasService.buffer?.ensureCpu();
+        dest?.ensureCpu();
         patternsService.pattern[toolPatternId]?.valuesService.updateMaskedIfNeeded(true);
 
         const brushPatternImage = patternsService.pattern[toolPatternId]?.valuesService.masked;

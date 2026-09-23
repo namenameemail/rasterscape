@@ -17,9 +17,23 @@ export interface ProjectMeta {
     sizeBytes: number
 }
 
-export interface SerializedPatternHistoryItem {
+export type SerializedFrameRef = {
+    frameId: string
+}
+
+export type SerializedInlineHistoryItem = {
     canvasImageData: SerializedImageData | null
     maskImageData: SerializedImageData | null
+}
+
+export type SerializedPatternHistoryItem = SerializedFrameRef | SerializedInlineHistoryItem
+
+export function isSerializedFrameRef(
+    item: SerializedPatternHistoryItem | null | undefined,
+): item is SerializedFrameRef {
+    return !!item
+        && typeof (item as SerializedFrameRef).frameId === 'string'
+        && !('canvasImageData' in item)
 }
 
 export interface SerializedHistoryState {

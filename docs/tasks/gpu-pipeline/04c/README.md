@@ -17,10 +17,10 @@
 | # | Задача | Суть |
 |---|--------|------|
 | [01](../done/04c-01-selection-clip.md) | Обрезка штриха по выделению | **закрыт** — stamp+layer GPU clip; [`../baselines/04c-01-after.md`](../baselines/04c-01-after.md) |
-| [02](02-blend-modes.md) | Режимы наложения | **ТЗ:** единый шейдерный blend на все `ECompositeOperation`; сейчас gate SourceOver → 2D |
-| [03](03-mask-draw.md) | Рисование в маску паттерна | mask-слой всегда CPU |
-| [04](04-helper-layer.md) | Helper перед GPU | Shape/Solid сначала полный 2D-слой |
-| [05](05-line-back-source.md) | Line «фон» / back fill | `createPattern` с CPU `.masked` |
+| [02](../done/04c-02-blend-modes.md) | Режимы наложения | **закрыт** — шейдерный blend на все режимы селекта, stamp и layer |
+| [03](../done/04c-03-mask-draw.md) | Рисование в маску паттерна | **закрыт** — жест по маске на GPU, без скачивания картинки паттерна |
+| [04](../done/04c-04-helper-layer.md) | Черновик штриха на весь кадр | **закрыт** — shape / solid / «фон» остаются на 2D-холсте размера картинки: GPU-аналог не совпадёт с Canvas |
+| [05](05-line-back-source.md) | Линия «фон»: картинка узора | штрих как сейчас; узор не скачивать с GPU на каждый кадр |
 | [06](06-brush-select-source.md) | Кисть \| выдел-е (`EBrushType.Select`) | upload CPU `.selected` |
 | [07](07-repeating.md) | Repeating | сетка на 2D-пути |
 

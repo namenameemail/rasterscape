@@ -10,7 +10,9 @@
     "link:bbuutoonnss": "node scripts/link-bbuutoonnss.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.0",
@@ -55,9 +57,12 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.7",
+    "fake-indexeddb": "^6.2.5",
+    "happy-dom": "^20.14.5",
     "sass": "^1.77.8",
     "typescript": "^5.2.2",
     "vite": "^6.4.3",
-    "vite-raw-plugin": "^1.0.2"
+    "vite-raw-plugin": "^1.0.2",
+    "vitest": "^5.0.1"
   }
 }

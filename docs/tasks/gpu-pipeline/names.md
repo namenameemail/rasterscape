@@ -19,7 +19,7 @@
 | **линия → фон** | `ELineType.SolidPattern` («back» в EN) | Сплошная линия с `createPattern`. |
 | **линия → кисть** | `ELineType.TrailingPattern` | Trailing pattern stamps. |
 | **маска** (паттерна) | `maskService`, mask-слой | Отдельный буфер маски паттерна, не selection. |
-| **режим наложения \| обычный** | `source-over` | Happy-path GPU в 4b. Остальные — [04c/02](04c/02-blend-modes.md). |
+| **режим наложения \| обычный** | `source-over` | Все режимы селекта на GPU: [done/04c-02](done/04c-02-blend-modes.md). |
 
 ## Сценарии в задачах (не названия кнопок)
 

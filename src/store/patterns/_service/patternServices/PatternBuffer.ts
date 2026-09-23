@@ -2,6 +2,7 @@ import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
 import {blurCanvasInPlace} from "../../../../utils/canvas/helpers/blur";
 import {getGlContext} from "../../../../gl/GlContext";
 import {StampDrawParams} from "../../../../gl/stampMat";
+import {ECompositeOperation} from "../../../compositeOperations";
 
 export class PatternBuffer {
     readonly canvas: HTMLCanvasElement;
@@ -158,6 +159,7 @@ export class PatternBuffer {
         stamps: StampDrawParams[],
         opacity: number,
         clipMask?: HTMLCanvasElement | null,
+        compositeOperation: ECompositeOperation = ECompositeOperation.SourceOver,
     ): void => {
         const dest = this.ensureGpu();
         profileLogger.time('canvas.stampGpu', () => {
@@ -171,6 +173,7 @@ export class PatternBuffer {
                 stamps,
                 opacity,
                 clipMask,
+                compositeOperation,
             );
         });
         this.gpuInSync = true;
@@ -182,6 +185,7 @@ export class PatternBuffer {
         layer: HTMLCanvasElement,
         opacity = 1,
         clipMask?: HTMLCanvasElement | null,
+        compositeOperation: ECompositeOperation = ECompositeOperation.SourceOver,
     ): void => {
         const dest = this.ensureGpu();
         profileLogger.time('canvas.compositeLayerGpu', () => {
@@ -193,6 +197,7 @@ export class PatternBuffer {
                 layer,
                 opacity,
                 clipMask,
+                compositeOperation,
             );
         });
         this.gpuInSync = true;

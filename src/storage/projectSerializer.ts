@@ -1,13 +1,15 @@
-import {AppState, patternsService} from '../store';
+import {AppState} from '../store';
 import {PatternService} from '../store/patterns/_service/PatternService';
 import {PatternState} from '../store/patterns/pattern/types';
 import {PatternHistoryItem} from '../store/patterns/history/types';
 import {decodeImageData, encodeImageData} from '../utils/imageDataCodec';
 import {int32ArrayJsonReplacer, reviveValuesArraysDeep} from '../utils/int32ArrayJson';
 import {
+    isSerializedFrameRef,
     ProjectExportFile,
     ProjectPayloadV1,
     SerializedHistoryState,
+    SerializedInlineHistoryItem,
     SerializedPattern,
     SerializedPatternHistoryItem,
 } from './projectTypes';
@@ -43,14 +45,23 @@ function deserializeHistoryItem(item: SerializedPatternHistoryItem | null): Patt
         return null;
     }
 
-    const canvasImageData = decodeImageData(item.canvasImageData);
-    const maskImageData = decodeImageData(item.maskImageData);
+    if (isSerializedFrameRef(item)) {
+        return null;
+    }
+
+    const inline = item as SerializedInlineHistoryItem & {frameId?: string};
+    const canvasImageData = decodeImageData(inline.canvasImageData as any);
+    const maskImageData = decodeImageData(inline.maskImageData as any);
 
     if (!canvasImageData || !maskImageData) {
         return null;
     }
 
-    return {canvasImageData, maskImageData};
+    return {
+        id: inline.frameId,
+        canvasImageData,
+        maskImageData,
+    };
 }
 
 function deserializeHistory(history: SerializedHistoryState | undefined): PatternState['history'] {

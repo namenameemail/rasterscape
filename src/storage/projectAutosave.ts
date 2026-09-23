@@ -32,6 +32,7 @@ let autosaveEnabled = false;
 let autosavePaused = false;
 let readAppState: (() => AppState) | null = null;
 let dirtyGeneration = 0;
+let idleDispatch: ((action: unknown) => unknown) | null = null;
 
 export function getDirtyGeneration(): number {
     return dirtyGeneration;
@@ -85,6 +86,40 @@ function autosaveSnapshot(state: AppState | null | undefined) {
     };
 }
 
+function detachIdleWatcher(): void {
+    if (!idleDispatch) {
+        return;
+    }
+
+    idleDispatch = null;
+    document.removeEventListener('mouseup', handlePointerUp);
+}
+
+function handlePointerUp(): void {
+    window.setTimeout(() => {
+        const dispatch = idleDispatch;
+
+        if (!dispatch || shouldDeferAutosave(readAppState?.())) {
+            return;
+        }
+
+        profileAutosave('idle after pointer up');
+        scheduleAutosave(dispatch);
+    }, 0);
+}
+
+function deferAutosaveUntilIdle(dispatch): void {
+    cancelScheduledProjectAutosave();
+
+    if (idleDispatch) {
+        idleDispatch = dispatch;
+        return;
+    }
+
+    idleDispatch = dispatch;
+    document.addEventListener('mouseup', handlePointerUp);
+}
+
 export function cancelScheduledProjectAutosave(): void {
     if (debounceTimer !== null) {
         window.clearTimeout(debounceTimer);
@@ -102,6 +137,7 @@ export function cancelScheduledProjectAutosave(): void {
 export function pauseProjectAutosave(): void {
     autosavePaused = true;
     cancelScheduledProjectAutosave();
+    detachIdleWatcher();
     profileAutosave('paused', autosaveSnapshot(readAppState?.()));
 }
 
@@ -119,7 +155,7 @@ function runAutosaveDispatch(dispatch, source: 'debounce' | 'retry') {
             drawing: isAnyPatternDrawing(),
             videoUpdating: isAnyVideoUpdating(state),
         });
-        scheduleAutosaveRetry(dispatch);
+        deferAutosaveUntilIdle(dispatch);
         return;
     }
 
@@ -148,14 +184,15 @@ function scheduleAutosave(dispatch) {
     }
 
     if (shouldDeferAutosave(readAppState?.())) {
-        cancelScheduledProjectAutosave();
         profileAutosave('debounce deferred busy', {
             ...autosaveSnapshot(readAppState?.()),
             drawing: isAnyPatternDrawing(),
         });
-        scheduleAutosaveRetry(dispatch);
+        deferAutosaveUntilIdle(dispatch);
         return;
     }
+
+    detachIdleWatcher();
 
     if (debounceTimer !== null) {
         window.clearTimeout(debounceTimer);
@@ -230,16 +267,13 @@ export const projectAutosaveMiddleware: Middleware = (store) => {
         }
 
         if (action.type === EVideoAction.START_UPDATING || shouldDeferAutosave(state)) {
-            cancelScheduledProjectAutosave();
             profileAutosave('deferred while busy', {
                 action: action.type,
                 dirtyGeneration,
                 drawing: isAnyPatternDrawing(),
                 ...autosaveSnapshot(store.getState() as AppState),
             });
-            if (isAnyPatternDrawing()) {
-                scheduleAutosaveRetry(store.dispatch);
-            }
+            deferAutosaveUntilIdle(store.dispatch);
             return result;
         }
 
@@ -261,5 +295,6 @@ export function enableProjectAutosave(dispatch): void {
 export function disableProjectAutosave(): void {
     autosaveEnabled = false;
     cancelScheduledProjectAutosave();
+    detachIdleWatcher();
     profileAutosave('disabled');
 }

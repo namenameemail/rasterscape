@@ -3,8 +3,8 @@ import {ELineRandomType} from "../../../../../../store/line/types";
 import {createCanvas, HelperCanvas} from "../../../../../../utils/canvas/helpers/base";
 import {drawMasked} from "../../../../../../utils/canvas/helpers/draw";
 import {CanvasServiceEvent, ToolHandlers, ToolService} from "../types";
+import {bufferForDrawCanvas} from "../drawTarget";
 import {PatternService} from "../../../PatternService";
-import {ECompositeOperation} from "../../../../../../store/compositeOperations";
 
 export class LineSolid implements ToolService {
     patternService: PatternService;
@@ -56,11 +56,8 @@ export class LineSolid implements ToolService {
         const coordinates = state.position.coordinates;
         const selectionMask = this.patternService.selectionService.mask;
         const clipMask = this.patternService.selectionService.maskCanvas;
-        const dest = this.patternService.canvasService.buffer;
-        const useGpu = compositeOperation === ECompositeOperation.SourceOver
-            && !!dest
-            && brushEvent.canvas === dest.canvas
-            && (!selectionMask || !!clipMask);
+        const dest = bufferForDrawCanvas(this.patternService, brushEvent.canvas);
+        const useGpu = !!dest && (!selectionMask || !!clipMask);
         const newPrevPoints = {};
 
         if (!this.draw) {
@@ -108,14 +105,14 @@ export class LineSolid implements ToolService {
         });
 
         if (useGpu) {
-            dest.compositeLayerGpu(this.helperCanvas1.canvas, opacity, clipMask);
+            dest.compositeLayerGpu(this.helperCanvas1.canvas, opacity, clipMask, compositeOperation);
             this.helperCanvas1.clear();
             this.drewGpu = true;
             this.prevPoints = newPrevPoints;
             return;
         }
 
-        this.patternService.canvasService.buffer?.ensureCpu();
+        dest?.ensureCpu();
 
         const resultCanvas: HelperCanvas = selectionMask
             ? drawMasked(

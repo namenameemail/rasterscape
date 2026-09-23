@@ -1,5 +1,7 @@
 # 4c.02 — режимы наложения (единый GPU blend)
 
+**Статус: закрыт** (2026-09-22). Перенесено из `04c/` → `done/`.
+
 Словарь: [`../names.md`](../names.md). UI: «режим наложения» / `compositeOperation` (`ECompositeOperation` в [`store/compositeOperations`](../../../../src/store/compositeOperations/index.ts)).
 
 ## Цель
@@ -7,6 +9,12 @@
 Один **единообразный** механизм: все режимы из `ECompositeOperation` работают на GPU-пути штампа/слоя **так же**, как сейчас `source-over`, без `ensureCpu` на жесте и без сюрпризов при видео (dest остаётся GPU-ahead).
 
 Не «портим три режима через `gl.blendFunc`», не «остальное навсегда 2D». Полный шейдерный blend, один API для stamp и layer.
+
+## Сделано (2026-09-22)
+
+Один шейдерный blend (`src/gl/shaders.ts` `compositeBlend`, straight source × premul dest) для stamp и layer. `gl.BLEND` на этих путях выключен. Режим прокинут из tools; gate `=== SourceOver` снят. 2D остаётся, если нет `PatternBuffer` / чужой canvas.
+
+Формулы сверены с Canvas2D (`src/gl/blendMath.test.ts`). Пиксель GPU: source-over, multiply, screen, destination-out. Ручная проверка режимов — ок.
 
 ## Сейчас
 
@@ -57,7 +65,7 @@ Canvas2D / CSS compositing:
 2. **Layer** (`compositeCanvasOver` → `compositeTextureOver`) — Shape / Solid / SolidPattern.  
    После: тот же blend-модуль (fullscreen quad src=layer, dest=pattern), не отдельная « entка» для source-over.
 
-Clip selection ([`../done/04c-01-selection-clip.md`](../done/04c-01-selection-clip.md)): mask по-прежнему режет **source alpha** (или результат до записи); blend не подменяет clip.
+Clip selection ([`04c-01-selection-clip.md`](04c-01-selection-clip.md)): mask по-прежнему режет **source alpha** (или результат до записи); blend не подменяет clip.
 
 ### Контракт цвета / alpha (зафиксировать в коде и проверить)
 
@@ -123,7 +131,7 @@ useGpu = !!dest && brushEvent.canvas === dest.canvas && (!selectionMask || !!cli
 
 1. Обновить этот файл: «Сделано» / проверка.
 2. Baseline after: жест с `multiply` (или eraser) + video A←B — есть `stampGpu`/`compositeLayerGpu`, нет регулярного `downloadGpu` на dest, штрих визуально как 2D.
-3. Строка в [`README.md`](README.md): 02 закрыт; файл перенести в [`../done/04c-02-blend-modes.md`](../done/).
+3. Строка в [`../04c/README.md`](../04c/README.md): 02 закрыт; файл в `done/`.
 
 ## API (ориентир сигнатур)
 
@@ -145,7 +153,7 @@ Default `mode = SourceOver`, чтобы старые вызовы не лома�
 - Отдельный `gl.blendFunc` на «простые» режимы и шейдер на «сложные» — два механизма, разные баги.
 - Молчаливый fallback: GPU dest + вдруг 2D upload середины жеста при смене режима.
 - Менять семантику UI enum / прятать режимы.
-- Тащить platformer world / repeating ([07](07-repeating.md)) в этот тикет — только pattern `PatternBuffer` draw tools, как 4b.
+- Тащить platformer world / repeating ([07](../04c/07-repeating.md)) в этот тикет — только pattern `PatternBuffer` draw tools, как 4b.
 
 ## Где код
 

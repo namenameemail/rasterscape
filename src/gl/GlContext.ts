@@ -10,7 +10,9 @@ import {
     drawTexture,
 } from './draw'
 import {linkProgram} from './program'
+import {ECompositeOperation} from '../store/compositeOperations'
 import {
+    BLEND_FS,
     BLIT_FS,
     BLIT_VS,
     BLUR_FS,
@@ -31,6 +33,7 @@ export class GlContext {
     blurProgram: WebGLProgram
     maskProgram: WebGLProgram
     stampProgram: WebGLProgram
+    blendProgram: WebGLProgram
     blitBuffer: WebGLBuffer
     stampBuffer: WebGLBuffer
     copyFbo: WebGLFramebuffer
@@ -69,6 +72,7 @@ export class GlContext {
         this.blurProgram = linkProgram(gl, BLIT_VS, BLUR_FS)
         this.maskProgram = linkProgram(gl, BLIT_VS, MASK_FS)
         this.stampProgram = linkProgram(gl, STAMP_VS, STAMP_FS)
+        this.blendProgram = linkProgram(gl, BLIT_VS, BLEND_FS)
         gl.useProgram(this.blitProgram)
         gl.uniform1f(gl.getUniformLocation(this.blitProgram, 'u_opacity'), 1)
         const blitBuffer = gl.createBuffer()
@@ -179,8 +183,9 @@ export class GlContext {
         destFlipY: boolean,
         opacity = 1,
         layerFlipY = false,
+        mode: ECompositeOperation = ECompositeOperation.SourceOver,
     ): void => {
-        compositeTextureOverImpl(this, video, dest, width, height, destFlipY, opacity, layerFlipY)
+        compositeTextureOverImpl(this, video, dest, width, height, destFlipY, opacity, layerFlipY, mode)
     }
 
     compositeCanvasOver = (
@@ -191,8 +196,9 @@ export class GlContext {
         layer: HTMLCanvasElement,
         opacity = 1,
         clipMask?: HTMLCanvasElement | null,
+        mode: ECompositeOperation = ECompositeOperation.SourceOver,
     ): void => {
-        compositeCanvasOverImpl(this, dest, width, height, destFlipY, layer, opacity, clipMask)
+        compositeCanvasOverImpl(this, dest, width, height, destFlipY, layer, opacity, clipMask, mode)
     }
 
     compositeMasked = (
@@ -220,8 +226,9 @@ export class GlContext {
         stamps: StampDrawParams[],
         opacity: number,
         clipMask?: HTMLCanvasElement | null,
+        mode: ECompositeOperation = ECompositeOperation.SourceOver,
     ): void => {
-        stampTexturesImpl(this, dest, destW, destH, destFlipY, source, sourceFlipY, stamps, opacity, clipMask)
+        stampTexturesImpl(this, dest, destW, destH, destFlipY, source, sourceFlipY, stamps, opacity, clipMask, mode)
     }
 
     blurTexture = (texture: WebGLTexture, width: number, height: number, radius: number): void => {

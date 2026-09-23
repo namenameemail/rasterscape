@@ -3,12 +3,12 @@ import {
     createProjectId,
     deleteProject as deleteProjectFromDb,
     duplicateProject as duplicateProjectInDb,
+    encodeResolvedPayloadForExport,
     getProject,
     getProjectPayload,
     getStoredCurrentProjectId,
     listProjects,
     putProject,
-    putProjectBuffer,
     setStoredCurrentProjectId,
 } from '../../storage/projectsDb';
 import {
@@ -16,7 +16,7 @@ import {
     createExportFile,
     parseProjectExportFile,
 } from '../../storage/projectSerializer';
-import {serializeProjectToBuffer, terminateProjectSerializeWorker} from '../../storage/projectSerializeClient';
+import {persistProjectViaWorker, terminateProjectSerializeWorker} from '../../storage/projectSerializeClient';
 import {PROJECT_FILE_EXTENSION, ProjectMeta, resolveUniqueProjectName, stripProjectFileExtension} from '../../storage/projectTypes';
 import {EProjectsAction} from './consts';
 import {hydrateEditor} from './hydrateEditor';
@@ -108,7 +108,12 @@ export const setProjectsPanelOpen = (open: boolean) => ({
     open,
 });
 
-export const saveCurrentProject = () => async (dispatch, getState: () => AppState) => {
+export const saveCurrentProject = (options?: {resaveAfterInFlight?: boolean}) => async (dispatch, getState: () => AppState) => {
+    if (saveInFlight && !options?.resaveAfterInFlight) {
+        profileAutosave('coalesced into in-flight save');
+        return saveInFlight;
+    }
+
     if (saveInFlight) {
         profileAutosave('waiting for in-flight save');
         try {
@@ -147,21 +152,19 @@ export const saveCurrentProject = () => async (dispatch, getState: () => AppStat
 
     saveInFlight = (async () => {
         try {
-            const buffer = await profileAutosaveAsync('serialize', () => serializeProjectToBuffer(getState()), {
-                currentProjectId,
-                patternCount: Object.keys(getState().patterns).length,
-            });
-            const updated = await profileAutosaveAsync('idb put', () =>
-                putProjectBuffer(currentProjectId, name, buffer),
+            const updated = await profileAutosaveAsync('persist', () =>
+                persistProjectViaWorker(getState(), currentProjectId, name),
             {
                 currentProjectId,
-                sizeBytes: buffer.byteLength,
+                patternCount: Object.keys(getState().patterns).length,
             });
 
             if (epoch !== saveEpoch) {
                 profileAutosave('success ignored', {reason: 'epoch stale', currentProjectId});
                 return;
             }
+
+            await yieldToUi();
 
             const nextList = getState().projects.list.map(item =>
                 item.id === updated.id ? updated : item
@@ -188,7 +191,7 @@ export const saveCurrentProject = () => async (dispatch, getState: () => AppStat
             markProjectClean(dispatch);
             profileAutosave('success', {
                 currentProjectId,
-                sizeBytes: buffer.byteLength,
+                sizeBytes: updated.sizeBytes,
                 updatedAt: updated.updatedAt,
                 dirtyGenerationAtStart,
             });
@@ -223,7 +226,7 @@ const saveBeforeSwitch = () => async (dispatch, getState: () => AppState) => {
     }
 
     try {
-        await dispatch(saveCurrentProject());
+        await dispatch(saveCurrentProject({resaveAfterInFlight: true}));
     } catch (error) {
         console.error('[projects] save before switch failed', error);
     }
@@ -346,7 +349,7 @@ export const exportProject = (projectId: string) => async (dispatch) => {
             id: record.id,
             name: record.name,
             updatedAt: record.updatedAt,
-        }, payload);
+        }, encodeResolvedPayloadForExport(payload));
 
         await yieldToUi();
 

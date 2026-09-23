@@ -9,6 +9,7 @@ import {CanvasServiceEvent, ToolHandlers, ToolService} from "../types";
 import {PatternService} from "../../../PatternService";
 import {patternsService} from "../../../../../index";
 import {StampDrawParams} from "../../../../../../gl/stampMat";
+import {bufferForDrawCanvas} from "../drawTarget";
 
 function distanceBetween(point1, point2) {
     if (!point1 || !point2) return 0;
@@ -79,11 +80,8 @@ export class LineTrailingPattern implements ToolService {
         const selectionService = patternsService.pattern[this.patternService.patternId].selectionService;
         const selectionMask = selectionService.mask;
         const clipMask = selectionService.maskCanvas;
-        const dest = this.patternService.canvasService.buffer;
-        const useGpu = compositeOperation === ECompositeOperation.SourceOver
-            && !!dest
-            && brushEvent.canvas === dest.canvas
-            && (!selectionMask || !!clipMask);
+        const dest = bufferForDrawCanvas(this.patternService, brushEvent.canvas);
+        const useGpu = !!dest && (!selectionMask || !!clipMask);
 
         const brushRotation = toolPattern?.config?.rotation ? toolPattern?.rotation?.value : null;
         const destinationRotation =
@@ -159,12 +157,13 @@ export class LineTrailingPattern implements ToolService {
                 stamps,
                 opacity,
                 clipMask,
+                compositeOperation,
             );
             this.drewGpu = true;
             return;
         }
 
-        this.patternService.canvasService.buffer?.ensureCpu();
+        dest?.ensureCpu();
         patternsService.pattern[toolPatternId]?.valuesService.updateMaskedIfNeeded(true);
 
         const linePatternImage = patternsService.pattern[toolPatternId]?.valuesService.masked;

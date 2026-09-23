@@ -8,6 +8,8 @@ import {PatternState} from '../store/patterns/pattern/types';
 import {SelectToolState} from '../store/selectTool/reducer';
 import {ToolState} from '../store/tool/reducer';
 import {ChangingValuesState} from '../store/changingValues/reducer';
+import {ProjectFrameRecord} from './projectsIdb';
+import {ProjectMeta} from './projectTypes';
 
 export type RawImagePayload = {
     width: number
@@ -18,6 +20,8 @@ export type RawImagePayload = {
 export type RawHistoryItemPayload = {
     canvas: RawImagePayload | null
     mask: RawImagePayload | null
+} | {
+    frameId: string
 }
 
 export type RawHistoryPayload = {
@@ -37,6 +41,10 @@ export type RawPatternPayload = {
 
 export type ProjectSerializeRequest = {
     id: number
+    projectId: string
+    name: string
+    frames: ProjectFrameRecord[]
+    keepFrameIds: string[]
     patternOrder: string[]
     activePatternId: string | null
     patterns: Record<string, RawPatternPayload>
@@ -52,7 +60,7 @@ export type ProjectSerializeRequest = {
 
 export type ProjectSerializeResponse = {
     id: number
-    buffer: ArrayBuffer
+    meta: ProjectMeta
 }
 
 export type ProjectSerializeError = {

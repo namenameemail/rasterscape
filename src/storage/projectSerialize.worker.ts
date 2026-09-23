@@ -1,5 +1,6 @@
 import {encodeRawImage} from '../utils/imageDataBinary';
 import {int32ArrayJsonReplacer} from '../utils/int32ArrayJson';
+import {persistProjectSave} from './projectPersist';
 import {
     ProjectPayloadV1,
     SerializedHistoryState,
@@ -16,6 +17,10 @@ import {
 function encodeHistoryItem(item: RawHistoryItemPayload | null): SerializedPatternHistoryItem | null {
     if (!item) {
         return null;
+    }
+
+    if ('frameId' in item) {
+        return {frameId: item.frameId};
     }
 
     return {
@@ -78,23 +83,35 @@ function buildPayload(request: ProjectSerializeRequest): ProjectPayloadV1 {
     };
 }
 
+async function persistRequest(request: ProjectSerializeRequest): Promise<ProjectSerializeResponse> {
+    const payload = buildPayload(request);
+    const buffer = new TextEncoder().encode(JSON.stringify(payload, int32ArrayJsonReplacer)).buffer;
+    const meta = await persistProjectSave({
+        projectId: request.projectId,
+        name: request.name,
+        buffer,
+        frames: request.frames,
+        keepFrameIds: request.keepFrameIds,
+    });
+
+    return {id: request.id, meta};
+}
+
 self.onmessage = (event: MessageEvent<ProjectSerializeRequest>) => {
     const request = event.data;
 
-    try {
-        const payload = buildPayload(request);
-        const buffer = new TextEncoder().encode(JSON.stringify(payload, int32ArrayJsonReplacer)).buffer;
-        const response: ProjectSerializeResponse = {id: request.id, buffer};
-
-        self.postMessage(response, [buffer]);
-    } catch (error) {
-        const response: ProjectSerializeError = {
-            id: request.id,
-            error: error instanceof Error ? error.message : String(error),
-        };
-
-        self.postMessage(response);
-    }
+    void persistRequest(request).then(
+        response => {
+            self.postMessage(response);
+        },
+        error => {
+            const response: ProjectSerializeError = {
+                id: request.id,
+                error: error instanceof Error ? error.message : String(error),
+            };
+            self.postMessage(response);
+        },
+    );
 };
 
 export type {};

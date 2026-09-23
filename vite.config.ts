@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path';
@@ -21,6 +22,7 @@ export default defineConfig({
       'store': path.resolve(__dirname, './src/store'),
       'components': path.resolve(__dirname, './src/components'),
       'utils': path.resolve(__dirname, './src/utils'),
+      'bbuutoonnss': bbuutoonnssPath,
     },
   },
   server: {
@@ -28,10 +30,10 @@ export default defineConfig({
       allow: [bbuutoonnssPath, path.resolve(__dirname, '..')],
     },
   },
-  define: {global: 'globalThis'}
-  // define: {
-  //   // By default, Vite doesn't include shims for NodeJS/
-  //   // necessary for segment analytics lib to work
-  //   global: {},
-  // },
+  define: {global: 'globalThis'},
+  test: {
+    environment: 'happy-dom',
+    setupFiles: ['./src/storage/test/setup.ts'],
+    include: ['src/**/*.test.ts'],
+  },
 })

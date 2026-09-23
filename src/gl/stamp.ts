@@ -1,3 +1,5 @@
+import {ECompositeOperation} from '../store/compositeOperations'
+import {blendModeId} from './blendModes'
 import {
     blitTexture,
     copyTexture2D,
@@ -16,6 +18,7 @@ export const stampTextures = (
     stamps: StampDrawParams[],
     opacity: number,
     clipMask?: HTMLCanvasElement | null,
+    mode: ECompositeOperation = ECompositeOperation.SourceOver,
 ): void => {
     if (!stamps.length) {
         return
@@ -40,9 +43,13 @@ export const stampTextures = (
         stampFlipY = true
     }
 
+    const backdrop = ctx.ensureScratch(destW, destH)
+    if (stampSource !== backdrop) {
+        copyTexture2D(ctx, dest, backdrop, destW, destH)
+    }
+
     ctx.bindTexture2DTarget(dest, destW, destH)
-    gl.enable(gl.BLEND)
-    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+    gl.disable(gl.BLEND)
     gl.useProgram(ctx.stampProgram)
     gl.activeTexture(gl.TEXTURE0)
     gl.bindTexture(gl.TEXTURE_2D, stampSource)
@@ -50,11 +57,15 @@ export const stampTextures = (
     gl.activeTexture(gl.TEXTURE1)
     gl.bindTexture(gl.TEXTURE_2D, clipMask ? ctx.uploadClipMask(clipMask) : ctx.ensureWhiteTex())
     gl.uniform1i(gl.getUniformLocation(ctx.stampProgram, 'u_mask'), 1)
+    gl.activeTexture(gl.TEXTURE2)
+    gl.bindTexture(gl.TEXTURE_2D, backdrop)
+    gl.uniform1i(gl.getUniformLocation(ctx.stampProgram, 'u_dst'), 2)
     gl.uniform2f(gl.getUniformLocation(ctx.stampProgram, 'u_destSize'), destW, destH)
     gl.uniform1f(gl.getUniformLocation(ctx.stampProgram, 'u_opacity'), opacity)
     gl.uniform1f(gl.getUniformLocation(ctx.stampProgram, 'u_flipY'), stampFlipY ? 1 : 0)
     gl.uniform1f(gl.getUniformLocation(ctx.stampProgram, 'u_useMask'), clipMask ? 1 : 0)
     gl.uniform1f(gl.getUniformLocation(ctx.stampProgram, 'u_maskFlipY'), 0)
+    gl.uniform1i(gl.getUniformLocation(ctx.stampProgram, 'u_mode'), blendModeId(mode))
 
     gl.bindBuffer(gl.ARRAY_BUFFER, ctx.stampBuffer)
     const aCorner = gl.getAttribLocation(ctx.stampProgram, 'a_corner')
@@ -70,9 +81,10 @@ export const stampTextures = (
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     }
 
+    gl.activeTexture(gl.TEXTURE2)
+    gl.bindTexture(gl.TEXTURE_2D, null)
     gl.activeTexture(gl.TEXTURE1)
     gl.bindTexture(gl.TEXTURE_2D, null)
     gl.activeTexture(gl.TEXTURE0)
-    gl.disable(gl.BLEND)
     gl.bindFramebuffer(gl.FRAMEBUFFER, null)
 }

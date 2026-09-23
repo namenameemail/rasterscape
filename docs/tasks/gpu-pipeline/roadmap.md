@@ -41,9 +41,9 @@ flowchart LR
 | [04c/](04c/README.md) | 4c: оставшийся CPU по местам |
 | [names.md](names.md) | Как называть UI ↔ код в задачах пайплайна |
 | [05-cook-graph.md](05-cook-graph.md) | Считать картинку только если она нужна; на экран — только видимое |
-| [06-frame-hitches.md](06-frame-hitches.md) | Диагностика зависаний кадра: Rec All, hitch-log, CDP Profiler |
+| [done/06-frame-hitches.md](done/06-frame-hitches.md) | 6 закрыт: hitch ≠ GPU; hotkeys const keys; autosave coalesce/idle + frames + persist в worker |
 
-Порядок: 0–4 и 4b закрыты. Дальше **4c** (по одной подзадаче) и/или **5**; 4c не блокер 5. **6** — параллельно, по симптомам hitch (не блокер 4c/5).
+Порядок: 0–4, 4b и **6** закрыты. Дальше **4c** (по одной подзадаче) и/или **5**; 4c не блокер 5.
 
 ## Объекты
 
