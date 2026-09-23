@@ -80,7 +80,7 @@ export class PatternValuesService {
         return this.patternService;
     };
 
-    ensureMaskedGpu = (): { texture: WebGLTexture, width: number, height: number, stampFlipY: boolean } | null => {
+    ensureMaskedGpu = (): { texture: WebGLTexture, width: number, height: number, stampFlipY: boolean, premul: boolean } | null => {
         const buffer = this.patternService.canvasService.buffer;
 
         if (!buffer?.width || !buffer.height) {
@@ -96,6 +96,7 @@ export class PatternValuesService {
                 width: buffer.width,
                 height: buffer.height,
                 stampFlipY: !buffer.textureFromCanvas,
+                premul: !buffer.textureFromCanvas,
             };
         }
 
@@ -107,6 +108,7 @@ export class PatternValuesService {
                 width: buffer.width,
                 height: buffer.height,
                 stampFlipY: !buffer.textureFromCanvas,
+                premul: !buffer.textureFromCanvas,
             };
         }
 
@@ -121,7 +123,7 @@ export class PatternValuesService {
             buffer.textureFromCanvas,
         );
 
-        return {texture, width: buffer.width, height: buffer.height, stampFlipY: true};
+        return {texture, width: buffer.width, height: buffer.height, stampFlipY: true, premul: false};
     };
 
     ensureSelectedGpu = (): { texture: WebGLTexture, width: number, height: number, stampFlipY: boolean } | null => {

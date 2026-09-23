@@ -4,6 +4,7 @@ import {
     compositeMasked as compositeMaskedImpl,
     compositeTextureOver as compositeTextureOverImpl,
 } from './composite'
+import {compositePatternStrokes as compositePatternStrokesImpl, type PatternFillSource, type PatternStroke} from './patternFill'
 import {
     blitToScratch,
     blurTexture as blurTextureImpl,
@@ -17,6 +18,7 @@ import {
     BLIT_VS,
     BLUR_FS,
     MASK_FS,
+    PATTERN_STROKE_FS,
     QUAD,
     STAMP_CORNERS,
     STAMP_FS,
@@ -34,6 +36,7 @@ export class GlContext {
     maskProgram: WebGLProgram
     stampProgram: WebGLProgram
     blendProgram: WebGLProgram
+    patternProgram: WebGLProgram
     blitBuffer: WebGLBuffer
     stampBuffer: WebGLBuffer
     copyFbo: WebGLFramebuffer
@@ -47,6 +50,9 @@ export class GlContext {
     private layerTex: WebGLTexture | null = null
     private layerW = 0
     private layerH = 0
+    private strokeTex: WebGLTexture | null = null
+    private strokeW = 0
+    private strokeH = 0
     private clipMaskTex: WebGLTexture | null = null
     private clipMaskW = 0
     private clipMaskH = 0
@@ -73,6 +79,7 @@ export class GlContext {
         this.maskProgram = linkProgram(gl, BLIT_VS, MASK_FS)
         this.stampProgram = linkProgram(gl, STAMP_VS, STAMP_FS)
         this.blendProgram = linkProgram(gl, BLIT_VS, BLEND_FS)
+        this.patternProgram = linkProgram(gl, BLIT_VS, PATTERN_STROKE_FS)
         gl.useProgram(this.blitProgram)
         gl.uniform1f(gl.getUniformLocation(this.blitProgram, 'u_opacity'), 1)
         const blitBuffer = gl.createBuffer()
@@ -188,6 +195,20 @@ export class GlContext {
         compositeTextureOverImpl(this, video, dest, width, height, destFlipY, opacity, layerFlipY, mode)
     }
 
+    compositePatternStrokes = (
+        dest: WebGLTexture,
+        width: number,
+        height: number,
+        destFlipY: boolean,
+        strokes: PatternStroke[],
+        source: PatternFillSource,
+        opacity = 1,
+        clipMask?: HTMLCanvasElement | null,
+        mode: ECompositeOperation = ECompositeOperation.SourceOver,
+    ): void => {
+        compositePatternStrokesImpl(this, dest, width, height, destFlipY, strokes, source, opacity, clipMask, mode)
+    }
+
     compositeCanvasOver = (
         dest: WebGLTexture,
         width: number,
@@ -263,6 +284,18 @@ export class GlContext {
             this.maskScratchH = height
         }
         return this.maskScratch
+    }
+
+    ensureStroke = (width: number, height: number): WebGLTexture => {
+        if (!this.strokeTex || this.strokeW !== width || this.strokeH !== height) {
+            if (this.strokeTex) {
+                this.gl.deleteTexture(this.strokeTex)
+            }
+            this.strokeTex = this.createTexture2D(width, height)
+            this.strokeW = width
+            this.strokeH = height
+        }
+        return this.strokeTex
     }
 
     ensureLayer = (width: number, height: number): WebGLTexture => {

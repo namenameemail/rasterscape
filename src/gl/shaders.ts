@@ -261,6 +261,35 @@ void main() {
     o = compositeBlend(src, dst, u_mode);
 }`
 
+export const PATTERN_STROKE_FS = `#version 300 es
+precision highp float;
+uniform sampler2D u_stroke;
+uniform sampler2D u_pattern;
+uniform sampler2D u_dst;
+uniform vec2 u_destSize;
+uniform vec2 u_patternSize;
+uniform vec3 u_inv0;
+uniform vec3 u_inv1;
+uniform float u_patternFlipY;
+uniform float u_patternPremul;
+out vec4 o;
+void main() {
+    vec2 px = gl_FragCoord.xy;
+    vec2 local = vec2(dot(u_inv0, vec3(px, 1.0)), dot(u_inv1, vec3(px, 1.0)));
+    vec2 uv = local / u_patternSize;
+    if (u_patternFlipY > 0.5) uv.y = 1.0 - uv.y;
+    vec4 stroke = texture(u_stroke, px / u_destSize);
+    vec4 pat = texture(u_pattern, uv);
+    float pa = pat.a;
+    vec3 prgb = pat.rgb;
+    if (u_patternPremul > 0.5 && pa > 1e-4) prgb /= pa;
+    float asrc = stroke.a * pa;
+    vec4 dst = texture(u_dst, px / u_destSize);
+    float ao = asrc + dst.a * (1.0 - asrc);
+    vec3 co = ao > 1e-4 ? (prgb * asrc + dst.rgb * dst.a * (1.0 - asrc)) / ao : vec3(0.0);
+    o = vec4(co, ao);
+}`
+
 export const QUAD = new Float32Array([
     -1, 1, 0, 1,
     -1, -1, 0, 0,

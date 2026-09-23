@@ -1,6 +1,7 @@
 import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
 import {blurCanvasInPlace} from "../../../../utils/canvas/helpers/blur";
 import {getGlContext} from "../../../../gl/GlContext";
+import {PatternFillSource, PatternStroke} from "../../../../gl/patternFill";
 import {StampDrawParams} from "../../../../gl/stampMat";
 import {ECompositeOperation} from "../../../compositeOperations";
 
@@ -195,6 +196,35 @@ export class PatternBuffer {
                 this.canvas.height,
                 this.gpuFromCanvas,
                 layer,
+                opacity,
+                clipMask,
+                compositeOperation,
+            );
+        });
+        this.gpuInSync = true;
+        this.cpuInSync = false;
+        this.gpuFromCanvas = false;
+    };
+
+    compositePatternStrokesGpu = (
+        strokes: PatternStroke[],
+        source: PatternFillSource,
+        opacity = 1,
+        clipMask?: HTMLCanvasElement | null,
+        compositeOperation: ECompositeOperation = ECompositeOperation.SourceOver,
+    ): void => {
+        if (!strokes.length) {
+            return;
+        }
+        const dest = this.ensureGpu();
+        profileLogger.time('canvas.compositePatternStroke', () => {
+            getGlContext().compositePatternStrokes(
+                dest,
+                this.canvas.width,
+                this.canvas.height,
+                this.gpuFromCanvas,
+                strokes,
+                source,
                 opacity,
                 clipMask,
                 compositeOperation,
