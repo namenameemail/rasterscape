@@ -13,6 +13,7 @@ export const blendTextureOver = (
     srcFlipY: boolean,
     mode: ECompositeOperation = ECompositeOperation.SourceOver,
     opacity = 1,
+    premul = false,
 ): void => {
     const backdrop = ctx.ensureScratch(width, height)
     blitTexture(ctx, dest, backdrop, width, height, destFlipY)
@@ -29,6 +30,7 @@ export const blendTextureOver = (
     gl.uniform1i(gl.getUniformLocation(ctx.blendProgram, 'u_dst'), 1)
     gl.uniform1f(gl.getUniformLocation(ctx.blendProgram, 'u_opacity'), opacity)
     gl.uniform1f(gl.getUniformLocation(ctx.blendProgram, 'u_srcFlipY'), srcFlipY ? 1 : 0)
+    gl.uniform1f(gl.getUniformLocation(ctx.blendProgram, 'u_premul'), premul ? 1 : 0)
     gl.uniform1i(gl.getUniformLocation(ctx.blendProgram, 'u_mode'), blendModeId(mode))
     bindQuad(ctx, ctx.blendProgram)
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)

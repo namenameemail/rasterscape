@@ -13,6 +13,7 @@ export class PatternSelectionService {
     mask?: ImageData;
     maskCanvas?: HTMLCanvasElement;
     bBox?: SelectionBBox | null;
+    maskSerial = 0;
 
     private maskBuffer?: HelperCanvas;
 
@@ -21,6 +22,7 @@ export class PatternSelectionService {
     }
 
     update = (segments: Segments, bBox?: SelectionBBox | null): PatternService => {
+        this.maskSerial += 1;
         const canvas = this.patternService.canvasService.canvas;
 
         if (segments.length && canvas) {

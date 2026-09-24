@@ -20,7 +20,11 @@ import {
     MASK_FS,
     PATTERN_STROKE_FS,
     QUAD,
+    REPEAT_FS,
     STAMP_CORNERS,
+    STROKE_FS,
+    STROKE_TINT_FS,
+    STROKE_VS,
     STAMP_FS,
     STAMP_VS,
 } from './shaders'
@@ -35,10 +39,14 @@ export class GlContext {
     blurProgram: WebGLProgram
     maskProgram: WebGLProgram
     stampProgram: WebGLProgram
+    repeatProgram: WebGLProgram
+    strokeProgram: WebGLProgram
+    strokeTintProgram: WebGLProgram
     blendProgram: WebGLProgram
     patternProgram: WebGLProgram
     blitBuffer: WebGLBuffer
     stampBuffer: WebGLBuffer
+    strokeBuffer: WebGLBuffer
     copyFbo: WebGLFramebuffer
 
     private scratch: WebGLTexture | null = null
@@ -56,6 +64,11 @@ export class GlContext {
     private clipMaskTex: WebGLTexture | null = null
     private clipMaskW = 0
     private clipMaskH = 0
+    private selectionMaskTex: WebGLTexture | null = null
+    private selectionMaskCanvas: HTMLCanvasElement | null = null
+    private selectionMaskW = 0
+    private selectionMaskH = 0
+    private selectionMaskSerial = -1
     private whiteTex: WebGLTexture | null = null
 
     constructor() {
@@ -78,18 +91,23 @@ export class GlContext {
         this.blurProgram = linkProgram(gl, BLIT_VS, BLUR_FS)
         this.maskProgram = linkProgram(gl, BLIT_VS, MASK_FS)
         this.stampProgram = linkProgram(gl, STAMP_VS, STAMP_FS)
+        this.repeatProgram = linkProgram(gl, STAMP_VS, REPEAT_FS)
+        this.strokeProgram = linkProgram(gl, STROKE_VS, STROKE_FS)
+        this.strokeTintProgram = linkProgram(gl, BLIT_VS, STROKE_TINT_FS)
         this.blendProgram = linkProgram(gl, BLIT_VS, BLEND_FS)
         this.patternProgram = linkProgram(gl, BLIT_VS, PATTERN_STROKE_FS)
         gl.useProgram(this.blitProgram)
         gl.uniform1f(gl.getUniformLocation(this.blitProgram, 'u_opacity'), 1)
         const blitBuffer = gl.createBuffer()
         const stampBuffer = gl.createBuffer()
+        const strokeBuffer = gl.createBuffer()
         const copyFbo = gl.createFramebuffer()
-        if (!blitBuffer || !stampBuffer || !copyFbo) {
+        if (!blitBuffer || !stampBuffer || !strokeBuffer || !copyFbo) {
             throw new Error('gl alloc')
         }
         this.blitBuffer = blitBuffer
         this.stampBuffer = stampBuffer
+        this.strokeBuffer = strokeBuffer
         this.copyFbo = copyFbo
         gl.bindBuffer(gl.ARRAY_BUFFER, blitBuffer)
         gl.bufferData(gl.ARRAY_BUFFER, QUAD, gl.STATIC_DRAW)
@@ -256,10 +274,24 @@ export class GlContext {
         blurTextureImpl(this, texture, width, height, radius)
     }
 
-    uploadCanvasSized = (canvas: HTMLCanvasElement): WebGLTexture => {
-        const tex = this.ensureLayer(canvas.width, canvas.height)
-        this.uploadCanvas(canvas, tex)
-        return tex
+    selectionMaskTexture = (canvas: HTMLCanvasElement, serial: number): WebGLTexture => {
+        const {width, height} = canvas
+        if (!this.selectionMaskTex || this.selectionMaskW !== width || this.selectionMaskH !== height) {
+            if (this.selectionMaskTex) {
+                this.gl.deleteTexture(this.selectionMaskTex)
+            }
+            this.selectionMaskTex = this.createTexture2D(width, height)
+            this.selectionMaskW = width
+            this.selectionMaskH = height
+            this.selectionMaskCanvas = null
+            this.selectionMaskSerial = -1
+        }
+        if (this.selectionMaskCanvas !== canvas || this.selectionMaskSerial !== serial) {
+            this.uploadCanvas(canvas, this.selectionMaskTex)
+            this.selectionMaskCanvas = canvas
+            this.selectionMaskSerial = serial
+        }
+        return this.selectionMaskTex
     }
 
     ensureScratch = (width: number, height: number): WebGLTexture => {

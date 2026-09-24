@@ -153,7 +153,7 @@ Default `mode = SourceOver`, чтобы старые вызовы не лома�
 - Отдельный `gl.blendFunc` на «простые» режимы и шейдер на «сложные» — два механизма, разные баги.
 - Молчаливый fallback: GPU dest + вдруг 2D upload середины жеста при смене режима.
 - Менять семантику UI enum / прятать режимы.
-- Тащить platformer world / repeating ([07](../04c/07-repeating.md)) в этот тикет — только pattern `PatternBuffer` draw tools, как 4b.
+- Тащить platformer world / repeating ([07](04c-07-repeating.md)) в этот тикет — только pattern `PatternBuffer` draw tools, как 4b.
 
 ## Где код
 

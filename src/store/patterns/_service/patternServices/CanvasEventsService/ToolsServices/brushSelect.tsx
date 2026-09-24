@@ -7,7 +7,6 @@ import {CanvasServiceEvent, ToolHandlers, ToolService} from "../types";
 import {PatternService} from "../../../PatternService";
 import {EBrushType} from "../../../../../brush/types";
 import {StampDrawParams} from "../../../../../../gl/stampMat";
-import {getGlContext} from "../../../../../../gl/GlContext";
 import {bufferForDrawCanvas} from "../drawTarget";
 
 export class BrushSelect implements ToolService {
@@ -79,27 +78,10 @@ export class BrushSelect implements ToolService {
 
         if (useGpu) {
             const selected = this.patternService.valuesService.ensureSelectedGpu();
-            let texture: WebGLTexture;
-            let sourceFlipY: boolean;
-            let sw: number;
-            let sh: number;
+            if (!selected) return;
 
-            if (selected) {
-                texture = selected.texture;
-                sourceFlipY = selected.stampFlipY;
-                sw = selected.width;
-                sh = selected.height;
-            } else {
-                const selectedCanvas = this.patternService.valuesService.selected;
-                if (!selectedCanvas) return;
-                texture = getGlContext().uploadCanvasSized(selectedCanvas);
-                sourceFlipY = false;
-                sw = selectedCanvas.width;
-                sh = selectedCanvas.height;
-            }
-
-            const width = patternSize * sw;
-            const height = patternSize * sh;
+            const width = patternSize * selected.width;
+            const height = patternSize * selected.height;
             const stamps: StampDrawParams[] = [];
 
             coordinates[0]?.forEach(({x, y}) => {
@@ -119,7 +101,7 @@ export class BrushSelect implements ToolService {
                 });
             });
 
-            dest.stampGpu(texture, sourceFlipY, stamps, opacity, null, compositeOperation);
+            dest.stampGpu(selected.texture, selected.stampFlipY, stamps, opacity, null, compositeOperation);
             this.drewGpu = true;
             return;
         }

@@ -1,4 +1,5 @@
 import * as React from "react";
+import {createPortal} from "react-dom";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "store";
 import classNames from "classnames";
@@ -12,7 +13,6 @@ import {
 } from "store/changingValues/actions";
 import {toStartValue} from "store/change/actions";
 import "./styles.scss";
-import {HoverHideable} from "../../../HoverHideable/HoverHideable";
 import {ButtonHotkeyInputs} from "../../../../Hotkeys/ButtonHotkeyInputs/ButtonHotkeyInputs";
 import {getChangeFunctionsSelectItemsNumber} from "../../../../../store/changeFunctions/selectors";
 import {ChangeFunctionState, ECFType} from "../../../../../store/changeFunctions/types";
@@ -25,6 +25,7 @@ import {Translations} from "../../../../../store/language/helpers";
 import {HKLabelProps} from "../types";
 import {ButtonHotkeyTrigger} from "../../../../Hotkeys/ButtonHotkeyInputs/ButtonHotkeyTrigger";
 import {HotkeyControlType} from "../../../../../store/hotkeys/types";
+import {useHoverHideableLock} from "../../../HoverHideable/HoverHideableLockContext";
 
 export interface ButtonNumberCFStateProps {
     changeFunctionsSelectItems: ChangeFunctionState[]
@@ -67,6 +68,7 @@ export interface ButtonNumberCFProps extends ButtonNumberCFStateProps, ButtonNum
 }
 
 const availableCFTypes = [ECFType.FXY, ECFType.WAVE];
+const CF_PANEL_Z = 20;
 
 const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = React.memo((props) => {
 
@@ -121,12 +123,80 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         hkData3,
     };
 
+    const rootRef = React.useRef<HTMLDivElement>(null);
     const selectDropRef = React.useRef<SelectDropImperativeHandlers>(null);
+    const closeTimerRef = React.useRef<number>();
 
     const [_redOpen, setRedOpen] = React.useState(false);
     const [_menuOpen, setMenuOpen] = React.useState(false);
+    const [panelStyle, setPanelStyle] = React.useState<React.CSSProperties>({});
+    const [portalScope, setPortalScope] = React.useState('');
 
     const [active, setActive] = React.useState<boolean>();
+
+    const clearCloseTimer = React.useCallback(() => {
+        if (closeTimerRef.current != null) {
+            window.clearTimeout(closeTimerRef.current);
+            closeTimerRef.current = undefined;
+        }
+    }, []);
+
+    const updatePanelPosition = React.useCallback(() => {
+        const root = rootRef.current;
+        if (!root) return;
+        const rect = root.getBoundingClientRect();
+        setPanelStyle({
+            top: rect.top,
+            left: rect.right - 1,
+            zIndex: CF_PANEL_Z,
+        });
+        const scopes: string[] = [];
+        if (root.closest('.repeating-controls')) scopes.push('button-number-cf-portal-host--repeating');
+        if (root.closest('.video-offset')) scopes.push('button-number-cf-portal-host--video-offset');
+        if (root.closest('.video-controls')) scopes.push('button-number-cf-portal-host--video');
+        const colorHost = root.closest('.video-offset-red, .video-offset-blue, .video-offset-green');
+        if (colorHost) {
+            colorHost.classList.forEach((c) => {
+                if (c.startsWith('video-offset-')) scopes.push(c);
+            });
+        }
+        setPortalScope(scopes.join(' '));
+    }, []);
+
+    const hoverLock = useHoverHideableLock();
+
+    React.useEffect(() => {
+        if (!_redOpen || !hoverLock) return;
+        hoverLock.lock();
+        return () => hoverLock.unlock();
+    }, [_redOpen, hoverLock]);
+
+    const openCf = React.useCallback(() => {
+        clearCloseTimer();
+        updatePanelPosition();
+        setRedOpen(true);
+    }, [clearCloseTimer, updatePanelPosition]);
+
+    const closeCf = React.useCallback(() => {
+        clearCloseTimer();
+        closeTimerRef.current = window.setTimeout(() => {
+            setRedOpen(false);
+            setMenuOpen(false);
+        }, 80);
+    }, [clearCloseTimer]);
+
+    React.useEffect(() => {
+        if (!_redOpen) return;
+        const sync = () => updatePanelPosition();
+        window.addEventListener('resize', sync);
+        window.addEventListener('scroll', sync, true);
+        return () => {
+            window.removeEventListener('resize', sync);
+            window.removeEventListener('scroll', sync, true);
+        };
+    }, [_redOpen, updatePanelPosition]);
+
+    React.useEffect(() => () => clearCloseTimer(), [clearCloseTimer]);
 
     const handleCFChange = React.useCallback(({value: changeFunctionId}) => {
         setValueInChangingList(path, changeFunctionId, range || [from, to], value);
@@ -248,19 +318,21 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
     const handleKeyPress = React.useCallback((e) => {
         if (e.key === 'Enter') {
             e.stopPropagation();
-            setRedOpen(true);
+            openCf();
             setMenuOpen(true);
             setTimeout(selectDropRef.current?.focus, 0);
         }
-    }, []);
+    }, [openCf]);
 
     const handleCFSelectDropBlur = React.useCallback(() => {
         setTimeout(() => {
-            setRedOpen(false);
             setMenuOpen(false);
-        }, 150)
+            if (!rootRef.current?.matches(':hover')) {
+                setRedOpen(false);
+            }
+        }, 150);
         buttonNumberRef.current?.focus();
-    }, [setRedOpen, setMenuOpen]);
+    }, []);
 
     const cfGetText = React.useMemo(() => (item: ChangeFunctionState) => {
         return Translations.cfName(t)(item);
@@ -270,19 +342,23 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         return item.id
     }, []);
 
-    return withoutCF ? <div className={classNames("button-number-cf", className)}>{buttonElement}</div> : (
-        <HoverHideable
-            open={_redOpen}
-            onKeyPress={handleKeyPress}
-            className={classNames("button-number-cf", className)}
-            button={buttonElement}>
-            {!active && (
-                <HoverHideable
-                    open={_menuOpen}
-                    className={"button-number-cf-settings"}
-                    button={<div className="button-number-cf-settings-handler">
-                        <div></div>
-                    </div>}>
+    const cfPanel = !active && _redOpen && createPortal(
+        <div className={classNames('button-number-cf-portal-host', portalScope)}>
+            <div
+                className={classNames("button-number-cf-settings", "button-number-cf-settings--portal", className, {
+                    "button-number-cf-settings--menu-open": _menuOpen,
+                })}
+                style={panelStyle}
+                onMouseEnter={openCf}
+                onMouseLeave={closeCf}
+            >
+                <div
+                    className="button-number-cf-settings-handler"
+                    onMouseEnter={() => setMenuOpen(true)}
+                >
+                    <div></div>
+                </div>
+                {_menuOpen && (
                     <SelectDrop
                         ref={selectDropRef}
                         onBlur={handleCFSelectDropBlur}
@@ -306,9 +382,23 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
                         getValue={cfGetValue}
                         items={changeFunctionsSelectItems}
                     />
-                </HoverHideable>
-            )}
-        </HoverHideable>
+                )}
+            </div>
+        </div>,
+        document.body,
+    );
+
+    return withoutCF ? <div className={classNames("button-number-cf", className)}>{buttonElement}</div> : (
+        <div
+            ref={rootRef}
+            className={classNames("button-number-cf", className)}
+            onKeyPress={handleKeyPress}
+            onMouseEnter={openCf}
+            onMouseLeave={closeCf}
+        >
+            {buttonElement}
+            {cfPanel}
+        </div>
     );
 
 });

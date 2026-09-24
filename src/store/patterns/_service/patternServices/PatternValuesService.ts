@@ -3,6 +3,7 @@ import {performanceSettings} from "../../../../config/performanceSettings";
 import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
 import {HelperCanvas} from "../../../../utils/canvas/helpers/base";
 import {compositeMasked, ensureCanvas} from "../../../../utils/canvas/helpers/composite";
+import {copyTexture2D} from "../../../../gl/draw";
 import {getGlContext} from "../../../../gl/GlContext";
 
 export class PatternValuesService {
@@ -15,6 +16,11 @@ export class PatternValuesService {
     private selectedBuffer?: HelperCanvas;
     private lastMaskedUpdateTime = 0;
     private lastSelectedUpdateTime = 0;
+    private selectedGpuTex: WebGLTexture | null = null;
+    private selectedGpuW = 0;
+    private selectedGpuH = 0;
+    private selectedGpuMaskSerial = -1;
+    private selectedGpuContentSerial = -1;
 
     constructor(patternService: PatternService) {
         this.patternService = patternService;
@@ -135,19 +141,46 @@ export class PatternValuesService {
         }
 
         const source = buffer.ensureGpu();
+        const maskSerial = this.patternService.selectionService.maskSerial;
+        const contentSerial = buffer.contentSerial;
+        const {width, height} = buffer;
+
+        if (
+            this.selectedGpuTex
+            && this.selectedGpuMaskSerial === maskSerial
+            && this.selectedGpuContentSerial === contentSerial
+            && this.selectedGpuW === width
+            && this.selectedGpuH === height
+        ) {
+            return {texture: this.selectedGpuTex, width, height, stampFlipY: true};
+        }
+
         const glc = getGlContext();
-        const mask = glc.uploadCanvasSized(maskCanvas);
-        const texture = glc.compositeMasked(
+        const mask = glc.selectionMaskTexture(maskCanvas, maskSerial);
+        const composited = glc.compositeMasked(
             source,
             mask,
-            buffer.width,
-            buffer.height,
+            width,
+            height,
             false,
             !buffer.textureFromCanvas,
             buffer.textureFromCanvas,
         );
 
-        return {texture, width: buffer.width, height: buffer.height, stampFlipY: true};
+        if (!this.selectedGpuTex || this.selectedGpuW !== width || this.selectedGpuH !== height) {
+            if (this.selectedGpuTex) {
+                glc.gl.deleteTexture(this.selectedGpuTex);
+            }
+            this.selectedGpuTex = glc.createTexture2D(width, height);
+            this.selectedGpuW = width;
+            this.selectedGpuH = height;
+        }
+
+        copyTexture2D(glc, composited, this.selectedGpuTex, width, height);
+        this.selectedGpuMaskSerial = maskSerial;
+        this.selectedGpuContentSerial = contentSerial;
+
+        return {texture: this.selectedGpuTex, width, height, stampFlipY: true};
     };
 
     updateMasked = (): PatternService => {

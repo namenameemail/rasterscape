@@ -1,5 +1,6 @@
 import { coordHelper, coordHelper2, coordHelper3 } from '../components/Area/canvasPosition.servise'
 import { profileLogger } from './profiling/ProfileLogger'
+import { profileDebug } from './profileDebug'
 
 export enum FramePriority {
     Video = 0,
@@ -9,6 +10,7 @@ export enum FramePriority {
 }
 
 type FrameSubscriber = {
+    id: string
     callback: (time: number) => void
     priority: FramePriority
 }
@@ -26,7 +28,7 @@ class FrameScheduler {
         callback: (time: number) => void,
         priority: FramePriority,
     ): (() => void) => {
-        this.subscribers.set(id, { callback, priority })
+        this.subscribers.set(id, { id, callback, priority })
         this.sortedSubscribers = null
         this.ensureRunning()
         return () => this.unsubscribe(id)
@@ -88,7 +90,14 @@ class FrameScheduler {
         profileLogger.beginFrame()
 
         for (const subscriber of this.getSortedSubscribers()) {
-            subscriber.callback(time)
+            try {
+                subscriber.callback(time)
+            } catch (error) {
+                profileDebug('draw', 'frameError', {
+                    id: subscriber.id,
+                    message: error instanceof Error ? error.message : String(error),
+                })
+            }
         }
 
         if (this.subscribers.size > 0) {

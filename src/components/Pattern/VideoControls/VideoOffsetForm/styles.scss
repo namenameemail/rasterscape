@@ -125,3 +125,44 @@
     }
   }
 }
+
+.button-number-cf-portal-host--video-offset {
+  .select-drop > .select-drop-items > .select-buttons-items {
+    border: 1px solid #ebebeb;
+    background: lightgrey;
+
+    .button-select {
+      background: lightgrey;
+    }
+
+    .button-select-selected {
+      background: #ebebeb;
+    }
+  }
+
+  .select-drop-value {
+    background: lightgrey;
+  }
+
+  .bbuutoonn {
+    background: lightgrey;
+  }
+}
+
+.button-number-cf-portal-host--video-offset.video-offset-red {
+  .button-number-value {
+    border-right: 1px solid red;
+  }
+}
+
+.button-number-cf-portal-host--video-offset.video-offset-blue {
+  .button-number-value {
+    border-right: 1px solid blue;
+  }
+}
+
+.button-number-cf-portal-host--video-offset.video-offset-green {
+  .button-number-value {
+    border-right: 1px solid green;
+  }
+}

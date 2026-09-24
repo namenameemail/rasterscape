@@ -9,6 +9,7 @@ export type StampDrawParams = {
     yd: number
     width: number
     height: number
+    color?: [number, number, number]
 }
 
 const deg = (a: number) => (a * Math.PI) / 180

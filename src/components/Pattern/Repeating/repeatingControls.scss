@@ -26,18 +26,13 @@ $blue: darkblue;
 
   .bbuutoonn:focus {
     outline: 2px dotted #ffcd00;
-    //box-shadow: 0 0 6px black;
   }
 
   .type-select {
     position: absolute;
 
   }
-}
 
-
-
-.repeating-controls {
   .repeating-button {
     .bbuutoonn {
       background: black;
@@ -81,31 +76,16 @@ $blue: darkblue;
   .button-number-value {
 
     display: flex;
-    //align-items: center;
-    //height: 10px;
     background: transparent;
-    border-right: 1px solid white; //#595959;
+    border-right: 1px solid white;
   }
 
   .button-number-cf-settings-handler {
-
-
-    //background-color: black;
-
-
     & > div {
       &:after {
         color: $yellow;
       }
-
-      //border-radius: 50%;
     }
-
-  }
-
-  .bbuutoonn:focus {
-    outline: 2px dotted #ffcd00;
-    //box-shadow: 0 0 6px black;
   }
 
   .button-number-cf-value-active {
@@ -116,6 +96,34 @@ $blue: darkblue;
       box-shadow: none;
     }
   }
+}
 
+.repeating-button-number.button-number-cf-settings--portal {
+  .button-number-cf-settings-handler > div:after {
+    color: $yellow;
+  }
+}
 
+.button-number-cf-portal-host--repeating {
+  .select-drop > .select-drop-items > .select-buttons-items {
+    border: 1px solid $yellow;
+  }
+
+  .button-number-cf-settings-handler > div:after {
+    color: $yellow;
+  }
+
+  .bbuutoonn {
+    background: black;
+    color: white;
+  }
+
+  .bbuutoonn.button-select.button-select-selected {
+    background: $blue;
+  }
+
+  .select-drop-value {
+    background: black;
+    color: white;
+  }
 }

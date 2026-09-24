@@ -1,9 +1,22 @@
 import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
 import {blurCanvasInPlace} from "../../../../utils/canvas/helpers/blur";
 import {getGlContext} from "../../../../gl/GlContext";
+import {blendTextureOver} from "../../../../gl/blend";
+import {blitTexture, copyTexture2D} from "../../../../gl/draw";
 import {PatternFillSource, PatternStroke} from "../../../../gl/patternFill";
+import {drawRepeatLayer, RepeatStamp} from "../../../../gl/repeatLayer";
+import {drawStrokeLayer, StrokeDraw} from "../../../../gl/strokeDraw";
 import {StampDrawParams} from "../../../../gl/stampMat";
 import {ECompositeOperation} from "../../../compositeOperations";
+
+export type RepeatCopy = {
+    canvas: HTMLCanvasElement
+    dx: number
+    dy: number
+    color: [number, number, number]
+    originX: number
+    originY: number
+}
 
 export class PatternBuffer {
     readonly canvas: HTMLCanvasElement;
@@ -17,6 +30,12 @@ export class PatternBuffer {
     private gpuFromCanvas = true;
     private texW = 0;
     private texH = 0;
+    private imageSerial = 0;
+    private repeatBase: WebGLTexture | null = null;
+    private repeatReady = false;
+    private repeatW = 0;
+    private repeatH = 0;
+    private repeatTex = new Map<HTMLCanvasElement, {tex: WebGLTexture, w: number, h: number}>();
 
     constructor(width: number, height: number) {
         this.canvas = document.createElement('canvas');
@@ -40,6 +59,18 @@ export class PatternBuffer {
     get isGpuAhead(): boolean {
         return this.gpuInSync && !this.cpuInSync && !!this.texture;
     }
+
+    get contentSerial(): number {
+        return this.imageSerial;
+    }
+
+    private bumpContent = (): void => {
+        this.imageSerial += 1;
+    };
+
+    markGpuContent = (): void => {
+        this.bumpContent();
+    };
 
     markCpuChanged = (): void => {
         this.gpuInSync = false;
@@ -101,6 +132,7 @@ export class PatternBuffer {
             });
             this.gpuInSync = true;
             this.gpuFromCanvas = true;
+            this.bumpContent();
         }
 
         return texture;
@@ -129,6 +161,7 @@ export class PatternBuffer {
         this.gpuInSync = true;
         this.cpuInSync = false;
         this.gpuFromCanvas = false;
+        this.bumpContent();
     };
 
     compositeFramebuffer = (): void => {
@@ -138,6 +171,7 @@ export class PatternBuffer {
         this.gpuInSync = true;
         this.cpuInSync = false;
         this.gpuFromCanvas = false;
+        this.bumpContent();
     };
 
     compositeVideo = (video: WebGLTexture): void => {
@@ -152,6 +186,7 @@ export class PatternBuffer {
         this.gpuInSync = true;
         this.cpuInSync = false;
         this.gpuFromCanvas = false;
+        this.bumpContent();
     };
 
     stampGpu = (
@@ -180,6 +215,9 @@ export class PatternBuffer {
         this.gpuInSync = true;
         this.cpuInSync = false;
         this.gpuFromCanvas = false;
+        if (stamps.length) {
+            this.bumpContent();
+        }
     };
 
     compositeLayerGpu = (
@@ -204,6 +242,7 @@ export class PatternBuffer {
         this.gpuInSync = true;
         this.cpuInSync = false;
         this.gpuFromCanvas = false;
+        this.bumpContent();
     };
 
     compositePatternStrokesGpu = (
@@ -233,6 +272,118 @@ export class PatternBuffer {
         this.gpuInSync = true;
         this.cpuInSync = false;
         this.gpuFromCanvas = false;
+        this.bumpContent();
+    };
+
+    beginRepeat = (): void => {
+        const {width, height} = this.canvas;
+        if (this.repeatReady && this.repeatBase && this.repeatW === width && this.repeatH === height) return;
+        const dest = this.ensureGpu();
+        const glc = getGlContext();
+        if (!this.repeatBase || this.repeatW !== width || this.repeatH !== height) {
+            if (this.repeatBase) glc.gl.deleteTexture(this.repeatBase);
+            this.repeatBase = glc.createTexture2D(width, height);
+            this.repeatW = width;
+            this.repeatH = height;
+        }
+        if (this.gpuFromCanvas) {
+            const scratch = glc.ensureScratch(width, height);
+            blitTexture(glc, dest, scratch, width, height, true);
+            copyTexture2D(glc, scratch, this.repeatBase, width, height);
+            copyTexture2D(glc, scratch, dest, width, height);
+            this.gpuFromCanvas = false;
+        } else {
+            copyTexture2D(glc, dest, this.repeatBase, width, height);
+        }
+        this.repeatReady = true;
+    };
+
+    endRepeat = (): void => {
+        this.repeatReady = false;
+        const gl = getGlContext().gl;
+        for (const slot of this.repeatTex.values()) gl.deleteTexture(slot.tex);
+        this.repeatTex.clear();
+    };
+
+    compositeStrokesGpu = (
+        strokes: StrokeDraw[],
+        opacity = 1,
+        clipMask?: HTMLCanvasElement | null,
+        compositeOperation: ECompositeOperation = ECompositeOperation.SourceOver,
+    ): void => {
+        if (!this.repeatReady || !this.repeatBase) return;
+        const dest = this.ensureGpu();
+        const {width, height} = this.canvas;
+        const glc = getGlContext();
+        profileLogger.time('canvas.compositeStrokesGpu', () => {
+            copyTexture2D(glc, this.repeatBase as WebGLTexture, dest, width, height);
+            this.gpuFromCanvas = false;
+            const layer = glc.ensureLayer(width, height);
+            drawStrokeLayer(glc, layer, width, height, strokes, opacity, clipMask);
+            blendTextureOver(glc, dest, layer, width, height, false, false, compositeOperation, 1, true);
+        });
+        this.gpuInSync = true;
+        this.cpuInSync = false;
+        this.gpuFromCanvas = false;
+        this.bumpContent();
+    };
+
+    compositeRepeatsGpu = (
+        copies: RepeatCopy[],
+        opacity = 1,
+        clipMask?: HTMLCanvasElement | null,
+        compositeOperation: ECompositeOperation = ECompositeOperation.SourceOver,
+    ): void => {
+        if (!this.repeatReady || !this.repeatBase) return;
+        const dest = this.ensureGpu();
+        const {width, height} = this.canvas;
+        const glc = getGlContext();
+        profileLogger.time('canvas.compositeRepeatsGpu', () => {
+            copyTexture2D(glc, this.repeatBase as WebGLTexture, dest, width, height);
+            this.gpuFromCanvas = false;
+            const stamps: RepeatStamp[] = [];
+            let uploaded: HTMLCanvasElement | null = null;
+            for (const copy of copies) {
+                let slot = this.repeatTex.get(copy.canvas);
+                if (!slot || slot.w !== copy.canvas.width || slot.h !== copy.canvas.height) {
+                    if (slot) glc.gl.deleteTexture(slot.tex);
+                    slot = {
+                        tex: glc.createTexture2D(copy.canvas.width, copy.canvas.height),
+                        w: copy.canvas.width,
+                        h: copy.canvas.height,
+                    };
+                    this.repeatTex.set(copy.canvas, slot);
+                    uploaded = null;
+                }
+                if (uploaded !== copy.canvas) {
+                    glc.uploadCanvas(copy.canvas, slot.tex);
+                    uploaded = copy.canvas;
+                }
+                stamps.push({
+                    tex: slot.tex,
+                    stamp: {
+                        x: copy.originX + copy.canvas.width / 2 + copy.dx,
+                        y: copy.originY + copy.canvas.height / 2 + copy.dy,
+                        angleB: 0,
+                        angleD: 0,
+                        xc: 0,
+                        yc: 0,
+                        xd: 0,
+                        yd: 0,
+                        width: copy.canvas.width,
+                        height: copy.canvas.height,
+                        color: copy.color,
+                    },
+                });
+            }
+            const layer = glc.ensureLayer(width, height);
+            drawRepeatLayer(glc, layer, width, height, stamps, opacity, clipMask);
+            blendTextureOver(glc, dest, layer, width, height, false, false, compositeOperation, 1, true);
+        });
+        this.gpuInSync = true;
+        this.cpuInSync = false;
+        this.gpuFromCanvas = false;
+        this.bumpContent();
     };
 
     setMonitor = (monitor?: HTMLCanvasElement): void => {

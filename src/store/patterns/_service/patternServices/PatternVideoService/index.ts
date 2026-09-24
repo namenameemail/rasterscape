@@ -236,6 +236,7 @@ export class PatternVideoService {
                     this.patternService.platformerService.applyBlurToWorld(radius)
                 } else if (buffer?.texture) {
                     getGlContext().blurTexture(buffer.texture, buffer.width, buffer.height, radius)
+                    buffer.markGpuContent()
                     getGlContext().blitToDefault(buffer.texture, buffer.width, buffer.height)
                 }
             })

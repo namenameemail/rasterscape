@@ -219,6 +219,7 @@ precision highp float;
 uniform sampler2D u_tex;
 uniform sampler2D u_mask;
 uniform sampler2D u_dst;
+uniform vec3 u_color;
 uniform float u_opacity;
 uniform float u_flipY;
 uniform float u_useMask;
@@ -232,6 +233,7 @@ ${BLEND_FN}
 void main() {
     vec2 uv = vec2(v_uv.x, u_flipY > 0.5 ? 1.0 - v_uv.y : v_uv.y);
     vec4 c = texture(u_tex, uv);
+    c.rgb *= u_color;
     float ma = 1.0;
     if (u_useMask > 0.5) {
         vec2 muv = vec2(v_destUv.x, u_maskFlipY > 0.5 ? 1.0 - v_destUv.y : v_destUv.y);
@@ -243,12 +245,74 @@ void main() {
     o = compositeBlend(c, dst, u_mode);
 }`
 
+export const STROKE_VS = `#version 300 es
+in vec2 a_pos;
+uniform vec2 u_destSize;
+uniform vec2 u_translate;
+void main() {
+    vec2 p = a_pos + u_translate;
+    gl_Position = vec4(
+        p.x / u_destSize.x * 2.0 - 1.0,
+        1.0 - p.y / u_destSize.y * 2.0,
+        0.0,
+        1.0
+    );
+}`
+
+export const STROKE_FS = `#version 300 es
+precision highp float;
+out vec4 o;
+void main() {
+    o = vec4(1.0);
+}`
+
+export const STROKE_TINT_FS = `#version 300 es
+precision highp float;
+uniform sampler2D u_mask;
+uniform sampler2D u_clip;
+uniform vec3 u_color;
+uniform float u_opacity;
+uniform float u_useClip;
+in vec2 v_uv;
+out vec4 o;
+void main() {
+    float a = texture(u_mask, v_uv).a * u_opacity;
+    if (u_useClip > 0.5) a *= texture(u_clip, v_uv).a;
+    o = vec4(u_color * a, a);
+}`
+
+export const REPEAT_FS = `#version 300 es
+precision highp float;
+uniform sampler2D u_tex;
+uniform sampler2D u_mask;
+uniform vec3 u_color;
+uniform float u_opacity;
+uniform float u_flipY;
+uniform float u_useMask;
+uniform float u_maskFlipY;
+in vec2 v_uv;
+in vec2 v_destUv;
+out vec4 o;
+void main() {
+    vec2 uv = vec2(v_uv.x, u_flipY > 0.5 ? 1.0 - v_uv.y : v_uv.y);
+    vec4 c = texture(u_tex, uv);
+    c.rgb *= u_color;
+    float ma = 1.0;
+    if (u_useMask > 0.5) {
+        vec2 muv = vec2(v_destUv.x, u_maskFlipY > 0.5 ? 1.0 - v_destUv.y : v_destUv.y);
+        ma = texture(u_mask, muv).a;
+    }
+    float a = c.a * u_opacity * ma;
+    o = vec4(c.rgb * a, a);
+}`
+
 export const BLEND_FS = `#version 300 es
 precision highp float;
 uniform sampler2D u_src;
 uniform sampler2D u_dst;
 uniform float u_opacity;
 uniform float u_srcFlipY;
+uniform float u_premul;
 uniform int u_mode;
 in vec2 v_uv;
 out vec4 o;
@@ -256,6 +320,7 @@ ${BLEND_FN}
 void main() {
     vec2 suv = vec2(v_uv.x, u_srcFlipY > 0.5 ? 1.0 - v_uv.y : v_uv.y);
     vec4 src = texture(u_src, suv);
+    if (u_premul > 0.5 && src.a > 1e-5) src.rgb /= src.a;
     src.a *= u_opacity;
     vec4 dst = texture(u_dst, v_uv);
     o = compositeBlend(src, dst, u_mode);

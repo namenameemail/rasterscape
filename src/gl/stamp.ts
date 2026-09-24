@@ -74,9 +74,12 @@ export const stampTextures = (
 
     const uMat = gl.getUniformLocation(ctx.stampProgram, 'u_mat')
     const uStampSize = gl.getUniformLocation(ctx.stampProgram, 'u_stampSize')
+    const uColor = gl.getUniformLocation(ctx.stampProgram, 'u_color')
 
     for (const stamp of stamps) {
+        const color = stamp.color ?? [1, 1, 1]
         gl.uniform2f(uStampSize, stamp.width, stamp.height)
+        gl.uniform3f(uColor, color[0], color[1], color[2])
         gl.uniformMatrix3fv(uMat, false, stampCanvasMat(stamp))
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     }
