@@ -245,15 +245,42 @@ void main() {
     o = compositeBlend(c, dst, u_mode);
 }`
 
+export const CIRCLE_FS = `#version 300 es
+precision highp float;
+uniform sampler2D u_mask;
+uniform vec3 u_color;
+uniform float u_useMask;
+uniform float u_maskFlipY;
+uniform vec2 u_stampSize;
+in vec2 v_uv;
+in vec2 v_destUv;
+out vec4 o;
+void main() {
+    vec2 d = (v_uv - 0.5) * u_stampSize;
+    float r = min(u_stampSize.x, u_stampSize.y) * 0.5;
+    float cov = clamp(r - length(d) + 0.5, 0.0, 1.0);
+    float ma = 1.0;
+    if (u_useMask > 0.5) {
+        vec2 muv = vec2(v_destUv.x, u_maskFlipY > 0.5 ? 1.0 - v_destUv.y : v_destUv.y);
+        ma = texture(u_mask, muv).a;
+    }
+    float a = cov * ma;
+    o = vec4(u_color * a, a);
+}`
+
 export const STROKE_VS = `#version 300 es
 in vec2 a_pos;
 uniform vec2 u_destSize;
 uniform vec2 u_translate;
+uniform float u_flipY;
 void main() {
     vec2 p = a_pos + u_translate;
+    float ndcY = u_flipY > 0.5
+        ? p.y / u_destSize.y * 2.0 - 1.0
+        : 1.0 - p.y / u_destSize.y * 2.0;
     gl_Position = vec4(
         p.x / u_destSize.x * 2.0 - 1.0,
-        1.0 - p.y / u_destSize.y * 2.0,
+        ndcY,
         0.0,
         1.0
     );

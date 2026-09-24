@@ -220,6 +220,32 @@ export class PatternBuffer {
         }
     };
 
+    stampCirclesGpu = (
+        stamps: StampDrawParams[],
+        opacity: number,
+        clipMask?: HTMLCanvasElement | null,
+        compositeOperation: ECompositeOperation = ECompositeOperation.SourceOver,
+    ): void => {
+        if (!stamps.length) return;
+        const dest = this.ensureGpu();
+        profileLogger.time('canvas.stampCirclesGpu', () => {
+            getGlContext().stampCircles(
+                dest,
+                this.canvas.width,
+                this.canvas.height,
+                this.gpuFromCanvas,
+                stamps,
+                opacity,
+                clipMask,
+                compositeOperation,
+            );
+        });
+        this.gpuInSync = true;
+        this.cpuInSync = false;
+        this.gpuFromCanvas = false;
+        this.bumpContent();
+    };
+
     compositeLayerGpu = (
         layer: HTMLCanvasElement,
         opacity = 1,
@@ -256,11 +282,17 @@ export class PatternBuffer {
             return;
         }
         const dest = this.ensureGpu();
+        const {width, height} = this.canvas;
+        const glc = getGlContext();
         profileLogger.time('canvas.compositePatternStroke', () => {
-            getGlContext().compositePatternStrokes(
+            if (this.repeatReady && this.repeatBase) {
+                copyTexture2D(glc, this.repeatBase, dest, width, height);
+                this.gpuFromCanvas = false;
+            }
+            glc.compositePatternStrokes(
                 dest,
-                this.canvas.width,
-                this.canvas.height,
+                width,
+                height,
                 this.gpuFromCanvas,
                 strokes,
                 source,

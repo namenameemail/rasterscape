@@ -8,6 +8,8 @@ import {PatternService} from "../../../PatternService";
 import {patternsService} from "../../../../../index";
 import {linePatternInverse, linePatternMatrix, LinePatternPlacement, PatternInverse} from "../../../../../../gl/linePattern";
 import {PatternStroke} from "../../../../../../gl/patternFill";
+import {buildStroke} from "../../../../../../gl/strokeMesh";
+import {ERepeatsType} from "../../../../repeating/types";
 
 const placementOf = (
     x: number,
@@ -42,12 +44,13 @@ export class LineSolidPattern implements ToolService {
     patternService: PatternService;
     drewGpu = false;
 
-    prevPoints: Record<string, { x: number, y: number }> = {};
-    canvases: Record<string, HelperCanvas> = {};
+    trails: Record<string, {x: number, y: number}[]> = {};
     helperCanvas1: HelperCanvas;
     helperCanvas2: HelperCanvas;
     handlers: ToolHandlers = {};
     draw: boolean = false;
+    flat = false;
+    refId?: string;
 
     constructor(patternService: PatternService, _width?: number, _height?: number) {
         this.patternService = patternService;
@@ -64,7 +67,10 @@ export class LineSolidPattern implements ToolService {
             onClick: this.lineDraw,
             onRelease: () => {
                 this.draw = false;
-                this.canvases = {};
+                this.trails = {};
+                this.refId = undefined;
+                this.flat = false;
+                this.patternService.canvasService.buffer?.endRepeat();
             }
         };
     }
@@ -84,15 +90,16 @@ export class LineSolidPattern implements ToolService {
 
         const state = this.patternService.storeService.getState();
         const pattern = state.patterns[this.patternService.patternId];
-        const {width, height} = pattern;
         const {size, opacity, compositeOperation, cap, join, patternMouseCentered, patternId, patternSize} = state.line.params as LineParams;
-        const coordinates = state.position.coordinates;
-        const newPrevPoints = {};
+        const points = state.position.coordinates[0] ?? [];
+        if (!points.length) return;
+
         const toolPattern = state.patterns[patternId];
         const selectionMask = this.patternService.selectionService.mask;
         const clipMask = this.patternService.selectionService.maskCanvas;
         const dest = bufferForDrawCanvas(this.patternService, brushEvent.canvas);
         const useGpu = !!dest && (!selectionMask || !!clipMask);
+        const flatNow = !!pattern.config.repeating && pattern.repeating.params.type === ERepeatsType.FlatGrid;
 
         if (!toolPattern) return;
 
@@ -107,21 +114,36 @@ export class LineSolidPattern implements ToolService {
 
         if (!this.draw) {
             this.draw = true;
-            coordinates[0]?.forEach(({x, y, id: index}) => {
-                this.canvases[index] = createCanvas(width, height);
-                const ctx = this.canvases[index]?.context;
-                if (!ctx) return;
-                ctx.beginPath();
-                ctx.moveTo(x, y);
+            this.trails = {};
+            this.refId = points[0].id;
+            this.flat = flatNow;
+            points.forEach(({x, y, id}) => {
+                this.trails[id] = [{x, y}];
             });
-            this.prevPoints = newPrevPoints;
             return;
         }
+
+        if (this.flat !== flatNow) {
+            this.flat = flatNow;
+        }
+
+        points.forEach(({x, y, id}) => {
+            if (!this.trails[id]) this.trails[id] = [];
+            this.trails[id].push({x, y});
+        });
+
+        const ref = points.find(({id}) => id === this.refId) ?? points[0];
+        this.refId = ref.id;
+        const ready = points.some(({id}) => (this.trails[id]?.length ?? 0) >= 2);
+        if (!ready || size <= 0) return;
+
+        const lineCap = cap as CanvasLineCap;
+        const lineJoin = join as CanvasLineJoin;
 
         const invByPointer: Record<string, PatternInverse> = {};
         if (patternGpu) {
             let invertible = true;
-            for (const point of coordinates[0] ?? []) {
+            for (const point of points) {
                 const inv = linePatternInverse(placementOf(point.x, point.y, patternSize, toolPattern, patternMouseCentered));
                 if (!inv) {
                     invertible = false;
@@ -135,45 +157,25 @@ export class LineSolidPattern implements ToolService {
             }
         }
 
-        const linePatternImage = patternGpu ? null : patternsService.pattern[patternId]?.valuesService.masked;
-        if (!patternGpu && !linePatternImage) return;
-
-        const strokes: PatternStroke[] = [];
-
-        coordinates[0]?.forEach(({x, y, id: index}) => {
-            if (!this.canvases[index]) {
-                this.canvases[index] = createCanvas(width, height);
-            }
-            const ctx = this.canvases[index]?.context;
-            this.canvases[index].clear();
-            newPrevPoints[index] = {x, y};
-
-            ctx.lineWidth = size;
-            ctx.lineJoin = join;
-            ctx.lineCap = cap;
-            ctx.globalAlpha = size ? opacity : 0;
-            ctx.strokeStyle = patternGpu
-                ? '#fff'
-                : getPatternStrokeStyle(ctx, x, y, patternSize, toolPattern, linePatternImage, patternMouseCentered);
-
-            if (this.prevPoints[index]) {
-                ctx.lineTo(x, y);
-            } else {
-                ctx.closePath();
-                ctx.moveTo(x, y);
-            }
-
-            ctx.stroke();
-            if (patternGpu) {
-                const inv = invByPointer[index];
-                if (inv) strokes.push({canvas: this.canvases[index].canvas, inv});
-            } else {
-                this.helperCanvas1.context.drawImage(this.canvases[index].canvas, 0, 0);
-            }
-        });
-
         if (patternGpu && dest) {
+            const flatMesh = this.flat
+                ? buildStroke(this.trails[ref.id] ?? [], size, lineCap, lineJoin)
+                : null;
+            const strokes: PatternStroke[] = [];
+            for (const {x, y, id} of points) {
+                const inv = invByPointer[id];
+                if (!inv) continue;
+                const mesh = flatMesh ?? buildStroke(this.trails[id] ?? [], size, lineCap, lineJoin);
+                if (mesh.length < 6) continue;
+                strokes.push({
+                    mesh,
+                    inv,
+                    dx: this.flat ? x - ref.x : 0,
+                    dy: this.flat ? y - ref.y : 0,
+                });
+            }
             if (strokes.length) {
+                dest.beginRepeat();
                 dest.compositePatternStrokesGpu(
                     strokes,
                     {
@@ -189,16 +191,33 @@ export class LineSolidPattern implements ToolService {
                 );
                 this.drewGpu = true;
             }
-            this.helperCanvas1.clear();
-            this.prevPoints = newPrevPoints;
             return;
         }
+
+        const linePatternImage = patternsService.pattern[patternId]?.valuesService.masked;
+        if (!linePatternImage) return;
+
+        this.helperCanvas1.clear();
+        points.forEach(({x, y, id}) => {
+            const trail = this.trails[id] ?? [];
+            if (trail.length < 2) return;
+            const strokeCtx = this.helperCanvas1.context;
+            strokeCtx.lineWidth = size;
+            strokeCtx.lineJoin = join;
+            strokeCtx.lineCap = cap;
+            strokeCtx.globalAlpha = size ? opacity : 0;
+            strokeCtx.strokeStyle = getPatternStrokeStyle(strokeCtx, x, y, patternSize, toolPattern, linePatternImage, patternMouseCentered);
+            strokeCtx.beginPath();
+            strokeCtx.moveTo(trail[0].x, trail[0].y);
+            for (let i = 1; i < trail.length; i++) strokeCtx.lineTo(trail[i].x, trail[i].y);
+            strokeCtx.stroke();
+        });
+        context.globalAlpha = 1;
 
         if (useGpu && dest) {
             dest.compositeLayerGpu(this.helperCanvas1.canvas, opacity, clipMask, compositeOperation);
             this.helperCanvas1.clear();
             this.drewGpu = true;
-            this.prevPoints = newPrevPoints;
             return;
         }
 
@@ -207,8 +226,8 @@ export class LineSolidPattern implements ToolService {
         const resultCanvas: HelperCanvas = selectionMask
             ? drawMasked(
                 selectionMask,
-                ({context}) => {
-                    context.drawImage(this.helperCanvas1.canvas, 0, 0);
+                ({context: maskContext}) => {
+                    maskContext.drawImage(this.helperCanvas1.canvas, 0, 0);
                     this.helperCanvas1.clear();
                 }
             )(this.helperCanvas2)
@@ -218,7 +237,5 @@ export class LineSolidPattern implements ToolService {
         context.globalAlpha = opacity;
         context.drawImage(resultCanvas.canvas, 0, 0);
         resultCanvas.clear();
-
-        this.prevPoints = newPrevPoints;
     }
 }

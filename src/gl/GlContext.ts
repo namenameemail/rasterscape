@@ -27,8 +27,10 @@ import {
     STROKE_VS,
     STAMP_FS,
     STAMP_VS,
+    CIRCLE_FS,
 } from './shaders'
 import {stampTextures as stampTexturesImpl} from './stamp'
+import {stampCircles as stampCirclesImpl} from './circleStamp'
 import type {StampDrawParams} from './stampMat'
 
 export class GlContext {
@@ -39,6 +41,7 @@ export class GlContext {
     blurProgram: WebGLProgram
     maskProgram: WebGLProgram
     stampProgram: WebGLProgram
+    circleProgram: WebGLProgram
     repeatProgram: WebGLProgram
     strokeProgram: WebGLProgram
     strokeTintProgram: WebGLProgram
@@ -91,6 +94,7 @@ export class GlContext {
         this.blurProgram = linkProgram(gl, BLIT_VS, BLUR_FS)
         this.maskProgram = linkProgram(gl, BLIT_VS, MASK_FS)
         this.stampProgram = linkProgram(gl, STAMP_VS, STAMP_FS)
+        this.circleProgram = linkProgram(gl, STAMP_VS, CIRCLE_FS)
         this.repeatProgram = linkProgram(gl, STAMP_VS, REPEAT_FS)
         this.strokeProgram = linkProgram(gl, STROKE_VS, STROKE_FS)
         this.strokeTintProgram = linkProgram(gl, BLIT_VS, STROKE_TINT_FS)
@@ -268,6 +272,19 @@ export class GlContext {
         mode: ECompositeOperation = ECompositeOperation.SourceOver,
     ): void => {
         stampTexturesImpl(this, dest, destW, destH, destFlipY, source, sourceFlipY, stamps, opacity, clipMask, mode)
+    }
+
+    stampCircles = (
+        dest: WebGLTexture,
+        destW: number,
+        destH: number,
+        destFlipY: boolean,
+        stamps: StampDrawParams[],
+        opacity: number,
+        clipMask?: HTMLCanvasElement | null,
+        mode: ECompositeOperation = ECompositeOperation.SourceOver,
+    ): void => {
+        stampCirclesImpl(this, dest, destW, destH, destFlipY, stamps, opacity, clipMask, mode)
     }
 
     blurTexture = (texture: WebGLTexture, width: number, height: number, radius: number): void => {

@@ -7,6 +7,12 @@ import {EBrushType} from "../../../../../brush/types";
 import {getRandomColor} from "../../../../../../utils/utils";
 import {circle} from "../../../../../../utils/canvas/helpers/geometry";
 import {bufferForDrawCanvas} from "../drawTarget";
+import {StampDrawParams} from "../../../../../../gl/stampMat";
+
+const hexRgb = (hex: string): [number, number, number] => {
+    const n = parseInt(hex.slice(1), 16);
+    return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+};
 
 export class BrushShape implements ToolService {
     patternService: PatternService;
@@ -49,32 +55,46 @@ export class BrushShape implements ToolService {
         const pattern = state.patterns[this.patternService.patternId];
         const {size, opacity, compositeOperation} = state.brush.params.paramsByType[EBrushType.Shape];
         const coordinates = state.position.coordinates;
+        const points = coordinates[0] ?? [];
+        if (!points.length || size <= 0) return;
+
         const selectionMask = this.patternService.selectionService.mask;
         const clipMask = this.patternService.selectionService.maskCanvas;
         const dest = bufferForDrawCanvas(this.patternService, brushEvent.canvas);
         const useGpu = !!dest && (!selectionMask || !!clipMask);
 
+        if (useGpu && dest) {
+            const stamps: StampDrawParams[] = points.map(({x, y}) => ({
+                x, y,
+                angleB: 0,
+                angleD: 0,
+                xc: 0,
+                yc: 0,
+                xd: 0,
+                yd: 0,
+                width: size,
+                height: size,
+                color: hexRgb(getRandomColor()),
+            }));
+            dest.stampCirclesGpu(stamps, opacity, clipMask, compositeOperation);
+            this.drewGpu = true;
+            return;
+        }
+
         const rotation = pattern.rotation.value;
         const angle = rotation ? rotation.angle : 0;
 
         this.helperCanvas1.clear();
-        coordinates[0]?.forEach(({x, y}) => {
+        points.forEach(({x, y}) => {
             drawWithRotation(
                 -angle,
                 x, y,
-                ({context}) => {
-                    context.fillStyle = getRandomColor();
-                    circle(context, 0, 0, size / 2);
+                ({context: c}) => {
+                    c.fillStyle = getRandomColor();
+                    circle(c, 0, 0, size / 2);
                 }
             )(this.helperCanvas1);
         });
-
-        if (useGpu) {
-            dest.compositeLayerGpu(this.helperCanvas1.canvas, opacity, clipMask, compositeOperation);
-            this.helperCanvas1.clear();
-            this.drewGpu = true;
-            return;
-        }
 
         dest?.ensureCpu();
 
@@ -84,8 +104,8 @@ export class BrushShape implements ToolService {
         const resultCanvas: HelperCanvas = selectionMask
             ? drawMasked(
                 selectionMask,
-                ({context}) => {
-                    context.drawImage(this.helperCanvas1.canvas, 0, 0);
+                ({context: c}) => {
+                    c.drawImage(this.helperCanvas1.canvas, 0, 0);
                     this.helperCanvas1.clear();
                 }
             )(this.helperCanvas2)

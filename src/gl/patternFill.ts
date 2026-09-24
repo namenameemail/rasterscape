@@ -3,10 +3,14 @@ import {compositeMasked, compositeTextureOver} from './composite'
 import {bindQuad, copyTexture2D} from './draw'
 import type {GlContext} from './GlContext'
 import type {PatternInverse} from './linePattern'
+import {drawStrokeMask} from './strokeDraw'
 
 export type PatternStroke = {
-    canvas: HTMLCanvasElement
     inv: PatternInverse
+    canvas?: HTMLCanvasElement
+    mesh?: Float32Array
+    dx?: number
+    dy?: number
 }
 
 export type PatternFillSource = {
@@ -103,7 +107,13 @@ export const compositePatternStrokes = (
     try {
         for (const stroke of strokes) {
             const strokeTex = ctx.ensureStroke(width, height)
-            ctx.uploadCanvas(stroke.canvas, strokeTex)
+            if (stroke.mesh && stroke.mesh.length >= 6) {
+                drawStrokeMask(ctx, strokeTex, width, height, stroke.mesh, stroke.dx ?? 0, stroke.dy ?? 0, true)
+            } else if (stroke.canvas) {
+                ctx.uploadCanvas(stroke.canvas, strokeTex)
+            } else {
+                continue
+            }
             const backdrop = ctx.ensureScratch(width, height)
             copyTexture2D(ctx, layer, backdrop, width, height)
             drawPatternStroke(

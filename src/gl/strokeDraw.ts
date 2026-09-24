@@ -8,6 +8,37 @@ export type StrokeDraw = {
     color: [number, number, number]
 }
 
+export const drawStrokeMask = (
+    ctx: GlContext,
+    dest: WebGLTexture,
+    width: number,
+    height: number,
+    mesh: Float32Array,
+    dx = 0,
+    dy = 0,
+    flipY = false,
+): void => {
+    if (mesh.length < 6) return
+    const {gl} = ctx
+    const aUv = gl.getAttribLocation(ctx.strokeTintProgram, 'a_uv')
+    const aStrokePos = gl.getAttribLocation(ctx.strokeProgram, 'a_pos')
+    ctx.bindTexture2DTarget(dest, width, height)
+    gl.clearColor(0, 0, 0, 0)
+    gl.clear(gl.COLOR_BUFFER_BIT)
+    gl.disable(gl.BLEND)
+    if (aUv >= 0) gl.disableVertexAttribArray(aUv)
+    gl.useProgram(ctx.strokeProgram)
+    gl.uniform2f(gl.getUniformLocation(ctx.strokeProgram, 'u_destSize'), width, height)
+    gl.uniform2f(gl.getUniformLocation(ctx.strokeProgram, 'u_translate'), dx, dy)
+    gl.uniform1f(gl.getUniformLocation(ctx.strokeProgram, 'u_flipY'), flipY ? 1 : 0)
+    gl.bindBuffer(gl.ARRAY_BUFFER, ctx.strokeBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, mesh, gl.DYNAMIC_DRAW)
+    gl.vertexAttribPointer(aStrokePos, 2, gl.FLOAT, false, 0, 0)
+    gl.enableVertexAttribArray(aStrokePos)
+    gl.drawArrays(gl.TRIANGLES, 0, mesh.length / 2)
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+}
+
 export const drawStrokeLayer = (
     ctx: GlContext,
     layer: WebGLTexture,
@@ -38,6 +69,7 @@ export const drawStrokeLayer = (
         gl.useProgram(ctx.strokeProgram)
         gl.uniform2f(gl.getUniformLocation(ctx.strokeProgram, 'u_destSize'), width, height)
         gl.uniform2f(gl.getUniformLocation(ctx.strokeProgram, 'u_translate'), stroke.dx, stroke.dy)
+        gl.uniform1f(gl.getUniformLocation(ctx.strokeProgram, 'u_flipY'), 0)
         gl.bindBuffer(gl.ARRAY_BUFFER, ctx.strokeBuffer)
         gl.bufferData(gl.ARRAY_BUFFER, stroke.mesh, gl.DYNAMIC_DRAW)
         gl.vertexAttribPointer(aStrokePos, 2, gl.FLOAT, false, 0, 0)
