@@ -9,6 +9,7 @@ const bbuutoonnssPath = path.resolve(__dirname, '../bbuutoonnss')
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './',
   plugins: [
     react(),
     rawPlugin({

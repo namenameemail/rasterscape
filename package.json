@@ -9,6 +9,8 @@
     "run": "node scripts/run.mjs",
     "link:bbuutoonnss": "node scripts/link-bbuutoonnss.mjs",
     "build": "tsc -b && vite build",
+    "build:static": "vite build",
+    "deploy": "sh scripts/deploy.sh",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "vitest run",

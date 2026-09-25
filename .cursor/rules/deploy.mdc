@@ -1,0 +1,34 @@
+---
+description: How to deploy rasterscape to GitHub Pages
+alwaysApply: true
+---
+
+# Deploy (GitHub Pages)
+
+Live URL: https://namenameemail.github.io/rasterscape/
+
+Static site lives in sibling repo:
+
+`/home/name/Desktop/web/namenameemail.github.io/rasterscape/`
+
+Source stays here (`rasterscape`). Pages repo only gets the built files.
+
+## How
+
+```sh
+npm run deploy
+```
+
+Script: [`scripts/deploy.sh`](scripts/deploy.sh).
+
+1. `vite build` with `base: './'` (subdir-safe asset paths; skips `tsc` — full `npm run build` often fails on existing type debt).
+2. Replace `../namenameemail.github.io/rasterscape/` with `dist/`.
+3. Commit + push that repo (`origin`, current branch).
+
+Override pages path: `PAGES_DIR=/other/path npm run deploy`.
+
+## Rules
+
+- Do not put source into the pages repo — only `dist` contents.
+- Do not change `base` back to `/` without updating deploy; absolute `/assets/…` breaks under `/rasterscape/`.
+- After deploy, wait a minute for Pages; hard-refresh if an old bundle is cached.
