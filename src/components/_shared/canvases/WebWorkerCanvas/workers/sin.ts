@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 export const ctxSin: Worker = self as any;
 
 ctxSin.onmessage = (ev) => {
@@ -39,3 +40,5 @@ ctxSin.onmessage = (ev) => {
         imageData: context.getImageData(0, 0, width, height)
     });
 };
+
+export {};

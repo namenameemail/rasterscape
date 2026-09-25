@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 export const ctxSaw: Worker = self as any;
 
 ctxSaw.onmessage = (ev) => {
@@ -36,3 +37,5 @@ ctxSaw.onmessage = (ev) => {
         imageData: context.getImageData(0, 0, width, height)
     });
 };
+
+export {};

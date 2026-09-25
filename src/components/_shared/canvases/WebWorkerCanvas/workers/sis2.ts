@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import {xySis2} from "../../../../../store/changeFunctions/functions/_helpers";
 import * as Color from "color";
 
@@ -46,3 +47,5 @@ ctxSis2.onmessage = (ev) => {
         imageData
     });
 };
+
+export {};

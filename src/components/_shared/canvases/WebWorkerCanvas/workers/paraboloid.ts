@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import {xyParaboloid} from "../../../../../store/changeFunctions/functions/_helpers";
 import * as Color from "color";
 
@@ -44,3 +45,5 @@ ctxParaboloid.onmessage = (ev) => {
         imageData
     });
 };
+
+export {};

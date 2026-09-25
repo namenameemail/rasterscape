@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 export const ctxNoise: Worker = self as any;
 
 ctxNoise.onmessage = (ev) => {
@@ -36,3 +37,5 @@ ctxNoise.onmessage = (ev) => {
         imageData: context.getImageData(0, 0, width, height)
     });
 };
+
+export {};

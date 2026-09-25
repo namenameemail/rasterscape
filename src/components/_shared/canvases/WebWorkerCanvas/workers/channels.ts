@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 export const ctxChannels: Worker = self as any;
 
 ctxChannels.onmessage = (ev) => {
@@ -51,3 +52,5 @@ ctxChannels.onmessage = (ev) => {
         imageData: newImageData
     });
 };
+
+export {};
