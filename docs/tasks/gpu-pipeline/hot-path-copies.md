@@ -1,12 +1,12 @@
 # Опись: копии всей картинки в процессор на кадре
 
-Снято при этапе 0. Новые такие копии в цикле кадра не добавлять. Undo / сейв / буфер обмена сюда не входят.
+Снято при этапе 0. Новые такие копии в цикле кадра **основного** пайплайна паттерна не добавлять. Undo / сейв / буфер обмена сюда не входят.
 
-## Осталось
+## Статус
 
-| Спан | Где | Когда | Что копируется |
-|------|-----|--------|----------------|
-| `platformer.collision.getImageData` | `PlatformerEngine.step` | playing и world dirty | `world.getImageData` перед `collision.rebuild` |
+**Готово** для happy-path паттерна (видео, values, штампы, present): полных `getImageData` на кадре больше нет.
+
+**Хвост — только платформер** → [`../platformer/hot-path-copies.md`](../platformer/hot-path-copies.md) (`platformer.collision.getImageData` + связанные CPU-пути world).
 
 ## Снято на этапе 3
 
@@ -23,14 +23,14 @@
 | `video.source.resize` — `resizeImageData` при несовпадении размера | `video.source.scale` — `drawImage` со скейлом на GPU |
 | `video.depth.getImageData` — до 4 паттернов за кадр | `video.depth.texture` — `texSubImage2D` с канвасов |
 | `video.blur` — get + StackBlur + put | тот же спан, внутри `filter: blur()` канваса |
-| `platformer.blur` — get + StackBlur + put мира | тот же спан, `filter: blur()` |
+| `platformer.blur` — get + StackBlur + put мира | ушло в платформер: тот же спан, `filter: blur()` — см. [02](../platformer/02-blur.md) |
 
-## Не съём в процессор, но в кадре
+## Не съём в процессор, но в кадре (паттерн)
 
 `video.pushNewFrame` — этап 4a: source-паттерн `copyTex`, **0.21 ms** ([`baselines/04-after.md`](baselines/04-after.md)). Камера пока `texSubImage3D` с video.
 
-`video.drawImage` — только platformer world. Видимый монитор: `canvas.present` **0.08 ms** ([`baselines/04-gl-present.md`](baselines/04-gl-present.md)). `video.composite` — source-over на dest, **0.05 ms**. `canvas.downloadGpu` — GL→2D на жесте / `getImageData` (4b убрал с happy-path dest; остальное — [`04c/`](04c/README.md), платформер — [`../platformer/`](../platformer/README.md)). `canvas.uploadGpu` — после штриха / первого GPU-кадра.
+Видимый монитор: `canvas.present` ~0.2 ms ([`done/04c-11-present.md`](done/04c-11-present.md); раньше [`baselines/04-gl-present.md`](baselines/04-gl-present.md)). `video.composite` — source-over на dest. `canvas.downloadGpu` — по делу (жест / `getImageData`), не happy-path dest после 4b. `canvas.uploadGpu` — после штриха / первого GPU-кадра.
 
-Внешний спан `video.getFrameData` / `video.valuesService` / `draw.valuesMasked` уже был — внутри них более узкие имена из таблиц.
+Платформерные `video.drawImage` / world / collision — [`../platformer/`](../platformer/README.md).
 
-Не кадр (не трогаем): `history/actions`, `import/actions` save/load, clipboard, `projectSerializer`, `room/actions`, `pattern/helpers` startImage, resize паттерна, platformer `init`/`stop`, кнопка блюра в `blur/actions`.
+Не кадр (не трогаем): `history/actions`, `import/actions` save/load, clipboard, `projectSerializer`, `room/actions`, `pattern/helpers` startImage, resize паттерна, кнопка блюра в `blur/actions`.

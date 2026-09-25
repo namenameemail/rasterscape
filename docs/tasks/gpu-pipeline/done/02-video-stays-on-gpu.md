@@ -82,4 +82,4 @@
 
 ### Следующая задача
 
-[`05-cook-graph.md`](../05-cook-graph.md).
+[`05-cook-graph.md`](05-cook-graph.md).

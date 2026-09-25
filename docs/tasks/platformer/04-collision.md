@@ -4,7 +4,7 @@
 
 ## Сейчас
 
-Единственный полный `getImageData` в hot-path описи — `platformer.collision.getImageData`, когда world dirty ([`../gpu-pipeline/hot-path-copies.md`](../gpu-pipeline/hot-path-copies.md)).
+Единственный полный `getImageData` в hot-path паттерна уже убран; у платформера остался `platformer.collision.getImageData`, когда world dirty ([`hot-path-copies.md`](hot-path-copies.md)).
 
 ## Сделать
 

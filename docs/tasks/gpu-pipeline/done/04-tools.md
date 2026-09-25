@@ -80,4 +80,4 @@
 
 ### Следующая задача
 
-[`../04c/`](../04c/README.md) и/или [`05-cook-graph.md`](../05-cook-graph.md) (независимо).
+[`../04c/`](../04c/README.md) и/или [`05-cook-graph.md`](05-cook-graph.md) (независимо).

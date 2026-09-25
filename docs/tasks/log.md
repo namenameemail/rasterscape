@@ -2,6 +2,7 @@
 
 Новые сверху.
 
+- 2026-09-25 20:42 — [5 cook-graph](gpu-pipeline/done/05-cook-graph.md)
 - 2026-09-25 19:36 — [4c.11 показ на монитор](gpu-pipeline/done/04c-11-present.md)
 - 2026-09-25 19:27 — [4c.10 построение маски выделения](gpu-pipeline/done/04c-10-selection-build.md)
 - 2026-09-25 17:29 — [4c.09 превью](gpu-pipeline/done/04c-09-preview.md)

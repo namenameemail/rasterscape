@@ -2,7 +2,7 @@
 
 Было в [`../gpu-pipeline/04c/`](../gpu-pipeline/04c/README.md) как 4c.12–15. Вынесено отдельно: это не happy-path рисования паттерна, а путь мира платформера.
 
-Словарь имён пайплайна: [`../gpu-pipeline/names.md`](../gpu-pipeline/names.md). Опись копий: [`../gpu-pipeline/hot-path-copies.md`](../gpu-pipeline/hot-path-copies.md).
+Словарь имён пайплайна: [`../gpu-pipeline/names.md`](../gpu-pipeline/names.md). Опись оставшихся копий на кадре: [`hot-path-copies.md`](hot-path-copies.md) (из gpu-pipeline перенесено сюда).
 
 **Закрытие:** статус + дата → `done/` → строка в таблице на `done`, запись в [`../log.md`](../log.md).
 
