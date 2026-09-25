@@ -114,7 +114,7 @@ export const store = createStore(
     rootReducer,
     compose(
         applyMiddleware(thunk, logger),
-        persistState(['hotkeys']), //, 'changeFunctions'
+        persistState(['hotkeys'], {key: 'rasterscape-8m'}), //, 'changeFunctions'
     )
 );
 // export const store = createStore(rootReducer, applyMiddleware(thunk));

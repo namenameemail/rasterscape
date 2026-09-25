@@ -203,9 +203,9 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
 
 const mapStateToProps: MapStateToProps<ButtonNumberCFStateProps, ButtonNumberCFOwnProps, AppState> = (state, {path}) => ({
     changeFunctionsSelectItems: getChangeFunctionsSelectItemsNumber(state),
-    changeFunction: state.changeFunctions.functions[state.changingValues[path]?.changeFunctionId],
-    changingValue: state.changingValues[path],
-    hotkey: state.hotkeys.keys[path],
+    changeFunction: state.changeFunctions?.functions?.[state.changingValues?.[path]?.changeFunctionId],
+    changingValue: state.changingValues?.[path],
+    hotkey: state.hotkeys?.keys?.[path],
 });
 
 const mapDispatchToProps: MapDispatchToProps<ButtonNumberCFActionProps, ButtonNumberCFOwnProps> = {
