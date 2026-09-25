@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 const ctx: Worker = self as any;
 
 // Respond to message from parent thread
@@ -6,3 +7,5 @@ ctx.onmessage = (ev) => {
     message = message.replace(/fuck/gi, "****");
     ctx.postMessage(message);
 };
+
+export {};
