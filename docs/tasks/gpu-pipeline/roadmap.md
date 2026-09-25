@@ -43,8 +43,9 @@ flowchart LR
 | [done/05-cook-graph.md](done/05-cook-graph.md) | **5 закрыт** — cook только если visible / wanted / alwaysCook |
 | [../platformer/](../platformer/README.md) | Платформер: video→world, blur, display, collision (бывш. 4c.12–15) |
 | [done/06-frame-hitches.md](done/06-frame-hitches.md) | 6 закрыт: hitch ≠ GPU; hotkeys const keys; autosave coalesce/idle + frames + persist в worker |
+| [07-sync-and-present.md](07-sync-and-present.md) | 7: один контракт sync/flipY у буфера + один present (без `drewGpu`-веток) |
 
-Порядок: 0–5, 4b и **6** закрыты. Дальше хвосты **4c** и **платформер**.
+Порядок: 0–5, 4b и **6** закрыты. Дальше хвосты **4c**, **платформер**, при рефакторе — **7**.
 
 ## Объекты
 
