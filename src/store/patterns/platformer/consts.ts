@@ -9,4 +9,5 @@ export enum EPlatformerAction {
     SET_MOVE_SPEED = 'pattern/platformer/set-move-speed',
     SET_COLLISION_ALPHA_THRESHOLD = 'pattern/platformer/set-collision-alpha-threshold',
     SET_BACKGROUND_FIT = 'pattern/platformer/set-background-fit',
+    SET_ALWAYS_COOK = 'pattern/platformer/set-always-cook',
 }

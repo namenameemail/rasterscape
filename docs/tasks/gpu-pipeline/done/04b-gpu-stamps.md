@@ -23,7 +23,7 @@
 
 ## Сознательно не в 4b → 4c
 
-См. оглавление [`../04c/`](../04c/README.md) (selection, mask, blend, helper, values, present, platformer, …).
+См. оглавление [`../04c/`](../04c/README.md) (selection, mask, blend, helper, values, present, …). Платформер — [`../../platformer/`](../../platformer/README.md).
 
 ## Где смотреть
 

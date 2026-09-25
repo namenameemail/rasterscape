@@ -175,7 +175,7 @@ const mapStateToProps: MapStateToProps<PatternNavigationBarStateProps, PatternNa
     const backgroundActivityById: Record<string, boolean> = {};
 
     patternsSelectItems.forEach(({id}) => {
-        backgroundActivityById[id] = patternHasBackgroundActivity(state.patterns[id]);
+        backgroundActivityById[id] = patternHasBackgroundActivity(state, id);
     });
 
     return {

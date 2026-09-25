@@ -17,6 +17,7 @@ export interface PlatformerParams {
     backgroundPatternId: string | null
     backgroundFit: PlatformerBackgroundFit
     collisionAlphaThreshold: number
+    alwaysCook: boolean
 }
 
 export interface PlatformerValue {

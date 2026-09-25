@@ -3,6 +3,7 @@ import {PlatformerBackgroundFit, PlatformerParams} from './types'
 import {getPlatformerState} from './helpers'
 import {AppState, patternsService} from '../../index'
 import {EPlatformerAction} from './consts'
+import {syncPatternCook, syncPatternsCook} from '../cook/syncCook'
 
 export type SetPlayerPatternAction = PatternAction & { value: string | null }
 export type SetBackgroundPatternAction = PatternAction & { value: string | null }
@@ -12,6 +13,7 @@ export type SetJumpForceAction = PatternAction & { value: number }
 export type SetMoveSpeedAction = PatternAction & { value: number }
 export type SetCollisionAlphaThresholdAction = PatternAction & { value: number }
 export type SetBackgroundFitAction = PatternAction & { value: PlatformerBackgroundFit }
+export type SetPlatformerAlwaysCookAction = PatternAction & { value: boolean }
 
 export const start = (patternId: string) => async (dispatch, getState: () => AppState) => {
     const pattern = getState().patterns[patternId]
@@ -38,6 +40,12 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
 
         dispatch({type: EPlatformerAction.START_PLAYING, id: patternId})
         patternService.previewService.autoUpdate(true)
+
+        syncPatternsCook(
+            patternId,
+            params.playerPatternId,
+            params.backgroundPatternId,
+        )
     } catch (error) {
         console.error(error)
         patternService.platformerService.stop()
@@ -46,6 +54,7 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
 
 export const stop = (patternId: string) => (dispatch, getState: () => AppState) => {
     const patternService = patternsService.pattern[patternId]
+    const params = getState().patterns[patternId]?.platformer?.params
 
     if (!patternService) {
         return
@@ -56,6 +65,8 @@ export const stop = (patternId: string) => (dispatch, getState: () => AppState) 
     patternService.platformerService.stop()
     patternService.previewService.autoUpdate(false)
     patternService.valuesService.update()
+
+    syncPatternsCook(patternId, params?.playerPatternId, params?.backgroundPatternId)
 }
 
 export const setPlayerPattern = (id: string, value: string | null) => (dispatch, getState: () => AppState) => {
@@ -63,8 +74,11 @@ export const setPlayerPattern = (id: string, value: string | null) => (dispatch,
         return
     }
 
+    const prev = getState().patterns[id]?.platformer?.params?.playerPatternId
+
     dispatch({type: EPlatformerAction.SET_PLAYER_PATTERN, id, value})
     patternsService.pattern[id]?.platformerService.setPlayerPatternId(value)
+    syncPatternsCook(id, prev, value)
 }
 
 export const setBackgroundPattern = (id: string, value: string | null) => (dispatch, getState: () => AppState) => {
@@ -72,8 +86,11 @@ export const setBackgroundPattern = (id: string, value: string | null) => (dispa
         return
     }
 
+    const prev = getState().patterns[id]?.platformer?.params?.backgroundPatternId
+
     dispatch({type: EPlatformerAction.SET_BACKGROUND_PATTERN, id, value})
     patternsService.pattern[id]?.platformerService.setBackgroundPatternId(value)
+    syncPatternsCook(id, prev, value)
 }
 
 export const setPlayerSize = (id: string, width: number, height: number) => (dispatch) => {
@@ -104,6 +121,11 @@ export const setCollisionAlphaThreshold = (id: string, value: number) => (dispat
 export const setBackgroundFit = (id: string, value: PlatformerBackgroundFit) => (dispatch) => {
     dispatch({type: EPlatformerAction.SET_BACKGROUND_FIT, id, value})
     patternsService.pattern[id]?.platformerService.setBackgroundFit(value)
+}
+
+export const setPlatformerAlwaysCook = (id: string, value: boolean) => (dispatch) => {
+    dispatch({type: EPlatformerAction.SET_ALWAYS_COOK, id, value})
+    syncPatternCook(id)
 }
 
 export type PlatformerInitParams = PlatformerParams & {

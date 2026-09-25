@@ -9,6 +9,7 @@ import {
     SetMoveSpeedAction,
     SetPlayerPatternAction,
     SetPlayerSizeAction,
+    SetPlatformerAlwaysCookAction,
 } from './actions'
 import {EPlatformerAction} from './consts'
 
@@ -121,6 +122,17 @@ export const platformerReducers = {
                 params: {
                     ...pattern.platformer.params,
                     backgroundFit: action.value,
+                },
+            },
+        })),
+    [EPlatformerAction.SET_ALWAYS_COOK]: reducePattern<SetPlatformerAlwaysCookAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            platformer: pattern.platformer && {
+                ...pattern.platformer,
+                params: {
+                    ...pattern.platformer.params,
+                    alwaysCook: action.value,
                 },
             },
         })),

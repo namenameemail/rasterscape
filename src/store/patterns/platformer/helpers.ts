@@ -13,4 +13,5 @@ export const getPlatformerState = getFunctionState<PlatformerValue, PlatformerPa
         backgroundPatternId: null,
         backgroundFit: PlatformerBackgroundFit.Stretch,
         collisionAlphaThreshold: 128,
+        alwaysCook: false,
     })

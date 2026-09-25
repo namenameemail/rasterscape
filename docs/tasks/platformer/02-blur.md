@@ -1,6 +1,10 @@
-# 4c.13 — платформер: blur мира
+# 02 — платформер: blur мира
 
-Сейчас: `applyBlurToWorld` — CPU `filter: blur` по миру, пока радиус > 0, на кадре.
+Было 4c.13. Оглавление: [`README.md`](README.md).
+
+## Сейчас
+
+`applyBlurToWorld` — CPU `filter: blur` по миру, пока радиус > 0, на кадре.
 
 ## Сделать
 

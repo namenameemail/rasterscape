@@ -10,6 +10,7 @@ import {isMeDrawer, parseMessage} from "./helpers";
 import {MessageData, MessageType} from "./types";
 import {base64Size} from "../../../utils/utils";
 import {ERoomAction} from "./consts";
+import {syncPatternCook} from "../cook/syncCook";
 
 export interface CreateRoomAction extends PatternAction {
     roomName: string
@@ -68,11 +69,13 @@ export const createRoom = (id: string, roomName: string): ThunkResult<CreateRoom
         console.log(roomSocket);
         roomSockets.add(id, roomSocket);
 
-        return dispatch({
+        const action = dispatch({
             type: ERoomAction.CREATE_ROOM,
             id,
             roomName,
-        })
+        });
+        syncPatternCook(id);
+        return action;
     };
 
 export const leaveRoom = (id: string): ThunkResult<PatternAction, AppState> =>
@@ -84,10 +87,12 @@ export const leaveRoom = (id: string): ThunkResult<PatternAction, AppState> =>
 
         roomSockets.leave(id);
 
-        return dispatch({
+        const action = dispatch({
             type: ERoomAction.LEAVE_ROOM,
             id,
-        })
+        });
+        syncPatternCook(id);
+        return action;
     };
 
 const sendImageThrottled = _throttle((id, dispatch, getState) => {

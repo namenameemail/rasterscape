@@ -136,8 +136,14 @@ export class PatternVideoService {
 
     }
 
+    isCooking = (): boolean => {
+        return !!this.unsubscribeFrame
+    }
+
     start = () => {
-        this.unsubscribeFrame?.()
+        if (this.unsubscribeFrame) {
+            return
+        }
         this.unsubscribeFrame = frameScheduler.subscribe(
             `video:${this.patternService.patternId}`,
             this.onFrameTick,

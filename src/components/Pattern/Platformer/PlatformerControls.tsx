@@ -15,6 +15,7 @@ import {
     setPlayerSize,
     start,
     stop,
+    setPlatformerAlwaysCook,
 } from '../../../store/patterns/platformer/actions'
 import {ButtonHK} from '../../_shared/buttons/hotkeyed/ButtonHK'
 import {ButtonNumberCF} from '../../_shared/buttons/hotkeyed/ButtonNumberCF'
@@ -39,6 +40,7 @@ export interface PlatformerControlsActionProps {
     setMoveSpeed(id: string, value: number): void
     setCollisionAlphaThreshold(id: string, value: number): void
     setBackgroundFit(id: string, value: PlatformerBackgroundFit): void
+    setPlatformerAlwaysCook(id: string, value: boolean): void
 }
 
 export interface PlatformerControlsOwnProps {
@@ -68,6 +70,11 @@ export class PlatformerControlsComponent extends React.PureComponent<PlatformerC
         platformerParams.playingOn
             ? stop(patternId)
             : start(patternId)
+    }
+
+    handleChangeAlwaysCook = () => {
+        const {platformerParams, patternId, setPlatformerAlwaysCook} = this.props
+        setPlatformerAlwaysCook(patternId, !platformerParams.alwaysCook)
     }
 
     handleSelectPlayerPattern = (value: string | null) => {
@@ -147,6 +154,19 @@ export class PlatformerControlsComponent extends React.PureComponent<PlatformerC
                     onClick={this.handleChangePlayingOn}
                 >
                     {t('pattern.platformer.play')}
+                </ButtonHK>
+
+                <ButtonHK
+                    hkLabel={'pattern.hotkeysDescription.platformer.alwaysCook'}
+                    hkData1={patternId}
+                    path={`pattern.${patternId}.platformer.alwaysCook`}
+                    className={'platformer-toggle'}
+                    selected={!!platformerParams.alwaysCook}
+                    name={'alwaysCook'}
+                    disabled={platformerDisabled}
+                    onClick={this.handleChangeAlwaysCook}
+                >
+                    {t('pattern.platformer.alwaysCook')}
                 </ButtonHK>
 
                 <HoverPatternSelect
@@ -270,6 +290,7 @@ const mapDispatchToProps: MapDispatchToProps<PlatformerControlsActionProps, Plat
     setMoveSpeed,
     setCollisionAlphaThreshold,
     setBackgroundFit,
+    setPlatformerAlwaysCook,
 }
 
 export const PlatformerControls = connect(

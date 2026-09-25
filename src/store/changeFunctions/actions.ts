@@ -4,6 +4,7 @@ import {setChangingMode} from "../changing/actions";
 import {ChangingMode} from "../changing/types";
 import {addPatternToCfDependency, removePatternToCfDependency} from "../dependencies";
 import {CfDepthParams} from "./functions/depth";
+import {syncPatternCook} from "../patterns/cook/syncCook";
 
 export enum EChangeFunctionsAction {
     ADD_CF = "change-functions/add",
@@ -41,6 +42,7 @@ export const addDepthCfPattern = (id: string, patternId: any) => (dispatch, getS
     dispatch({type: EChangeFunctionsAction.CF_DEPTH_ADD_PATTERN, id, patternId});
 
     dispatch(addPatternToCfDependency(patternId, id));
+    syncPatternCook(patternId);
 };
 
 export const removeDepthCfPattern = (id: string, index: number) => (dispatch, getState: () => AppState) => {
@@ -52,5 +54,7 @@ export const removeDepthCfPattern = (id: string, index: number) => (dispatch, ge
 
     if (!cfPatternsNewItems.some(item => item.patternId === patternId))
         dispatch(removePatternToCfDependency(patternId, id));
+
+    syncPatternCook(patternId);
 };
 

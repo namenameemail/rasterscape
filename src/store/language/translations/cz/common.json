@@ -9,12 +9,20 @@
       "sourceType": {
         "camera": "camera",
         "pattern": "pattern"
-      }
+      },
+      "alwaysCook": "vždy"
     },
     "hotkeysDescription": {
       "video": {
-        "sourceType": "pattern{{data1}} | video | source type"
+        "sourceType": "pattern{{data1}} | video | source type",
+        "alwaysCook": "pattern{{data1}} | video | vždy"
+      },
+      "platformer": {
+        "alwaysCook": "pattern{{data1}} | platformer | vždy"
       }
+    },
+    "platformer": {
+      "alwaysCook": "vždy"
     }
   }
 }

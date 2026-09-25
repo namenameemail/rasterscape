@@ -44,6 +44,10 @@ export class PatternPlatformerService {
         return this.playing
     }
 
+    isCooking = (): boolean => {
+        return !!this.unsubscribeFrame
+    }
+
     getWorldContext = (): CanvasRenderingContext2D => {
         return this.world.context
     }
@@ -221,13 +225,6 @@ export class PatternPlatformerService {
         window.addEventListener('keydown', this.boundKeyDown)
         window.addEventListener('keyup', this.boundKeyUp)
 
-        this.unsubscribeFrame?.()
-        this.unsubscribeFrame = frameScheduler.subscribe(
-            `platformer:${this.patternService.patternId}`,
-            this.onFrameTick,
-            FramePriority.Platformer,
-        )
-
         platformerProfiler.beginSession(this.patternService.patternId)
 
         platformerProfiler.log('init', {
@@ -238,6 +235,33 @@ export class PatternPlatformerService {
         })
 
         return this
+    }
+
+    startFrame = (): PatternPlatformerService => {
+        if (!this.playing || this.unsubscribeFrame) {
+            return this
+        }
+
+        this.unsubscribeFrame = frameScheduler.subscribe(
+            `platformer:${this.patternService.patternId}`,
+            this.onFrameTick,
+            FramePriority.Platformer,
+        )
+
+        return this
+    }
+
+    stopFrame = (): PatternPlatformerService => {
+        this.unsubscribeFrame?.()
+        this.unsubscribeFrame = null
+        return this
+    }
+
+    tickOnce = (): void => {
+        if (!this.playing) {
+            return
+        }
+        this.onFrame(performance.now())
     }
 
     stop = (): PatternPlatformerService => {
@@ -251,8 +275,7 @@ export class PatternPlatformerService {
         platformerProfiler.endSession(patternId)
 
         this.playing = false
-        this.unsubscribeFrame?.()
-        this.unsubscribeFrame = null
+        this.stopFrame()
 
         window.removeEventListener('keydown', this.boundKeyDown)
         window.removeEventListener('keyup', this.boundKeyUp)

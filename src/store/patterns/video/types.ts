@@ -29,6 +29,7 @@ export interface VideoParams {
     device: MediaDeviceInfo
     sourceType: VideoSourceType
     sourcePatternId: string | null
+    alwaysCook: boolean
 }
 
 export interface VideoValue {

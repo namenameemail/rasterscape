@@ -16,4 +16,5 @@ export enum EVideoAction {
     STOP_UPDATING = 'pattern/video/stop-updating',
     SET_VIDEO_SOURCE_TYPE = 'pattern/video/set-video-source-type',
     SET_VIDEO_SOURCE_PATTERN = 'pattern/video/set-video-source-pattern',
+    SET_ALWAYS_COOK = 'pattern/video/set-always-cook',
 }

@@ -401,7 +401,8 @@
       "sourceType": {
         "camera": "camera",
         "pattern": "pattern"
-      }
+      },
+      "alwaysCook": "always"
     },
     "hotkeysDescription": {
       "save": "pattern{{data1}} | save",
@@ -468,7 +469,8 @@
         },
         "stackType": "pattern{{data1}} | video | stack type",
         "cutFunction": "pattern{{data1}} | video | cut function",
-        "sourceType": "pattern{{data1}} | video | source type"
+        "sourceType": "pattern{{data1}} | video | source type",
+        "alwaysCook": "pattern{{data1}} | video | always"
       },
       "platformer": {
         "playingOn": "pattern{{data1}} | platformer | play/stop",
@@ -478,7 +480,8 @@
         "jumpForce": "pattern{{data1}} | platformer | jump force",
         "moveSpeed": "pattern{{data1}} | platformer | move speed",
         "collisionAlphaThreshold": "pattern{{data1}} | platformer | collision threshold",
-        "backgroundFit": "pattern{{data1}} | platformer | background fit"
+        "backgroundFit": "pattern{{data1}} | platformer | background fit",
+        "alwaysCook": "pattern{{data1}} | platformer | always"
       }
     },
     "platformer": {
@@ -490,7 +493,8 @@
         "stretch": "stretch",
         "contain": "contain",
         "cover": "cover"
-      }
+      },
+      "alwaysCook": "always"
     }
   },
   "patternControls": {

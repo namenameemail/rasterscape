@@ -1,6 +1,10 @@
-# 4c.14 — платформер: сборка кадра и tools → world
+# 03 — платформер: сборка кадра и tools → world
 
-Сейчас: `refreshDisplay` собирает кадр в 2D и `presentFromCpu`. Пока platformer playing, инструменты пишут в world 2D, не в GPU dest паттерна.
+Было 4c.14. Оглавление: [`README.md`](README.md).
+
+## Сейчас
+
+`refreshDisplay` собирает кадр в 2D и `presentFromCpu`. Пока platformer playing, инструменты пишут в world 2D, не в GPU dest паттерна.
 
 ## Сделать
 

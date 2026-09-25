@@ -20,6 +20,7 @@ import {
     setVideoOffset,
     setVideoSourceType,
     setVideoSourcePattern,
+    setVideoAlwaysCook,
 } from '../../../store/patterns/video/actions'
 import { getChangeFunctionsSelectItemsVideo } from '../../../store/changeFunctions/selectors'
 import { HoverPatternSelect } from '../HoverPatternSelect'
@@ -81,6 +82,8 @@ export interface VideoControlsActionProps {
     setVideoSourceType(id: string, value: VideoSourceType): void
 
     setVideoSourcePattern(id: string, value: string | null): void
+
+    setVideoAlwaysCook(id: string, value: boolean): void
 }
 
 export interface VideoControlsOwnProps {
@@ -124,6 +127,11 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
         videoParams.updatingOn
             ? this.props.stop(patternId)
             : this.props.start(patternId)
+    }
+
+    handleChangeAlwaysCook = () => {
+        const { videoParams, patternId, setVideoAlwaysCook } = this.props
+        setVideoAlwaysCook(patternId, !videoParams.alwaysCook)
     }
 
     handleChangeSlitModeParam = (axis: CameraAxis) => {
@@ -367,6 +375,18 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                         {/* {updatingOn ? t('pattern.video.stop') : t('pattern.video.update')} */}
                         {t('pattern.video.update')}
                     </ButtonHK>
+                    <ButtonHK
+                        hkLabel={'pattern.hotkeysDescription.video.alwaysCook'}
+                        hkData1={patternId}
+                        path={`pattern.${patternId}.video.alwaysCook`}
+                        className={'video-toggle'}
+                        selected={!!params.alwaysCook}
+                        name={'alwaysCook'}
+                        disabled={videoDisabled}
+                        onClick={this.handleChangeAlwaysCook}
+                    >
+                        {t('pattern.video.alwaysCook')}
+                    </ButtonHK>
                     <SelectDrop
 
                         hkByValue={false}
@@ -476,6 +496,7 @@ const mapDispatchToProps: MapDispatchToProps<VideoControlsActionProps, VideoCont
 
     setVideoSourceType,
     setVideoSourcePattern,
+    setVideoAlwaysCook,
 }
 
 export const VideoControls = connect<VideoControlsStateProps, VideoControlsActionProps, VideoControlsOwnProps, AppState>(

@@ -1,6 +1,10 @@
-# 4c.15 — платформер: коллизии
+# 04 — платформер: коллизии
 
-Сейчас: единственный полный `getImageData` в hot-path описи — `platformer.collision.getImageData`, когда world dirty ([`../hot-path-copies.md`](../hot-path-copies.md)).
+Было 4c.15. Оглавление: [`README.md`](README.md).
+
+## Сейчас
+
+Единственный полный `getImageData` в hot-path описи — `platformer.collision.getImageData`, когда world dirty ([`../gpu-pipeline/hot-path-copies.md`](../gpu-pipeline/hot-path-copies.md)).
 
 ## Сделать
 

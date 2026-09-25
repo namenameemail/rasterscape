@@ -2,6 +2,7 @@
 
 Новые сверху.
 
+- 2026-09-25 19:36 — [4c.11 показ на монитор](gpu-pipeline/done/04c-11-present.md)
 - 2026-09-25 19:27 — [4c.10 построение маски выделения](gpu-pipeline/done/04c-10-selection-build.md)
 - 2026-09-25 17:29 — [4c.09 превью](gpu-pipeline/done/04c-09-preview.md)
 - 2026-09-25 14:48 — [4c.08 masked / selected](gpu-pipeline/done/04c-08-values-masked.md)

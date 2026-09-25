@@ -17,6 +17,7 @@ export const getVideoState = getFunctionState<VideoValue, VideoParams>(
         device: null,
         sourceType: VideoSourceType.Camera,
         sourcePatternId: null,
+        alwaysCook: false,
         offset: {
             x0: 0.0,//.25,
             x1: 1.0,//.75,

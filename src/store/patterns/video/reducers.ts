@@ -7,6 +7,7 @@ import {
     SetStackTypeAction, SetVideoParamAction,
     SetVideoParamsAction,
     SetVideoSourcePatternAction, SetVideoSourceTypeAction,
+    SetVideoAlwaysCookAction,
 } from './actions'
 import {act} from "react-dom/test-utils";
 import {EVideoAction} from "./consts";
@@ -206,6 +207,17 @@ export const videoReducers = {
                 params: {
                     ...pattern.video.params,
                     sourcePatternId: action.value,
+                }
+            }
+        })),
+    [EVideoAction.SET_ALWAYS_COOK]: reducePattern<SetVideoAlwaysCookAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    alwaysCook: action.value,
                 }
             }
         })),

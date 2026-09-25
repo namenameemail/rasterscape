@@ -409,7 +409,8 @@
       "sourceType": {
         "camera": "камера",
         "pattern": "паттерн"
-      }
+      },
+      "alwaysCook": "всегда"
     },
     "hotkeysDescription": {
       "save": "паттерн{{data1}} | сохранить",
@@ -476,7 +477,8 @@
         },
         "stackType": "паттерн{{data1}} | видео | режим добавления кадров",
         "cutFunction": "паттерн{{data1}} | видео | функция среза",
-        "sourceType": "паттерн{{data1}} | видео | источник"
+        "sourceType": "паттерн{{data1}} | видео | источник",
+        "alwaysCook": "паттерн{{data1}} | видео | всегда"
       },
       "platformer": {
         "playingOn": "паттерн{{data1}} | платформер | старт/стоп",
@@ -486,7 +488,8 @@
         "jumpForce": "паттерн{{data1}} | платформер | сила прыжка",
         "moveSpeed": "паттерн{{data1}} | платформер | скорость",
         "collisionAlphaThreshold": "паттерн{{data1}} | платформер | порог коллизии",
-        "backgroundFit": "паттерн{{data1}} | платформер | масштаб фона"
+        "backgroundFit": "паттерн{{data1}} | платформер | масштаб фона",
+        "alwaysCook": "паттерн{{data1}} | платформер | всегда"
       }
     },
     "platformer": {
@@ -498,7 +501,8 @@
         "stretch": "растянуть",
         "contain": "вместить",
         "cover": "заполнить"
-      }
+      },
+      "alwaysCook": "всегда"
     }
   },
   "patternControls": {

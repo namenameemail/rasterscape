@@ -13,6 +13,7 @@ import {
     CameraAxis,
     StackType,
 } from '../_service/patternServices/PatternVideoService/ShaderVideoModule'
+import {depthPatternIdsForCf, syncPatternCook, syncPatternsCook} from '../cook/syncCook';
 
 export interface SetVideoParamsAction extends PatternAction {
     value: VideoParams
@@ -34,6 +35,7 @@ export type SetCutOffsetAction = PatternAction & { value: number };
 export type SetDepthAction = PatternAction & { value: number };
 export type SetVideoSourceTypeAction = PatternAction & { value: VideoSourceType };
 export type SetVideoSourcePatternAction = PatternAction & { value: string | null };
+export type SetVideoAlwaysCookAction = PatternAction & { value: boolean };
 
 export const setDevice = (id: string, device: MediaDeviceInfo) => (dispatch, getState: () => AppState) => {
     dispatch({
@@ -105,12 +107,20 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
             offset
         }))
         .setSourceType(sourceType ?? getVideoState().params.sourceType)
-        .setSourcePatternId(sourcePatternId ?? getVideoState().params.sourcePatternId)
-        .start();
+        .setSourcePatternId(sourcePatternId ?? getVideoState().params.sourcePatternId);
 
+    const state = getState();
+    syncPatternsCook(
+        patternId,
+        sourcePatternId,
+        ...depthPatternIdsForCf(state, pattern?.video?.params?.changeFunctionId),
+    );
 };
 
 export const stop = (id: string) => (dispatch, getState: () => AppState) => {
+    const pattern = getState().patterns[id];
+    const sourcePatternId = pattern?.video?.params?.sourcePatternId;
+    const changeFunctionId = pattern?.video?.params?.changeFunctionId;
     
     dispatch(updateImage({
         id,
@@ -124,7 +134,12 @@ export const stop = (id: string) => (dispatch, getState: () => AppState) => {
 
     patternsService.pattern[id].previewService.autoUpdate(false);
     patternsService.pattern[id].valuesService.update();
-    
+
+    syncPatternsCook(
+        id,
+        sourcePatternId,
+        ...depthPatternIdsForCf(getState(), changeFunctionId),
+    );
 };
 
 export const setEdgeMode = (id: string, value: EdgeMode) => (dispatch, getState: () => AppState) => {
@@ -167,17 +182,22 @@ export const setStackType = (id: string, value: StackType) => (dispatch, getStat
 };
 
 export const setChangeFunction = (id: string, changeFunctionId: string) => (dispatch, getState: () => AppState) => {
+    const prevCfId = patternsService.pattern[id].videoService.changeFunctionId;
+    const prevDepthIds = depthPatternIdsForCf(getState(), prevCfId);
+
     dispatch({
         type: EVideoAction.SET_CHANGE_FUNCTION,
         id,
         value: changeFunctionId
     });
 
-    dispatch(removeCfToPatternDependency(patternsService.pattern[id].videoService.changeFunctionId, id));
+    dispatch(removeCfToPatternDependency(prevCfId, id));
 
     patternsService.pattern[id].videoService.setChangeFunction(changeFunctionId);
 
     changeFunctionId && dispatch(addCfToPatternDependency(changeFunctionId, id));
+
+    syncPatternsCook(id, ...prevDepthIds, ...depthPatternIdsForCf(getState(), changeFunctionId));
 };
 
 export const setStackSize = (id: string, value: number): ThunkAction<any, any, any, SetStackSizeAction> => (dispatch, getState: () => AppState) => {
@@ -216,6 +236,7 @@ export const setVideoOffset = (id: string, paramName: string, value: any): Thunk
 export const setVideoSourceType = (id: string, value: VideoSourceType) => (dispatch, getState: () => AppState) => {
     const pattern = getState().patterns[id];
     const videoParams = pattern?.video?.params ?? getVideoState().params;
+    const prevSource = videoParams.sourcePatternId;
 
     if (value === VideoSourceType.Pattern && videoParams.cameraOn) {
         dispatch(stopCamera(id));
@@ -230,12 +251,16 @@ export const setVideoSourceType = (id: string, value: VideoSourceType) => (dispa
     patternsService.pattern[id].videoService
         .setSourceType(value)
         .setSourcePatternId(value === VideoSourceType.Camera ? null : videoParams.sourcePatternId);
+
+    syncPatternsCook(id, prevSource, value === VideoSourceType.Camera ? null : videoParams.sourcePatternId);
 };
 
 export const setVideoSourcePattern = (id: string, sourcePatternId: string | null) => (dispatch, getState: () => AppState) => {
     if (sourcePatternId === id) {
         return;
     }
+
+    const prevSource = getState().patterns[id]?.video?.params?.sourcePatternId;
 
     dispatch({
         type: EVideoAction.SET_VIDEO_SOURCE_PATTERN,
@@ -244,4 +269,15 @@ export const setVideoSourcePattern = (id: string, sourcePatternId: string | null
     });
 
     patternsService.pattern[id].videoService.setSourcePatternId(sourcePatternId);
+
+    syncPatternsCook(id, prevSource, sourcePatternId);
+};
+
+export const setVideoAlwaysCook = (id: string, value: boolean) => (dispatch) => {
+    dispatch({
+        type: EVideoAction.SET_ALWAYS_COOK,
+        id,
+        value,
+    });
+    syncPatternCook(id);
 };

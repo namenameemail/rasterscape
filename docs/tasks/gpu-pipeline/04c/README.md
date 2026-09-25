@@ -35,15 +35,13 @@
 | [09](../done/04c-09-preview.md) | Превью | **закрыт** — downsample с GPU; без полного `downloadGpu` ради 40×40 |
 | [10](../done/04c-10-selection-build.md) | Построение selection | **закрыт** — canvas-маска; `getImageData` только когда нужен CPU |
 
-### Кадр / экран / платформер
+### Кадр / экран
 
 | # | Задача | Суть |
 |---|--------|------|
-| [11](11-present.md) | Показ на монитор | blit + `drawImage` каждый кадр |
-| [12](12-platformer-video.md) | Видео → world | `drawImage` в мир платформера |
-| [13](13-platformer-blur.md) | Blur мира | CPU blur по кадру |
-| [14](14-platformer-display.md) | Сборка кадра платформера | 2D + `presentFromCpu`; tools в world |
-| [15](15-platformer-collision.md) | Коллизии | `getImageData` мира когда dirty |
+| [11](../done/04c-11-present.md) | Показ на монитор | **закрыт** — Rec: present ~0.2 ms / ~1.5% стены; код не трогали |
+
+Платформер (было 4c.12–15) вынесен в [`../../platformer/`](../../platformer/README.md).
 
 ## Не трогаем (ок на CPU)
 
@@ -51,4 +49,4 @@
 
 ## Порядок
 
-Не жёсткий. Логичные пары: 01↔10, 05↔08, 12–15 подряд. 11 — по профилю `present`.
+Не жёсткий. Логичные пары: 01↔10, 05↔08. 11 закрыт по профилю `present` — не трогали. Платформер — отдельная тема.

@@ -19,6 +19,7 @@ import {pushHistory} from "../history/actions";
 import {getSelectedImageData} from "../selection/helpers";
 import {PreviewCanvasType} from "../_service/patternServices/PatternPreviewService";
 import {imageDataDebug} from "../../../components/Area/canvasPosition.servise";
+import {syncPatternCook} from "../cook/syncCook";
 
 export const bindCanvas = (id: string, canvas?: HTMLCanvasElement) => (dispatch, getState: () => AppState) => {
 
@@ -30,12 +31,14 @@ export const bindCanvas = (id: string, canvas?: HTMLCanvasElement) => (dispatch,
 
     if (!canvas) {
         patternService.unbindCanvas();
+        syncPatternCook(id);
         return;
     }
 
     const pattern = getState().patterns[id];
 
     patternService.bindCanvas(canvas, pattern.width, pattern.height);
+    syncPatternCook(id);
 };
 export const bindPreview = (id: string, previewId: string, canvas: HTMLCanvasElement) => (dispatch, getState: () => AppState) => {
     patternsService.pattern[id]
