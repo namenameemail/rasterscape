@@ -2,7 +2,7 @@
   "name": "zd2",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://wrreee.github.io/u3u",
+  "homepage": "/rasterscape-2m",
   "dependencies": {
     "bezier-js": "^2.4.4",
     "classnames": "2.2.6",
