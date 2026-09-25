@@ -5,6 +5,7 @@ import {HelperCanvas} from "../../../../utils/canvas/helpers/base";
 import {compositeMasked, ensureCanvas} from "../../../../utils/canvas/helpers/composite";
 import {copyTexture2D} from "../../../../gl/draw";
 import {getGlContext} from "../../../../gl/GlContext";
+import {PatternBuffer} from "./PatternBuffer";
 
 export class PatternValuesService {
     patternService: PatternService;
@@ -16,11 +17,18 @@ export class PatternValuesService {
     private selectedBuffer?: HelperCanvas;
     private lastMaskedUpdateTime = 0;
     private lastSelectedUpdateTime = 0;
+    private maskedContentSerial = -1;
+    private maskedMaskSerial = -1;
+    private maskedInverted = false;
+    private selectedContentSerial = -1;
+    private selectedMaskSerial = -1;
+    private selectedSourceKey = '';
     private selectedGpuTex: WebGLTexture | null = null;
     private selectedGpuW = 0;
     private selectedGpuH = 0;
     private selectedGpuMaskSerial = -1;
     private selectedGpuContentSerial = -1;
+    private selectedGpuSourceKey = '';
 
     constructor(patternService: PatternService) {
         this.patternService = patternService;
@@ -34,9 +42,7 @@ export class PatternValuesService {
     };
 
     syncMaskedReference = (): PatternService => {
-        const buffer = this.patternService.canvasService.buffer;
-        buffer?.ensureCpu();
-        const canvas = buffer?.canvas;
+        const canvas = this.patternService.canvasService.buffer?.canvas;
 
         if (canvas) {
             this.masked = canvas;
@@ -49,6 +55,9 @@ export class PatternValuesService {
         const maskEnabled = this.patternService.maskService.isMaskEnabled;
 
         if (!maskEnabled) {
+            if (force) {
+                this.patternService.canvasService.buffer?.ensureCpu();
+            }
             return this.syncMaskedReference();
         }
 
@@ -62,9 +71,12 @@ export class PatternValuesService {
         return this.patternService;
     };
 
-    updateSelectedIfNeeded = (force = false): PatternService => {
+    updateSelectedIfNeeded = (force = false, sourceBuffer?: PatternBuffer | null): PatternService => {
         if (!this.patternService.selectionService.maskCanvas) {
             this.selected = undefined;
+            this.selectedContentSerial = -1;
+            this.selectedMaskSerial = -1;
+            this.selectedSourceKey = '';
             return this.patternService;
         }
 
@@ -72,17 +84,13 @@ export class PatternValuesService {
             return this.patternService;
         }
 
-        this.updateSelected();
+        this.updateSelected(sourceBuffer);
         this.lastSelectedUpdateTime = performance.now();
 
         return this.patternService;
     };
 
     updateForVideoFrame = (): PatternService => {
-        if (this.patternService.selectionService.maskCanvas) {
-            this.updateSelectedIfNeeded();
-        }
-
         return this.patternService;
     };
 
@@ -125,16 +133,19 @@ export class PatternValuesService {
             buffer.width,
             buffer.height,
             !!maskService.isMaskInverted,
-            buffer.textureFromCanvas !== maskBuffer.textureFromCanvas,
+            maskBuffer.textureFromCanvas,
             buffer.textureFromCanvas,
         );
 
         return {texture, width: buffer.width, height: buffer.height, stampFlipY: true, premul: false};
     };
 
-    ensureSelectedGpu = (): { texture: WebGLTexture, width: number, height: number, stampFlipY: boolean } | null => {
-        const buffer = this.patternService.canvasService.buffer;
+    ensureSelectedGpu = (
+        sourceBuffer?: PatternBuffer | null,
+    ): { texture: WebGLTexture, width: number, height: number, stampFlipY: boolean } | null => {
+        const buffer = sourceBuffer ?? this.patternService.canvasService.buffer;
         const maskCanvas = this.patternService.selectionService.maskCanvas;
+        const sourceKey = buffer === this.patternService.maskService.buffer ? 'mask' : 'canvas';
 
         if (!buffer?.width || !buffer.height || !maskCanvas) {
             return null;
@@ -147,6 +158,7 @@ export class PatternValuesService {
 
         if (
             this.selectedGpuTex
+            && this.selectedGpuSourceKey === sourceKey
             && this.selectedGpuMaskSerial === maskSerial
             && this.selectedGpuContentSerial === contentSerial
             && this.selectedGpuW === width
@@ -163,7 +175,7 @@ export class PatternValuesService {
             width,
             height,
             false,
-            !buffer.textureFromCanvas,
+            false,
             buffer.textureFromCanvas,
         );
 
@@ -177,6 +189,7 @@ export class PatternValuesService {
         }
 
         copyTexture2D(glc, composited, this.selectedGpuTex, width, height);
+        this.selectedGpuSourceKey = sourceKey;
         this.selectedGpuMaskSerial = maskSerial;
         this.selectedGpuContentSerial = contentSerial;
 
@@ -185,50 +198,93 @@ export class PatternValuesService {
 
     updateMasked = (): PatternService => {
         profileLogger.time('values.updateMasked', () => {
-            const source = this.patternService.canvasService.canvas;
+            const buffer = this.patternService.canvasService.buffer;
 
-            if (!source) {
+            if (!buffer?.canvas) {
                 return;
             }
 
-            if (!this.patternService.maskService.isMaskEnabled) {
-                this.masked = source;
+            const maskService = this.patternService.maskService;
+
+            if (!maskService.isMaskEnabled) {
+                this.masked = buffer.canvas;
+                this.maskedContentSerial = buffer.contentSerial;
+                this.maskedMaskSerial = -1;
                 return;
             }
 
-            const mask = this.patternService.maskService.canvas;
+            const maskBuffer = maskService.buffer;
 
-            if (!mask) {
-                this.masked = source;
+            if (!maskBuffer?.canvas) {
+                this.masked = buffer.canvas;
+                this.maskedContentSerial = buffer.contentSerial;
+                this.maskedMaskSerial = -1;
                 return;
             }
 
-            this.maskedBuffer = ensureCanvas(this.maskedBuffer, source.width, source.height);
+            const inverted = !!maskService.isMaskInverted;
+            const maskSerial = maskBuffer.contentSerial;
+
+            if (
+                this.masked
+                && this.maskedContentSerial === buffer.contentSerial
+                && this.maskedMaskSerial === maskSerial
+                && this.maskedInverted === inverted
+            ) {
+                return;
+            }
+
+            buffer.ensureCpu();
+            maskBuffer.ensureCpu();
+
+            this.maskedBuffer = ensureCanvas(this.maskedBuffer, buffer.canvas.width, buffer.canvas.height);
             compositeMasked(
                 this.maskedBuffer,
-                source,
-                mask,
-                this.patternService.maskService.isMaskInverted,
+                buffer.canvas,
+                maskBuffer.canvas,
+                inverted,
             );
             this.masked = this.maskedBuffer.canvas;
+            this.maskedContentSerial = buffer.contentSerial;
+            this.maskedMaskSerial = maskSerial;
+            this.maskedInverted = inverted;
         });
 
         return this.patternService;
     };
 
-    updateSelected = (): PatternService => {
+    updateSelected = (sourceBuffer?: PatternBuffer | null): PatternService => {
         profileLogger.time('values.updateSelected', () => {
-            const source = this.patternService.canvasService.canvas;
+            const buffer = sourceBuffer ?? this.patternService.canvasService.buffer;
             const mask = this.patternService.selectionService.maskCanvas;
+            const maskSerial = this.patternService.selectionService.maskSerial;
+            const sourceKey = buffer === this.patternService.maskService.buffer ? 'mask' : 'canvas';
 
-            if (!source || !mask) {
+            if (!buffer?.canvas || !mask) {
                 this.selected = undefined;
+                this.selectedContentSerial = -1;
+                this.selectedMaskSerial = -1;
+                this.selectedSourceKey = '';
                 return;
             }
 
-            this.selectedBuffer = ensureCanvas(this.selectedBuffer, source.width, source.height);
-            compositeMasked(this.selectedBuffer, source, mask);
+            if (
+                this.selected
+                && this.selectedSourceKey === sourceKey
+                && this.selectedContentSerial === buffer.contentSerial
+                && this.selectedMaskSerial === maskSerial
+            ) {
+                return;
+            }
+
+            buffer.ensureCpu();
+
+            this.selectedBuffer = ensureCanvas(this.selectedBuffer, buffer.canvas.width, buffer.canvas.height);
+            compositeMasked(this.selectedBuffer, buffer.canvas, mask);
             this.selected = this.selectedBuffer.canvas;
+            this.selectedSourceKey = sourceKey;
+            this.selectedContentSerial = buffer.contentSerial;
+            this.selectedMaskSerial = maskSerial;
         });
 
         return this.patternService;
@@ -236,6 +292,9 @@ export class PatternValuesService {
 
     clearSelected = () => {
         this.selected = undefined;
+        this.selectedContentSerial = -1;
+        this.selectedMaskSerial = -1;
+        this.selectedSourceKey = '';
     };
 
     private isThrottleDue = (lastTime: number): boolean => {

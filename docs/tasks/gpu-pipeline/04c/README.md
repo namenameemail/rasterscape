@@ -31,9 +31,9 @@
 
 | # | Задача | Суть |
 |---|--------|------|
-| [08](08-values-masked.md) | masked / selected | 2D-композит и sync с GPU-ahead |
-| [09](09-preview.md) | Превью | полный буфер на CPU |
-| [10](10-selection-build.md) | Построение selection | Path2D → `getImageData` |
+| [08](../done/04c-08-values-masked.md) | masked / selected | **закрыт** — скачивание только по делу; после GPU-жеста снимок не устаревает |
+| [09](../done/04c-09-preview.md) | Превью | **закрыт** — downsample с GPU; без полного `downloadGpu` ради 40×40 |
+| [10](../done/04c-10-selection-build.md) | Построение selection | **закрыт** — canvas-маска; `getImageData` только когда нужен CPU |
 
 ### Кадр / экран / платформер
 

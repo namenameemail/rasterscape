@@ -22,4 +22,4 @@
 - [`linePattern.ts`](../../../../src/gl/linePattern.ts)
 - [`patternFill.ts`](../../../../src/gl/patternFill.ts)
 
-Общий CPU-снимок `.masked` для превью и прочего — отдельно, [08](../04c/08-values-masked.md).
+Общий CPU-снимок `.masked` для превью и прочего — отдельно, [08](04c-08-values-masked.md).

@@ -56,10 +56,9 @@ export class BrushPattern implements ToolService {
         } = state.brush.params.paramsByType[EBrushType.Pattern];
         const toolPattern = state.patterns[toolPatternId];
         const coordinates = state.position.coordinates;
-        const selectionMask = this.patternService.selectionService.mask;
         const clipMask = this.patternService.selectionService.maskCanvas;
         const dest = bufferForDrawCanvas(this.patternService, brushEvent.canvas);
-        const useGpu = !!dest && (!selectionMask || !!clipMask);
+        const useGpu = !!dest;
 
         const brushRotation = toolPattern?.config?.rotation ? toolPattern?.rotation?.value : null;
         const destinationRotation = (
@@ -98,6 +97,7 @@ export class BrushPattern implements ToolService {
                 opacity,
                 clipMask,
                 compositeOperation,
+                masked.premul,
             );
             this.drewGpu = true;
             return;
@@ -141,9 +141,9 @@ export class BrushPattern implements ToolService {
             )(this.helperCanvas1);
         });
 
-        const resultCanvas: HelperCanvas = selectionMask
+        const resultCanvas: HelperCanvas = clipMask
             ? drawMasked(
-                selectionMask,
+                clipMask,
                 ({context}) => {
                     context.drawImage(this.helperCanvas1.canvas, 0, 0);
                     this.helperCanvas1.clear();

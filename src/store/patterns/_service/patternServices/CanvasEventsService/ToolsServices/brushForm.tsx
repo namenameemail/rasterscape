@@ -58,10 +58,9 @@ export class BrushShape implements ToolService {
         const points = coordinates[0] ?? [];
         if (!points.length || size <= 0) return;
 
-        const selectionMask = this.patternService.selectionService.mask;
         const clipMask = this.patternService.selectionService.maskCanvas;
         const dest = bufferForDrawCanvas(this.patternService, brushEvent.canvas);
-        const useGpu = !!dest && (!selectionMask || !!clipMask);
+        const useGpu = !!dest;
 
         if (useGpu && dest) {
             const stamps: StampDrawParams[] = points.map(({x, y}) => ({
@@ -101,9 +100,9 @@ export class BrushShape implements ToolService {
         context.globalCompositeOperation = compositeOperation;
         context.globalAlpha = opacity;
 
-        const resultCanvas: HelperCanvas = selectionMask
+        const resultCanvas: HelperCanvas = clipMask
             ? drawMasked(
-                selectionMask,
+                clipMask,
                 ({context: c}) => {
                     c.drawImage(this.helperCanvas1.canvas, 0, 0);
                     this.helperCanvas1.clear();

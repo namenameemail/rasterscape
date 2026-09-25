@@ -32,6 +32,12 @@ export function syncPatternServicesFromState(patterns: PatternsState, state: App
             service.maskService.setImageData(new ImageData(pattern.width || 400, pattern.height || 400));
         }
 
+        const selectionValue = pattern.selection?.value;
+        service.selectionService.update(
+            selectionValue?.segments ?? [],
+            selectionValue?.bBox ?? null,
+        );
+
         service.valuesService.update();
     });
 

@@ -93,6 +93,8 @@ export const cutPatternBySelection = (id: string) => (dispatch, getState) => {
 
     dispatch(updateSelection(id, [], null));
 
+    patternService.previewService.update();
+
     dispatch(pushHistory(id));
 };
 

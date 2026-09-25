@@ -4,9 +4,9 @@ import { profileDebug } from './profileDebug'
 
 export enum FramePriority {
     Video = 0,
-    Draw = 1,
-    Platformer = 2,
-    Changing = 3,
+    Changing = 1,
+    Draw = 2,
+    Platformer = 3,
 }
 
 type FrameSubscriber = {

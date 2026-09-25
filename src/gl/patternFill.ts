@@ -142,8 +142,8 @@ export const compositePatternStrokes = (
 
     if (clipMask) {
         const maskTex = ctx.uploadClipMask(clipMask)
-        const clipped = compositeMasked(ctx, layer, maskTex, width, height, false, false, true)
-        compositeTextureOver(ctx, clipped, dest, width, height, destFlipY, opacity, false, mode)
+        const clipped = compositeMasked(ctx, layer, maskTex, width, height, false, true, false)
+        compositeTextureOver(ctx, clipped, dest, width, height, destFlipY, opacity, true, mode)
         return
     }
 

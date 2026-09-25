@@ -36,7 +36,7 @@ export const stampCircles = (
     gl.bindTexture(gl.TEXTURE_2D, clipMask ? ctx.uploadClipMask(clipMask) : ctx.ensureWhiteTex())
     gl.uniform1i(gl.getUniformLocation(ctx.circleProgram, 'u_mask'), 0)
     gl.uniform1f(gl.getUniformLocation(ctx.circleProgram, 'u_useMask'), clipMask ? 1 : 0)
-    gl.uniform1f(gl.getUniformLocation(ctx.circleProgram, 'u_maskFlipY'), 0)
+    gl.uniform1f(gl.getUniformLocation(ctx.circleProgram, 'u_maskFlipY'), clipMask ? 1 : 0)
     gl.uniform2f(gl.getUniformLocation(ctx.circleProgram, 'u_destSize'), destW, destH)
 
     gl.bindBuffer(gl.ARRAY_BUFFER, ctx.stampBuffer)

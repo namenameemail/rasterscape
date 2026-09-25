@@ -7,7 +7,7 @@ import {bufferForDrawCanvas} from "../drawTarget";
 import {PatternService} from "../../../PatternService";
 import {ERepeatsType} from "../../../../repeating/types";
 import {paintCoverage} from "../../../../repeating/coverage";
-import {RepeatCopy} from "../../PatternBuffer";
+import {RepeatCopy, PatternBuffer} from "../../PatternBuffer";
 import {buildStroke} from "../../../../../../gl/strokeMesh";
 import {StrokeDraw} from "../../../../../../gl/strokeDraw";
 import {profileDebug} from "../../../../../../utils/profileDebug";
@@ -37,6 +37,7 @@ export class LineSolid implements ToolService {
     helperCanvas2: HelperCanvas;
     handlers: ToolHandlers = {};
     draw: boolean = false;
+    private repeatDest?: PatternBuffer;
 
     constructor(patternService: PatternService, _width?: number, _height?: number) {
         this.patternService = patternService;
@@ -62,7 +63,15 @@ export class LineSolid implements ToolService {
                 this.refId = undefined;
                 this.flat = false;
                 this.cpuBase = undefined;
-                this.patternService.canvasService.buffer?.endRepeat();
+                const dest = this.repeatDest;
+                this.repeatDest = undefined;
+                dest?.endRepeat();
+                profileDebug('draw', 'lineSolid.endRepeat', {
+                    target: dest === this.patternService.maskService.buffer ? 'mask'
+                        : dest === this.patternService.canvasService.buffer ? 'canvas'
+                        : dest ? 'other' : 'none',
+                    serial: dest?.contentSerial,
+                });
             }
         };
     }
@@ -92,10 +101,9 @@ export class LineSolid implements ToolService {
         const points = state.position.coordinates[0] ?? [];
         if (!points.length) return;
 
-        const selectionMask = this.patternService.selectionService.mask;
         const clipMask = this.patternService.selectionService.maskCanvas;
         const dest = bufferForDrawCanvas(this.patternService, brushEvent.canvas);
-        const useGpu = !!dest && (!selectionMask || !!clipMask);
+        const useGpu = !!dest;
         const flatNow = !!pattern.config.repeating && pattern.repeating.params.type === ERepeatsType.FlatGrid;
 
         if (!this.draw) {
@@ -130,6 +138,7 @@ export class LineSolid implements ToolService {
 
         if (size <= 0) {
             if (useGpu && dest) {
+                this.repeatDest = dest;
                 dest.beginRepeat();
                 dest.compositeStrokesGpu([], opacity, clipMask, compositeOperation);
                 this.drewGpu = true;
@@ -166,7 +175,10 @@ export class LineSolid implements ToolService {
                 y0: mesh?.[1],
                 x1: mesh?.[2],
                 y1: mesh?.[3],
+                target: dest === this.patternService.maskService.buffer ? 'mask' : 'canvas',
+                serial: dest.contentSerial,
             });
+            this.repeatDest = dest;
             dest.beginRepeat();
             dest.compositeStrokesGpu(strokes, opacity, clipMask, compositeOperation);
             this.drewGpu = true;
@@ -235,9 +247,9 @@ export class LineSolid implements ToolService {
             layer.context.drawImage(tint.canvas, 0, 0);
         });
 
-        const masked: HelperCanvas = selectionMask
+        const masked: HelperCanvas = clipMask
             ? drawMasked(
-                selectionMask,
+                clipMask,
                 ({context: maskContext}) => {
                     maskContext.drawImage(layer.canvas, 0, 0);
                 }

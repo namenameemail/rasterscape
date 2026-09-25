@@ -23,6 +23,7 @@ export class PatternSelectionService {
 
     update = (segments: Segments, bBox?: SelectionBBox | null): PatternService => {
         this.maskSerial += 1;
+        this.mask = undefined;
         const canvas = this.patternService.canvasService.canvas;
 
         if (segments.length && canvas) {
@@ -32,14 +33,20 @@ export class PatternSelectionService {
             this.maskBuffer.context.fill(new Path2D(pathDataToString(segments)));
 
             this.maskCanvas = this.maskBuffer.canvas;
-            this.mask = this.maskBuffer.context.getImageData(0, 0, width, height);
             this.bBox = bBox;
         } else {
-            this.mask = undefined;
             this.maskCanvas = undefined;
             this.bBox = undefined;
         }
 
         return this.patternService;
+    };
+
+    ensureMaskCpu = (): ImageData | undefined => {
+        if (this.mask) return this.mask;
+        if (!this.maskBuffer || !this.maskCanvas) return undefined;
+        const {width, height} = this.maskCanvas;
+        this.mask = this.maskBuffer.context.getImageData(0, 0, width, height);
+        return this.mask;
     };
 }

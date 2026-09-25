@@ -1,6 +1,6 @@
 import {PatternService} from "../PatternService";
-import {compositeMasked} from "../../../../utils/canvas/helpers/composite";
-import {createHelperCanvas} from "../../../../utils/canvas/helpers/base";
+import {getGlContext} from "../../../../gl/GlContext";
+import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
 
 export enum PreviewCanvasType {
     Channel = "channel",
@@ -63,40 +63,38 @@ export class PatternPreviewService {
     }
 
     putImage = (previewItem: PreviewCanvasItem) => {
-        this.patternService.canvasService.buffer?.ensureCpu();
-        const source = this.patternService.canvasService.canvas;
-
-        if (!source?.width || !source.height) {
-            return;
-        }
+        const buffer = this.patternService.canvasService.buffer;
+        if (!buffer?.width || !buffer.height) return;
 
         const {canvas} = previewItem;
-        const context = canvas.getContext('2d');
+        if (!canvas.width || !canvas.height) return;
 
-        if (!context) {
-            return;
-        }
+        profileLogger.time('canvas.preview', () => {
+            const maskService = this.patternService.maskService;
+            const maskEnabled = !!maskService.isMaskEnabled;
 
-        context.clearRect(0, 0, canvas.width, canvas.height);
+            if (maskEnabled) {
+                const masked = this.patternService.valuesService.ensureMaskedGpu();
+                if (masked) {
+                    getGlContext().drawPreviewToCanvas(
+                        canvas,
+                        masked.texture,
+                        masked.width,
+                        masked.height,
+                        !masked.stampFlipY,
+                    );
+                    return;
+                }
+            }
 
-        const ratio = source.width / source.height;
-        const width = canvas.width * (ratio <= 1 ? ratio : 1);
-        const height = canvas.height * (ratio > 1 ? 1 / ratio : 1);
-        const x = ratio <= 1 ? (canvas.width - width) / 2 : 0;
-        const y = ratio > 1 ? (canvas.height - height) / 2 : 0;
-
-        const maskEnabled = this.patternService.maskService.isMaskEnabled;
-        const mask = maskEnabled ? this.patternService.maskService.canvas : null;
-
-        compositeMasked(
-            createHelperCanvas(canvas, context),
-            source,
-            mask,
-            this.patternService.maskService.isMaskInverted,
-            x,
-            y,
-            width,
-            height,
-        );
+            const source = buffer.ensureGpu();
+            getGlContext().drawPreviewToCanvas(
+                canvas,
+                source,
+                buffer.width,
+                buffer.height,
+                buffer.textureFromCanvas,
+            );
+        });
     };
 }

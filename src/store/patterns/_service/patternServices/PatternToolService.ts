@@ -11,6 +11,8 @@ import {BrushSelect} from "./CanvasEventsService/ToolsServices/brushSelect";
 import {LineSolidPattern} from "./CanvasEventsService/ToolsServices/lineSolidPattern";
 import {LineTrailingPattern} from "./CanvasEventsService/ToolsServices/lineTrailingPattern";
 import {profileLogger} from "../../../../utils/profiling/ProfileLogger";
+import {profileDebug} from "../../../../utils/profileDebug";
+import {PatternBuffer} from "./PatternBuffer";
 
 
 export const BrushServiceByType = {
@@ -63,21 +65,41 @@ export class PatternToolService {
         this.patternService.storeService.dispatchResetPosition();
     }
 
+    private bufferSyncMeta = (buffer: PatternBuffer | undefined, role: 'canvas' | 'mask') => ({
+        role,
+        serial: buffer?.contentSerial,
+        gpuAhead: !!buffer?.isGpuAhead,
+        fromCanvas: buffer?.textureFromCanvas,
+    });
+
     private presentToolResult = () => {
         const buffer = this.patternService.canvasService.buffer;
 
         if (this.canvasToolService?.drewGpu) {
+            profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'canvas'), path: 'drewGpu'});
             buffer?.presentGl();
             this.canvasToolService.drewGpu = false;
             return;
         }
 
         if (buffer?.isGpuAhead) {
+            profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'canvas'), path: 'gpuAhead'});
             buffer.presentGl();
             return;
         }
 
+        profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'canvas'), path: 'fromCpu'});
         this.patternService.canvasService.presentFromCpu();
+    };
+
+    private presentCanvasMonitor = () => {
+        const buffer = this.patternService.canvasService.buffer;
+        if (!buffer) return;
+        if (buffer.isGpuAhead) {
+            buffer.presentGl();
+            return;
+        }
+        buffer.present();
     };
 
     canvasEventHandlers: CanvasEventHandlers = {
@@ -87,7 +109,7 @@ export class PatternToolService {
         },
         onDown: (...args) => {
             this.canvasToolService?.handlers.onDown?.(...args);
-            this.presentToolResult();
+            this.presentCanvasMonitor();
         },
         onDraw: (...args) => {
             profileLogger.time('draw.tool', () => {
@@ -119,17 +141,30 @@ export class PatternToolService {
         const buffer = this.patternService.maskService.buffer;
 
         if (this.maskToolService?.drewGpu) {
+            profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'mask'), path: 'drewGpu'});
             buffer?.presentGl();
             this.maskToolService.drewGpu = false;
             return;
         }
 
         if (buffer?.isGpuAhead) {
+            profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'mask'), path: 'gpuAhead'});
             buffer.presentGl();
             return;
         }
 
+        profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'mask'), path: 'fromCpu'});
         this.patternService.maskService.presentFromCpu();
+    };
+
+    private presentMaskMonitor = () => {
+        const buffer = this.patternService.maskService.buffer;
+        if (!buffer) return;
+        if (buffer.isGpuAhead) {
+            buffer.presentGl();
+            return;
+        }
+        buffer.present();
     };
 
     maskCanvasEventHandlers: CanvasEventHandlers = {
@@ -139,7 +174,7 @@ export class PatternToolService {
         },
         onDown: (...args) => {
             this.maskToolService?.handlers.onDown?.(...args);
-            this.presentMaskToolResult();
+            this.presentMaskMonitor();
         },
         onDraw: (...args) => {
             profileLogger.time('draw.mask.tool', () => {
@@ -155,6 +190,7 @@ export class PatternToolService {
         onRelease: (...args) => {
             this.maskToolService?.handlers.onRelease?.(...args);
             this.presentMaskToolResult();
+            this.patternService.maskService.buffer?.ensureCpu();
             this.patternService.valuesService.update();
         },
         onPushPosition: this.pushMaskPositionToStore,

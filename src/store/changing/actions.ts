@@ -1,8 +1,7 @@
 import {allToStartValue, change} from "../change/actions";
 import {ChangingMode} from "./types";
 import {AppState} from "../index";
-
-// todo прикрутить сюда тайпскрипт
+import {frameScheduler, FramePriority} from "../../utils/FrameScheduler";
 
 export enum EChangingAction {
     START = "changing/start",
@@ -10,22 +9,22 @@ export enum EChangingAction {
     SET_MODE = "changing/set-mode"
 }
 
-let requestID = null;
+let unsubscribeChanging: (() => void) | null = null;
 
 export const startChanging = () => (dispatch, getState: () => AppState) => {
 
-    if (!requestID) {
-        requestID && cancelAnimationFrame(requestID); //нахуя эта строчка? вроде лишняя
-
+    if (!unsubscribeChanging) {
         const startTime = performance.now();
 
-        requestID = requestAnimationFrame(function changing(time) {
+        dispatch(change(0, getState().position));
 
-            // getState().position
-            dispatch(change(Math.abs(time - startTime), getState().position));
-
-            requestID = requestAnimationFrame(changing);
-        });
+        unsubscribeChanging = frameScheduler.subscribe(
+            'changing',
+            (time) => {
+                dispatch(change(Math.abs(time - startTime), getState().position));
+            },
+            FramePriority.Changing,
+        );
 
         return dispatch({type: EChangingAction.START})
     }
@@ -33,9 +32,8 @@ export const startChanging = () => (dispatch, getState: () => AppState) => {
 
 export const stopChanging = () => (dispatch, getState) => {
 
-    requestID && cancelAnimationFrame(requestID);
-
-    requestID = null;
+    unsubscribeChanging?.();
+    unsubscribeChanging = null;
 
     return dispatch({type: EChangingAction.STOP})
 };

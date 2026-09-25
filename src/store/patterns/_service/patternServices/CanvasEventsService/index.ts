@@ -9,6 +9,10 @@ import {
 } from "../PatternPlatformerService/PlatformerProfiler";
 import { frameScheduler, FramePriority } from "../../../../../utils/FrameScheduler";
 import { PatternBuffer } from "../PatternBuffer";
+import { startDrawChanging } from "../../../../changing/actions";
+import {ThunkDispatch} from "redux-thunk";
+import {AnyAction} from "redux";
+import {AppState} from "../../../../index";
 
 export interface CanvasEventHandlers {
     onPushPosition?: (e: MouseEvent) => void
@@ -110,6 +114,8 @@ export class CanvasEventsService {
         this.startFrameRelatedEvent = e;
 
         this.pushFrameRelatedEvent(e);
+
+        (this.storeService.store.dispatch as ThunkDispatch<AppState, undefined, AnyAction>)(startDrawChanging());
 
         this.handlers.onDown?.(this.buildToolEvent());
         this.logPlatformerCanvasEvent('down');

@@ -77,7 +77,7 @@ export class BrushSelect implements ToolService {
         ) ? targetPattern?.rotation?.value : null;
 
         if (useGpu) {
-            const selected = this.patternService.valuesService.ensureSelectedGpu();
+            const selected = this.patternService.valuesService.ensureSelectedGpu(dest);
             if (!selected) return;
 
             const width = patternSize * selected.width;
@@ -108,6 +108,7 @@ export class BrushSelect implements ToolService {
 
         dest?.ensureCpu();
 
+        this.patternService.valuesService.updateSelectedIfNeeded(true, dest);
         const brushPatternImage = this.patternService.valuesService.selected;
         if (!brushPatternImage) return;
 

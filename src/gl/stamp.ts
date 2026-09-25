@@ -1,9 +1,6 @@
 import {ECompositeOperation} from '../store/compositeOperations'
-import {blendModeId} from './blendModes'
-import {
-    blitTexture,
-    copyTexture2D,
-} from './draw'
+import {blendTextureOver} from './blend'
+import {blitTexture, copyTexture2D} from './draw'
 import type {GlContext} from './GlContext'
 import {stampCanvasMat, type StampDrawParams} from './stampMat'
 
@@ -19,6 +16,7 @@ export const stampTextures = (
     opacity: number,
     clipMask?: HTMLCanvasElement | null,
     mode: ECompositeOperation = ECompositeOperation.SourceOver,
+    sourcePremul = false,
 ): void => {
     if (!stamps.length) {
         return
@@ -43,38 +41,34 @@ export const stampTextures = (
         stampFlipY = true
     }
 
-    const backdrop = ctx.ensureScratch(destW, destH)
-    if (stampSource !== backdrop) {
-        copyTexture2D(ctx, dest, backdrop, destW, destH)
-    }
+    const layer = ctx.ensureLayer(destW, destH)
+    ctx.bindTexture2DTarget(layer, destW, destH)
+    gl.clearColor(0, 0, 0, 0)
+    gl.clear(gl.COLOR_BUFFER_BIT)
 
-    ctx.bindTexture2DTarget(dest, destW, destH)
-    gl.disable(gl.BLEND)
-    gl.useProgram(ctx.stampProgram)
+    gl.enable(gl.BLEND)
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+    gl.useProgram(ctx.stampLayerProgram)
     gl.activeTexture(gl.TEXTURE0)
     gl.bindTexture(gl.TEXTURE_2D, stampSource)
-    gl.uniform1i(gl.getUniformLocation(ctx.stampProgram, 'u_tex'), 0)
+    gl.uniform1i(gl.getUniformLocation(ctx.stampLayerProgram, 'u_tex'), 0)
     gl.activeTexture(gl.TEXTURE1)
     gl.bindTexture(gl.TEXTURE_2D, clipMask ? ctx.uploadClipMask(clipMask) : ctx.ensureWhiteTex())
-    gl.uniform1i(gl.getUniformLocation(ctx.stampProgram, 'u_mask'), 1)
-    gl.activeTexture(gl.TEXTURE2)
-    gl.bindTexture(gl.TEXTURE_2D, backdrop)
-    gl.uniform1i(gl.getUniformLocation(ctx.stampProgram, 'u_dst'), 2)
-    gl.uniform2f(gl.getUniformLocation(ctx.stampProgram, 'u_destSize'), destW, destH)
-    gl.uniform1f(gl.getUniformLocation(ctx.stampProgram, 'u_opacity'), opacity)
-    gl.uniform1f(gl.getUniformLocation(ctx.stampProgram, 'u_flipY'), stampFlipY ? 1 : 0)
-    gl.uniform1f(gl.getUniformLocation(ctx.stampProgram, 'u_useMask'), clipMask ? 1 : 0)
-    gl.uniform1f(gl.getUniformLocation(ctx.stampProgram, 'u_maskFlipY'), 0)
-    gl.uniform1i(gl.getUniformLocation(ctx.stampProgram, 'u_mode'), blendModeId(mode))
+    gl.uniform1i(gl.getUniformLocation(ctx.stampLayerProgram, 'u_mask'), 1)
+    gl.uniform2f(gl.getUniformLocation(ctx.stampLayerProgram, 'u_destSize'), destW, destH)
+    gl.uniform1f(gl.getUniformLocation(ctx.stampLayerProgram, 'u_flipY'), stampFlipY ? 1 : 0)
+    gl.uniform1f(gl.getUniformLocation(ctx.stampLayerProgram, 'u_useMask'), clipMask ? 1 : 0)
+    gl.uniform1f(gl.getUniformLocation(ctx.stampLayerProgram, 'u_maskFlipY'), clipMask ? 1 : 0)
+    gl.uniform1f(gl.getUniformLocation(ctx.stampLayerProgram, 'u_premul'), sourcePremul ? 1 : 0)
 
     gl.bindBuffer(gl.ARRAY_BUFFER, ctx.stampBuffer)
-    const aCorner = gl.getAttribLocation(ctx.stampProgram, 'a_corner')
+    const aCorner = gl.getAttribLocation(ctx.stampLayerProgram, 'a_corner')
     gl.vertexAttribPointer(aCorner, 2, gl.FLOAT, false, 0, 0)
     gl.enableVertexAttribArray(aCorner)
 
-    const uMat = gl.getUniformLocation(ctx.stampProgram, 'u_mat')
-    const uStampSize = gl.getUniformLocation(ctx.stampProgram, 'u_stampSize')
-    const uColor = gl.getUniformLocation(ctx.stampProgram, 'u_color')
+    const uMat = gl.getUniformLocation(ctx.stampLayerProgram, 'u_mat')
+    const uStampSize = gl.getUniformLocation(ctx.stampLayerProgram, 'u_stampSize')
+    const uColor = gl.getUniformLocation(ctx.stampLayerProgram, 'u_color')
 
     for (const stamp of stamps) {
         const color = stamp.color ?? [1, 1, 1]
@@ -84,10 +78,12 @@ export const stampTextures = (
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     }
 
-    gl.activeTexture(gl.TEXTURE2)
-    gl.bindTexture(gl.TEXTURE_2D, null)
+    gl.disable(gl.BLEND)
     gl.activeTexture(gl.TEXTURE1)
     gl.bindTexture(gl.TEXTURE_2D, null)
     gl.activeTexture(gl.TEXTURE0)
+    gl.bindTexture(gl.TEXTURE_2D, null)
     gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+
+    blendTextureOver(ctx, dest, layer, destW, destH, false, false, mode, opacity, true)
 }

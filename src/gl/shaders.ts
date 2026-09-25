@@ -245,6 +245,32 @@ void main() {
     o = compositeBlend(c, dst, u_mode);
 }`
 
+export const STAMP_LAYER_FS = `#version 300 es
+precision highp float;
+uniform sampler2D u_tex;
+uniform sampler2D u_mask;
+uniform vec3 u_color;
+uniform float u_flipY;
+uniform float u_useMask;
+uniform float u_maskFlipY;
+uniform float u_premul;
+in vec2 v_uv;
+in vec2 v_destUv;
+out vec4 o;
+void main() {
+    vec2 uv = vec2(v_uv.x, u_flipY > 0.5 ? 1.0 - v_uv.y : v_uv.y);
+    vec4 c = texture(u_tex, uv);
+    if (u_premul > 0.5 && c.a > 1e-5) c.rgb /= c.a;
+    c.rgb *= u_color;
+    float ma = 1.0;
+    if (u_useMask > 0.5) {
+        vec2 muv = vec2(v_destUv.x, u_maskFlipY > 0.5 ? 1.0 - v_destUv.y : v_destUv.y);
+        ma = texture(u_mask, muv).a;
+    }
+    float a = c.a * ma;
+    o = vec4(c.rgb * a, a);
+}`
+
 export const CIRCLE_FS = `#version 300 es
 precision highp float;
 uniform sampler2D u_mask;

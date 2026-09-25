@@ -1,6 +1,6 @@
 import {Segments, SelectionParams, SelectionValue} from "./types";
 import {PatternState} from "../pattern/types";
-import {createMaskedImageFromImageData, imageDataToCanvas, maskInverse} from "../../../utils/canvas/helpers/imageData";
+import {maskInverse} from "../../../utils/canvas/helpers/imageData";
 import {createCanvas} from "../../../utils/canvas/helpers/base";
 import {pathDataToString} from "../../../utils/path";
 import {getFunctionState} from "../../../utils/patterns/function";
@@ -25,9 +25,38 @@ export const getMaskFromSegments = (width, height, selectionValue: Segments): Im
 
 };
 
+const drawSelectionMask = (
+    context: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    pattern: PatternState,
+    inverse?: boolean,
+): void => {
+    const patternService = patternsService.pattern[pattern.id];
+    const maskCanvas = patternService.selectionService.maskCanvas;
+
+    if (maskCanvas && !inverse) {
+        context.drawImage(maskCanvas, 0, 0);
+        return;
+    }
+
+    const maskImageData = maskCanvas
+        ? patternService.selectionService.ensureMaskCpu()
+        : getMaskFromSegments(width, height, pattern.selection.value.segments);
+
+    if (!maskImageData) return;
+
+    context.putImageData(inverse ? maskInverse(maskImageData) : maskImageData, 0, 0);
+};
+
 export const getSelectedImageData = (pattern: PatternState, withMask?: boolean, inverse?: boolean): ImageData => {
 
     const patternService = patternsService.pattern[pattern.id];
+    patternService.canvasService.buffer?.ensureCpu();
+    if (withMask) {
+        patternService.valuesService.updateMasked();
+    }
+
     const {width, height} = patternService.canvasService.canvas;
 
     const maskedImage = withMask
@@ -45,35 +74,20 @@ export const getSelectedImageData = (pattern: PatternState, withMask?: boolean, 
             y: 0,
         };
 
-        const maskImageData = getMaskFromSegments(width, height, pattern.selection.value.segments);
-
         const {context} = createCanvas(width, height);
 
-        if (maskImageData) {
-            context.putImageData(
-                maskImageData
-                , 0, 0);
-            context.globalCompositeOperation = "source-in";
-        }
+        drawSelectionMask(context, width, height, pattern);
+        context.globalCompositeOperation = "source-in";
         context.drawImage(maskedImage, 0, 0, width, height);
 
         return context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
 
     } else {
-        const maskImageData = getMaskFromSegments(width, height, pattern.selection.value.segments);
-
         const {context} = createCanvas(width, height);
 
-        if (maskImageData) {
-            context.putImageData(
-                maskInverse(maskImageData)
-                , 0, 0);
-            context.globalCompositeOperation = "source-in";
-        }
+        drawSelectionMask(context, width, height, pattern, true);
+        context.globalCompositeOperation = "source-in";
         context.drawImage(maskedImage, 0, 0, width, height);
-
-        // context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
-
 
         return context.getImageData(0, 0, width, height);
     }
@@ -84,14 +98,12 @@ export const getSelectedMask = (pattern: PatternState): ImageData => {
     const {width, height} = patternService.canvasService.canvas;
     const bbox = patternService.selectionService.bBox;
 
-    const maskImageData = getMaskFromSegments(width, height, pattern.selection.value.segments);
+    patternService.maskService.buffer?.ensureCpu();
 
     const {context} = createCanvas(width, height);
 
-    if (maskImageData) {
-        context.putImageData(maskImageData, 0, 0);
-        context.globalCompositeOperation = "source-in";
-    }
+    drawSelectionMask(context, width, height, pattern);
+    context.globalCompositeOperation = "source-in";
 
     if (pattern.config.mask) {
         context.drawImage(patternService.maskService.canvas, 0, 0, width, height)
@@ -101,10 +113,6 @@ export const getSelectedMask = (pattern: PatternState): ImageData => {
     }
 
     try {
-
-        context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
-
-
         return context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
     } catch (e) {
         console.error(e);
@@ -113,4 +121,3 @@ export const getSelectedMask = (pattern: PatternState): ImageData => {
     }
 
 };
-

@@ -141,6 +141,7 @@ export const doublePattern = (id: string) => (dispatch, getState) => {
 
 export const copyPatternToClipboard = (id: string) => async (dispatch, getState: () => AppState) => {
     const patternService = patternsService.pattern[id];
+    patternService.valuesService.update();
 
     (
         patternService.valuesService.selected

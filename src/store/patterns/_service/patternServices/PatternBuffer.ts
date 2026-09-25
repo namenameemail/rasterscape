@@ -8,6 +8,7 @@ import {drawRepeatLayer, RepeatStamp} from "../../../../gl/repeatLayer";
 import {drawStrokeLayer, StrokeDraw} from "../../../../gl/strokeDraw";
 import {StampDrawParams} from "../../../../gl/stampMat";
 import {ECompositeOperation} from "../../../compositeOperations";
+import {profileDebug} from "../../../../utils/profileDebug";
 
 export type RepeatCopy = {
     canvas: HTMLCanvasElement
@@ -196,6 +197,7 @@ export class PatternBuffer {
         opacity: number,
         clipMask?: HTMLCanvasElement | null,
         compositeOperation: ECompositeOperation = ECompositeOperation.SourceOver,
+        sourcePremul = false,
     ): void => {
         const dest = this.ensureGpu();
         profileLogger.time('canvas.stampGpu', () => {
@@ -210,6 +212,7 @@ export class PatternBuffer {
                 opacity,
                 clipMask,
                 compositeOperation,
+                sourcePremul,
             );
         });
         this.gpuInSync = true;
@@ -309,7 +312,14 @@ export class PatternBuffer {
 
     beginRepeat = (): void => {
         const {width, height} = this.canvas;
-        if (this.repeatReady && this.repeatBase && this.repeatW === width && this.repeatH === height) return;
+        if (this.repeatReady && this.repeatBase && this.repeatW === width && this.repeatH === height) {
+            profileDebug('canvas', 'beginRepeat.skip', {
+                serial: this.imageSerial,
+                w: width,
+                h: height,
+            });
+            return;
+        }
         const dest = this.ensureGpu();
         const glc = getGlContext();
         if (!this.repeatBase || this.repeatW !== width || this.repeatH !== height) {
@@ -324,13 +334,19 @@ export class PatternBuffer {
             copyTexture2D(glc, scratch, this.repeatBase, width, height);
             copyTexture2D(glc, scratch, dest, width, height);
             this.gpuFromCanvas = false;
+            profileDebug('canvas', 'beginRepeat.capture', {serial: this.imageSerial, fromCanvas: true, w: width, h: height});
         } else {
             copyTexture2D(glc, dest, this.repeatBase, width, height);
+            profileDebug('canvas', 'beginRepeat.capture', {serial: this.imageSerial, fromCanvas: false, w: width, h: height});
         }
         this.repeatReady = true;
     };
 
     endRepeat = (): void => {
+        profileDebug('canvas', 'endRepeat', {
+            serial: this.imageSerial,
+            wasReady: this.repeatReady,
+        });
         this.repeatReady = false;
         const gl = getGlContext().gl;
         for (const slot of this.repeatTex.values()) gl.deleteTexture(slot.tex);

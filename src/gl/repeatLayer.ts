@@ -37,7 +37,7 @@ export const drawRepeatLayer = (
     gl.uniform1f(gl.getUniformLocation(ctx.repeatProgram, 'u_opacity'), opacity)
     gl.uniform1f(gl.getUniformLocation(ctx.repeatProgram, 'u_flipY'), 0)
     gl.uniform1f(gl.getUniformLocation(ctx.repeatProgram, 'u_useMask'), clipMask ? 1 : 0)
-    gl.uniform1f(gl.getUniformLocation(ctx.repeatProgram, 'u_maskFlipY'), 0)
+    gl.uniform1f(gl.getUniformLocation(ctx.repeatProgram, 'u_maskFlipY'), clipMask ? 1 : 0)
 
     gl.bindBuffer(gl.ARRAY_BUFFER, ctx.stampBuffer)
     const aCorner = gl.getAttribLocation(ctx.repeatProgram, 'a_corner')

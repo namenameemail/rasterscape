@@ -26,11 +26,13 @@ import {
     STROKE_TINT_FS,
     STROKE_VS,
     STAMP_FS,
+    STAMP_LAYER_FS,
     STAMP_VS,
     CIRCLE_FS,
 } from './shaders'
 import {stampTextures as stampTexturesImpl} from './stamp'
 import {stampCircles as stampCirclesImpl} from './circleStamp'
+import {drawPreviewToCanvas as drawPreviewToCanvasImpl} from './preview'
 import type {StampDrawParams} from './stampMat'
 
 export class GlContext {
@@ -41,6 +43,7 @@ export class GlContext {
     blurProgram: WebGLProgram
     maskProgram: WebGLProgram
     stampProgram: WebGLProgram
+    stampLayerProgram: WebGLProgram
     circleProgram: WebGLProgram
     repeatProgram: WebGLProgram
     strokeProgram: WebGLProgram
@@ -73,6 +76,10 @@ export class GlContext {
     private selectionMaskH = 0
     private selectionMaskSerial = -1
     private whiteTex: WebGLTexture | null = null
+    private previewTex: WebGLTexture | null = null
+    private previewW = 0
+    private previewH = 0
+    private previewPixels: Uint8Array | null = null
 
     constructor() {
         this.canvas = document.createElement('canvas')
@@ -94,6 +101,7 @@ export class GlContext {
         this.blurProgram = linkProgram(gl, BLIT_VS, BLUR_FS)
         this.maskProgram = linkProgram(gl, BLIT_VS, MASK_FS)
         this.stampProgram = linkProgram(gl, STAMP_VS, STAMP_FS)
+        this.stampLayerProgram = linkProgram(gl, STAMP_VS, STAMP_LAYER_FS)
         this.circleProgram = linkProgram(gl, STAMP_VS, CIRCLE_FS)
         this.repeatProgram = linkProgram(gl, STAMP_VS, REPEAT_FS)
         this.strokeProgram = linkProgram(gl, STROKE_VS, STROKE_FS)
@@ -154,6 +162,13 @@ export class GlContext {
         const {gl} = this
         gl.bindTexture(gl.TEXTURE_2D, texture)
         gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, canvas)
+    }
+
+    uploadSelectionMaskCanvas = (canvas: HTMLCanvasElement, texture: WebGLTexture): void => {
+        const {gl} = this
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1)
+        this.uploadCanvas(canvas, texture)
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 0)
     }
 
     copyFramebufferToTexture = (texture: WebGLTexture, width: number, height: number): void => {
@@ -270,8 +285,9 @@ export class GlContext {
         opacity: number,
         clipMask?: HTMLCanvasElement | null,
         mode: ECompositeOperation = ECompositeOperation.SourceOver,
+        sourcePremul = false,
     ): void => {
-        stampTexturesImpl(this, dest, destW, destH, destFlipY, source, sourceFlipY, stamps, opacity, clipMask, mode)
+        stampTexturesImpl(this, dest, destW, destH, destFlipY, source, sourceFlipY, stamps, opacity, clipMask, mode, sourcePremul)
     }
 
     stampCircles = (
@@ -285,6 +301,19 @@ export class GlContext {
         mode: ECompositeOperation = ECompositeOperation.SourceOver,
     ): void => {
         stampCirclesImpl(this, dest, destW, destH, destFlipY, stamps, opacity, clipMask, mode)
+    }
+
+    drawPreviewToCanvas = (
+        target: HTMLCanvasElement,
+        source: WebGLTexture,
+        sourceW: number,
+        sourceH: number,
+        sourceFlipY: boolean,
+        mask: WebGLTexture | null = null,
+        maskFlipY = false,
+        inverted = false,
+    ): void => {
+        drawPreviewToCanvasImpl(this, target, source, sourceW, sourceH, sourceFlipY, mask, maskFlipY, inverted)
     }
 
     blurTexture = (texture: WebGLTexture, width: number, height: number, radius: number): void => {
@@ -304,7 +333,7 @@ export class GlContext {
             this.selectionMaskSerial = -1
         }
         if (this.selectionMaskCanvas !== canvas || this.selectionMaskSerial !== serial) {
-            this.uploadCanvas(canvas, this.selectionMaskTex)
+            this.uploadSelectionMaskCanvas(canvas, this.selectionMaskTex)
             this.selectionMaskCanvas = canvas
             this.selectionMaskSerial = serial
         }
@@ -359,6 +388,27 @@ export class GlContext {
         return this.layerTex
     }
 
+    ensurePreview = (width: number, height: number): WebGLTexture => {
+        if (!this.previewTex || this.previewW !== width || this.previewH !== height) {
+            if (this.previewTex) {
+                this.gl.deleteTexture(this.previewTex)
+            }
+            this.previewTex = this.createTexture2D(width, height)
+            this.previewW = width
+            this.previewH = height
+            this.previewPixels = null
+        }
+        return this.previewTex
+    }
+
+    ensurePreviewPixels = (width: number, height: number): Uint8Array => {
+        const n = width * height * 4
+        if (!this.previewPixels || this.previewPixels.length !== n) {
+            this.previewPixels = new Uint8Array(n)
+        }
+        return this.previewPixels
+    }
+
     uploadClipMask = (canvas: HTMLCanvasElement): WebGLTexture => {
         const {width, height} = canvas
         if (!this.clipMaskTex || this.clipMaskW !== width || this.clipMaskH !== height) {
@@ -369,7 +419,7 @@ export class GlContext {
             this.clipMaskW = width
             this.clipMaskH = height
         }
-        this.uploadCanvas(canvas, this.clipMaskTex)
+        this.uploadSelectionMaskCanvas(canvas, this.clipMaskTex)
         return this.clipMaskTex
     }
 

@@ -38,7 +38,11 @@ export class PatternCanvasService {
     };
 
     presentFromCpu = (): PatternService => {
-        this.buffer?.markCpuChanged();
+        const buffer = this.buffer;
+        if (buffer?.isGpuAhead) {
+            buffer.ensureCpu();
+        }
+        buffer?.markCpuChanged();
         return this.present();
     };
 

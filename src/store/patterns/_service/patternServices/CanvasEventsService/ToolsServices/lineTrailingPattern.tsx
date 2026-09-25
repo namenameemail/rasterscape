@@ -78,10 +78,9 @@ export class LineTrailingPattern implements ToolService {
         const toolPattern = state.patterns[toolPatternId];
         const coordinates = state.position.coordinates;
         const selectionService = patternsService.pattern[this.patternService.patternId].selectionService;
-        const selectionMask = selectionService.mask;
         const clipMask = selectionService.maskCanvas;
         const dest = bufferForDrawCanvas(this.patternService, brushEvent.canvas);
-        const useGpu = !!dest && (!selectionMask || !!clipMask);
+        const useGpu = !!dest;
 
         const brushRotation = toolPattern?.config?.rotation ? toolPattern?.rotation?.value : null;
         const destinationRotation =
@@ -216,9 +215,9 @@ export class LineTrailingPattern implements ToolService {
             }
         });
 
-        const resultCanvas: HelperCanvas = selectionMask
+        const resultCanvas: HelperCanvas = clipMask
             ? drawMasked(
-                selectionMask,
+                clipMask,
                 ({context}) => {
                     context.drawImage(this.helperCanvas1.canvas, 0, 0);
                     this.helperCanvas1.clear();

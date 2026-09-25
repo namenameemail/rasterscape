@@ -1,15 +1,21 @@
 import {HelperCanvas} from "./base";
 
 export type DrawMaskedDrawFunction = (helperCanvas: HelperCanvas) => void;
+export type DrawMask = ImageData | CanvasImageSource;
+
 export const drawMasked = (
-    maskImageData: ImageData,
+    mask: DrawMask,
     draw: DrawMaskedDrawFunction,
 ) => (helperCanvas: HelperCanvas): HelperCanvas => {
 
     const {context} = helperCanvas;
 
-    if (maskImageData) {
-        context.putImageData(maskImageData, 0, 0);
+    if (mask) {
+        if (mask instanceof ImageData) {
+            context.putImageData(mask, 0, 0);
+        } else {
+            context.drawImage(mask, 0, 0);
+        }
         context.globalCompositeOperation = "source-in";
     }
 
@@ -34,13 +40,13 @@ export const drawWithRotation = (
     return helperCanvas;
 };
 export const drawMaskedWithRotation = (
-    maskImageData: ImageData,
+    mask: DrawMask,
     angle: number,
     x: number, y: number,
     draw: DrawMaskedDrawFunction,
 ) => (helperCanvas: HelperCanvas): HelperCanvas => {
     drawMasked(
-        maskImageData,
+        mask,
         drawWithRotation(angle, x, y, draw)
     )(helperCanvas);
 
@@ -82,7 +88,7 @@ export const drawWithRotationAndOffset = (
     return helperCanvas;
 };
 export const drawMaskedWithRotationAndOffset = (
-    maskImageData: ImageData,
+    mask: DrawMask,
     angleB: number,
     angleD: number,
     xc: number, yc: number,
@@ -91,7 +97,7 @@ export const drawMaskedWithRotationAndOffset = (
     draw: DrawMaskedDrawFunction,
 ) => (helperCanvas: HelperCanvas): HelperCanvas => {
     drawMasked(
-        maskImageData,
+        mask,
         drawWithRotationAndOffset(angleB, angleD, xc, yc, xd, yd, x, y, draw)
     )(helperCanvas);
 
