@@ -11,7 +11,6 @@ import {bufferForDrawCanvas} from "../drawTarget";
 
 export class BrushSelect implements ToolService {
     patternService: PatternService;
-    drewGpu = false;
 
     helperCanvas1: HelperCanvas;
     helperCanvas2: HelperCanvas;
@@ -54,7 +53,6 @@ export class BrushSelect implements ToolService {
     };
 
     brushSelect = (brushEvent: CanvasServiceEvent) => {
-        this.drewGpu = false;
         const {context, events} = brushEvent;
 
         if (!events[0]) return;
@@ -102,7 +100,6 @@ export class BrushSelect implements ToolService {
             });
 
             dest.stampGpu(selected.texture, selected.stampFlipY, stamps, opacity, null, compositeOperation);
-            this.drewGpu = true;
             return;
         }
 

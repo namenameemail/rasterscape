@@ -16,7 +16,6 @@ const hexRgb = (hex: string): [number, number, number] => {
 
 export class BrushShape implements ToolService {
     patternService: PatternService;
-    drewGpu = false;
 
     helperCanvas1: HelperCanvas;
     helperCanvas2: HelperCanvas;
@@ -46,7 +45,6 @@ export class BrushShape implements ToolService {
     };
 
     circleBrush = (brushEvent: CanvasServiceEvent) => {
-        this.drewGpu = false;
         const {context, events} = brushEvent;
 
         if (!events[0]) return;
@@ -76,7 +74,6 @@ export class BrushShape implements ToolService {
                 color: hexRgb(getRandomColor()),
             }));
             dest.stampCirclesGpu(stamps, opacity, clipMask, compositeOperation);
-            this.drewGpu = true;
             return;
         }
 

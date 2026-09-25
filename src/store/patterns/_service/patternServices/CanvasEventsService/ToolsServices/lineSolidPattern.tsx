@@ -44,7 +44,6 @@ const getPatternStrokeStyle = (ctx, x, y, patternSize, linePattern: PatternState
 
 export class LineSolidPattern implements ToolService {
     patternService: PatternService;
-    drewGpu = false;
 
     trails: Record<string, {x: number, y: number}[]> = {};
     helperCanvas1: HelperCanvas;
@@ -94,7 +93,6 @@ export class LineSolidPattern implements ToolService {
     };
 
     lineDraw = (brushEvent: CanvasServiceEvent) => {
-        this.drewGpu = false;
         const {context, events} = brushEvent;
 
         if (!events[0]) return;
@@ -200,7 +198,6 @@ export class LineSolidPattern implements ToolService {
                     clipMask,
                     compositeOperation,
                 );
-                this.drewGpu = true;
             }
             return;
         }
@@ -228,7 +225,6 @@ export class LineSolidPattern implements ToolService {
         if (useGpu && dest) {
             dest.compositeLayerGpu(this.helperCanvas1.canvas, opacity, clipMask, compositeOperation);
             this.helperCanvas1.clear();
-            this.drewGpu = true;
             return;
         }
 

@@ -19,7 +19,6 @@ const hexRgb = (hex: string): [number, number, number] => {
 
 export class LineSolid implements ToolService {
     patternService: PatternService;
-    drewGpu = false;
 
     trails: Record<string, {x: number, y: number}[]> = {};
     painted: Record<string, number> = {};
@@ -89,7 +88,6 @@ export class LineSolid implements ToolService {
     };
 
     lineDraw = (brushEvent: CanvasServiceEvent) => {
-        this.drewGpu = false;
         const {context, events} = brushEvent;
 
         if (!events[0]) return;
@@ -141,7 +139,6 @@ export class LineSolid implements ToolService {
                 this.repeatDest = dest;
                 dest.beginRepeat();
                 dest.compositeStrokesGpu([], opacity, clipMask, compositeOperation);
-                this.drewGpu = true;
             }
             return;
         }
@@ -181,7 +178,6 @@ export class LineSolid implements ToolService {
             this.repeatDest = dest;
             dest.beginRepeat();
             dest.compositeStrokesGpu(strokes, opacity, clipMask, compositeOperation);
-            this.drewGpu = true;
             return;
         }
 

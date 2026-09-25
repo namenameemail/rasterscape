@@ -11,7 +11,6 @@ import {bufferForDrawCanvas} from "../drawTarget";
 
 export class BrushPattern implements ToolService {
     patternService: PatternService;
-    drewGpu = false;
 
     helperCanvas1: HelperCanvas;
     helperCanvas2: HelperCanvas;
@@ -41,7 +40,6 @@ export class BrushPattern implements ToolService {
     };
 
     patternBrush = (brushEvent: CanvasServiceEvent) => {
-        this.drewGpu = false;
         const {context, events} = brushEvent;
 
         if (!events[0]) return;
@@ -99,7 +97,6 @@ export class BrushPattern implements ToolService {
                 compositeOperation,
                 masked.premul,
             );
-            this.drewGpu = true;
             return;
         }
 

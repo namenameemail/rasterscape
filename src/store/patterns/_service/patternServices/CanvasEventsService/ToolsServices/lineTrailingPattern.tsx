@@ -23,7 +23,6 @@ function angleBetween(point1, point2) {
 
 export class LineTrailingPattern implements ToolService {
     patternService: PatternService;
-    drewGpu = false;
 
     draw: boolean = false;
 
@@ -62,7 +61,6 @@ export class LineTrailingPattern implements ToolService {
     };
 
     patternLine = (brushEvent: CanvasServiceEvent) => {
-        this.drewGpu = false;
         const {context, events} = brushEvent;
         if (!events[0]) return;
 
@@ -158,7 +156,6 @@ export class LineTrailingPattern implements ToolService {
                 clipMask,
                 compositeOperation,
             );
-            this.drewGpu = true;
             return;
         }
 

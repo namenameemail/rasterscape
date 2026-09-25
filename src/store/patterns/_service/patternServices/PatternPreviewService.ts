@@ -93,7 +93,7 @@ export class PatternPreviewService {
                 source,
                 buffer.width,
                 buffer.height,
-                buffer.textureFromCanvas,
+                false,
             );
         });
     };

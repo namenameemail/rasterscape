@@ -19,7 +19,6 @@ export interface ToolService {
     patternService: PatternService
     handlers: ToolHandlers
     setSize?: (width: number, height: number) => void
-    drewGpu?: boolean
 }
 
 

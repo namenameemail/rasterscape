@@ -69,37 +69,25 @@ export class PatternToolService {
         role,
         serial: buffer?.contentSerial,
         gpuAhead: !!buffer?.isGpuAhead,
-        fromCanvas: buffer?.textureFromCanvas,
+        premul: buffer?.texturePremul,
     });
 
     private presentToolResult = () => {
         const buffer = this.patternService.canvasService.buffer;
+        if (!buffer) return;
 
-        if (this.canvasToolService?.drewGpu) {
-            profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'canvas'), path: 'drewGpu'});
-            buffer?.presentGl();
-            this.canvasToolService.drewGpu = false;
-            return;
-        }
-
-        if (buffer?.isGpuAhead) {
-            profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'canvas'), path: 'gpuAhead'});
+        if (buffer.isGpuAhead) {
+            profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'canvas'), path: 'gpu'});
             buffer.presentGl();
             return;
         }
 
-        profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'canvas'), path: 'fromCpu'});
+        profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'canvas'), path: 'cpu'});
         this.patternService.canvasService.presentFromCpu();
     };
 
     private presentCanvasMonitor = () => {
-        const buffer = this.patternService.canvasService.buffer;
-        if (!buffer) return;
-        if (buffer.isGpuAhead) {
-            buffer.presentGl();
-            return;
-        }
-        buffer.present();
+        this.patternService.canvasService.buffer?.present();
     };
 
     canvasEventHandlers: CanvasEventHandlers = {
@@ -139,32 +127,20 @@ export class PatternToolService {
 
     private presentMaskToolResult = () => {
         const buffer = this.patternService.maskService.buffer;
+        if (!buffer) return;
 
-        if (this.maskToolService?.drewGpu) {
-            profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'mask'), path: 'drewGpu'});
-            buffer?.presentGl();
-            this.maskToolService.drewGpu = false;
-            return;
-        }
-
-        if (buffer?.isGpuAhead) {
-            profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'mask'), path: 'gpuAhead'});
+        if (buffer.isGpuAhead) {
+            profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'mask'), path: 'gpu'});
             buffer.presentGl();
             return;
         }
 
-        profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'mask'), path: 'fromCpu'});
+        profileDebug('draw', 'present', {...this.bufferSyncMeta(buffer, 'mask'), path: 'cpu'});
         this.patternService.maskService.presentFromCpu();
     };
 
     private presentMaskMonitor = () => {
-        const buffer = this.patternService.maskService.buffer;
-        if (!buffer) return;
-        if (buffer.isGpuAhead) {
-            buffer.presentGl();
-            return;
-        }
-        buffer.present();
+        this.patternService.maskService.buffer?.present();
     };
 
     maskCanvasEventHandlers: CanvasEventHandlers = {

@@ -28,7 +28,7 @@ export class PatternBuffer {
     private monitorContext?: CanvasRenderingContext2D;
     private gpuInSync = false;
     private cpuInSync = true;
-    private gpuFromCanvas = true;
+    private gpuPremul = false;
     private texW = 0;
     private texH = 0;
     private imageSerial = 0;
@@ -54,7 +54,15 @@ export class PatternBuffer {
     }
 
     get textureFromCanvas(): boolean {
-        return this.gpuFromCanvas;
+        return false;
+    }
+
+    get stampFlipY(): boolean {
+        return true;
+    }
+
+    get texturePremul(): boolean {
+        return this.gpuPremul;
     }
 
     get isGpuAhead(): boolean {
@@ -69,20 +77,42 @@ export class PatternBuffer {
         this.imageSerial += 1;
     };
 
+    private afterCpuWrite = (): void => {
+        this.gpuInSync = false;
+        this.cpuInSync = true;
+        this.gpuPremul = false;
+    };
+
+    private afterGpuDraw = (bump = true): void => {
+        this.gpuInSync = true;
+        this.cpuInSync = false;
+        this.gpuPremul = true;
+        if (bump) this.bumpContent();
+    };
+
+    private afterGpuUpload = (): void => {
+        this.gpuInSync = true;
+        this.cpuInSync = true;
+        this.gpuPremul = false;
+        this.bumpContent();
+    };
+
+    private afterCpuDownload = (): void => {
+        this.cpuInSync = true;
+    };
+
     markGpuContent = (): void => {
         this.bumpContent();
     };
 
     markCpuChanged = (): void => {
-        this.gpuInSync = false;
-        this.cpuInSync = true;
+        this.afterCpuWrite();
     };
 
     setSize = (width: number, height: number): void => {
         this.canvas.width = width;
         this.canvas.height = height;
-        this.gpuInSync = false;
-        this.cpuInSync = true;
+        this.afterCpuWrite();
         this.syncMonitorSize();
     };
 
@@ -93,15 +123,13 @@ export class PatternBuffer {
 
     writePixels = (imageData: ImageData): void => {
         this.context.putImageData(imageData, 0, 0);
-        this.gpuInSync = false;
-        this.cpuInSync = true;
+        this.afterCpuWrite();
     };
 
     blur = (radius: number): void => {
         this.ensureCpu();
         blurCanvasInPlace(this.canvas, this.context, radius);
-        this.gpuInSync = false;
-        this.cpuInSync = true;
+        this.afterCpuWrite();
     };
 
     private ensureTexture = (): WebGLTexture => {
@@ -123,6 +151,14 @@ export class PatternBuffer {
         return this.texture;
     };
 
+    private normalizeUploadToGl = (texture: WebGLTexture): void => {
+        const glc = getGlContext();
+        const {width, height} = this.canvas;
+        const scratch = glc.ensureScratch(width, height);
+        blitTexture(glc, texture, scratch, width, height, true);
+        copyTexture2D(glc, scratch, texture, width, height);
+    };
+
     ensureGpu = (): WebGLTexture => {
         const texture = this.ensureTexture();
 
@@ -130,10 +166,9 @@ export class PatternBuffer {
             this.ensureCpu();
             profileLogger.time('canvas.uploadGpu', () => {
                 getGlContext().uploadCanvas(this.canvas, texture);
+                this.normalizeUploadToGl(texture);
             });
-            this.gpuInSync = true;
-            this.gpuFromCanvas = true;
-            this.bumpContent();
+            this.afterGpuUpload();
         }
 
         return texture;
@@ -148,31 +183,25 @@ export class PatternBuffer {
         const glc = getGlContext();
 
         profileLogger.time('canvas.downloadGpu', () => {
-            glc.blitToDefault(this.texture as WebGLTexture, width, height, this.gpuFromCanvas);
+            glc.blitToDefault(this.texture as WebGLTexture, width, height, false);
             this.context.clearRect(0, 0, width, height);
             this.context.drawImage(glc.canvas, 0, 0);
         });
-        this.cpuInSync = true;
+        this.afterCpuDownload();
     };
 
     captureFramebuffer = (): void => {
         const glc = getGlContext();
         const texture = this.ensureTexture();
         glc.copyFramebufferToTexture(texture, this.canvas.width, this.canvas.height);
-        this.gpuInSync = true;
-        this.cpuInSync = false;
-        this.gpuFromCanvas = false;
-        this.bumpContent();
+        this.afterGpuDraw();
     };
 
     compositeFramebuffer = (): void => {
         const glc = getGlContext();
         const dest = this.ensureGpu();
-        glc.compositeDefaultOver(dest, this.canvas.width, this.canvas.height, this.gpuFromCanvas);
-        this.gpuInSync = true;
-        this.cpuInSync = false;
-        this.gpuFromCanvas = false;
-        this.bumpContent();
+        glc.compositeDefaultOver(dest, this.canvas.width, this.canvas.height, false);
+        this.afterGpuDraw();
     };
 
     compositeVideo = (video: WebGLTexture): void => {
@@ -182,12 +211,9 @@ export class PatternBuffer {
             dest,
             this.canvas.width,
             this.canvas.height,
-            this.gpuFromCanvas,
+            false,
         );
-        this.gpuInSync = true;
-        this.cpuInSync = false;
-        this.gpuFromCanvas = false;
-        this.bumpContent();
+        this.afterGpuDraw();
     };
 
     stampGpu = (
@@ -205,7 +231,7 @@ export class PatternBuffer {
                 dest,
                 this.canvas.width,
                 this.canvas.height,
-                this.gpuFromCanvas,
+                false,
                 source,
                 sourceFlipY,
                 stamps,
@@ -215,12 +241,7 @@ export class PatternBuffer {
                 sourcePremul,
             );
         });
-        this.gpuInSync = true;
-        this.cpuInSync = false;
-        this.gpuFromCanvas = false;
-        if (stamps.length) {
-            this.bumpContent();
-        }
+        this.afterGpuDraw(!!stamps.length);
     };
 
     stampCirclesGpu = (
@@ -236,17 +257,14 @@ export class PatternBuffer {
                 dest,
                 this.canvas.width,
                 this.canvas.height,
-                this.gpuFromCanvas,
+                false,
                 stamps,
                 opacity,
                 clipMask,
                 compositeOperation,
             );
         });
-        this.gpuInSync = true;
-        this.cpuInSync = false;
-        this.gpuFromCanvas = false;
-        this.bumpContent();
+        this.afterGpuDraw();
     };
 
     compositeLayerGpu = (
@@ -261,17 +279,14 @@ export class PatternBuffer {
                 dest,
                 this.canvas.width,
                 this.canvas.height,
-                this.gpuFromCanvas,
+                false,
                 layer,
                 opacity,
                 clipMask,
                 compositeOperation,
             );
         });
-        this.gpuInSync = true;
-        this.cpuInSync = false;
-        this.gpuFromCanvas = false;
-        this.bumpContent();
+        this.afterGpuDraw();
     };
 
     compositePatternStrokesGpu = (
@@ -290,13 +305,12 @@ export class PatternBuffer {
         profileLogger.time('canvas.compositePatternStroke', () => {
             if (this.repeatReady && this.repeatBase) {
                 copyTexture2D(glc, this.repeatBase, dest, width, height);
-                this.gpuFromCanvas = false;
             }
             glc.compositePatternStrokes(
                 dest,
                 width,
                 height,
-                this.gpuFromCanvas,
+                false,
                 strokes,
                 source,
                 opacity,
@@ -304,10 +318,7 @@ export class PatternBuffer {
                 compositeOperation,
             );
         });
-        this.gpuInSync = true;
-        this.cpuInSync = false;
-        this.gpuFromCanvas = false;
-        this.bumpContent();
+        this.afterGpuDraw();
     };
 
     beginRepeat = (): void => {
@@ -328,17 +339,8 @@ export class PatternBuffer {
             this.repeatW = width;
             this.repeatH = height;
         }
-        if (this.gpuFromCanvas) {
-            const scratch = glc.ensureScratch(width, height);
-            blitTexture(glc, dest, scratch, width, height, true);
-            copyTexture2D(glc, scratch, this.repeatBase, width, height);
-            copyTexture2D(glc, scratch, dest, width, height);
-            this.gpuFromCanvas = false;
-            profileDebug('canvas', 'beginRepeat.capture', {serial: this.imageSerial, fromCanvas: true, w: width, h: height});
-        } else {
-            copyTexture2D(glc, dest, this.repeatBase, width, height);
-            profileDebug('canvas', 'beginRepeat.capture', {serial: this.imageSerial, fromCanvas: false, w: width, h: height});
-        }
+        copyTexture2D(glc, dest, this.repeatBase, width, height);
+        profileDebug('canvas', 'beginRepeat.capture', {serial: this.imageSerial, w: width, h: height});
         this.repeatReady = true;
     };
 
@@ -365,15 +367,11 @@ export class PatternBuffer {
         const glc = getGlContext();
         profileLogger.time('canvas.compositeStrokesGpu', () => {
             copyTexture2D(glc, this.repeatBase as WebGLTexture, dest, width, height);
-            this.gpuFromCanvas = false;
             const layer = glc.ensureLayer(width, height);
             drawStrokeLayer(glc, layer, width, height, strokes, opacity, clipMask);
             blendTextureOver(glc, dest, layer, width, height, false, false, compositeOperation, 1, true);
         });
-        this.gpuInSync = true;
-        this.cpuInSync = false;
-        this.gpuFromCanvas = false;
-        this.bumpContent();
+        this.afterGpuDraw();
     };
 
     compositeRepeatsGpu = (
@@ -388,7 +386,6 @@ export class PatternBuffer {
         const glc = getGlContext();
         profileLogger.time('canvas.compositeRepeatsGpu', () => {
             copyTexture2D(glc, this.repeatBase as WebGLTexture, dest, width, height);
-            this.gpuFromCanvas = false;
             const stamps: RepeatStamp[] = [];
             let uploaded: HTMLCanvasElement | null = null;
             for (const copy of copies) {
@@ -428,10 +425,7 @@ export class PatternBuffer {
             drawRepeatLayer(glc, layer, width, height, stamps, opacity, clipMask);
             blendTextureOver(glc, dest, layer, width, height, false, false, compositeOperation, 1, true);
         });
-        this.gpuInSync = true;
-        this.cpuInSync = false;
-        this.gpuFromCanvas = false;
-        this.bumpContent();
+        this.afterGpuDraw();
     };
 
     setMonitor = (monitor?: HTMLCanvasElement): void => {
@@ -449,7 +443,7 @@ export class PatternBuffer {
         }
 
         if (texture) {
-            getGlContext().blitToDefault(texture, this.canvas.width, this.canvas.height, this.gpuFromCanvas);
+            getGlContext().blitToDefault(texture, this.canvas.width, this.canvas.height, false);
         }
 
         profileLogger.time('canvas.present', () => {
@@ -465,9 +459,7 @@ export class PatternBuffer {
             return;
         }
 
-        if (!this.cpuInSync && this.gpuInSync && this.texture) {
-            const glc = getGlContext();
-            glc.blitToDefault(this.texture, this.canvas.width, this.canvas.height, this.gpuFromCanvas);
+        if (this.isGpuAhead) {
             this.presentGl();
             return;
         }

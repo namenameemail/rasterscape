@@ -109,8 +109,8 @@ export class PatternValuesService {
                 texture: source,
                 width: buffer.width,
                 height: buffer.height,
-                stampFlipY: !buffer.textureFromCanvas,
-                premul: !buffer.textureFromCanvas,
+                stampFlipY: buffer.stampFlipY,
+                premul: buffer.texturePremul,
             };
         }
 
@@ -121,8 +121,8 @@ export class PatternValuesService {
                 texture: source,
                 width: buffer.width,
                 height: buffer.height,
-                stampFlipY: !buffer.textureFromCanvas,
-                premul: !buffer.textureFromCanvas,
+                stampFlipY: buffer.stampFlipY,
+                premul: buffer.texturePremul,
             };
         }
 
@@ -133,8 +133,8 @@ export class PatternValuesService {
             buffer.width,
             buffer.height,
             !!maskService.isMaskInverted,
-            maskBuffer.textureFromCanvas,
-            buffer.textureFromCanvas,
+            false,
+            false,
         );
 
         return {texture, width: buffer.width, height: buffer.height, stampFlipY: true, premul: false};
@@ -176,7 +176,7 @@ export class PatternValuesService {
             height,
             false,
             false,
-            buffer.textureFromCanvas,
+            false,
         );
 
         if (!this.selectedGpuTex || this.selectedGpuW !== width || this.selectedGpuH !== height) {
