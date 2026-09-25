@@ -5,30 +5,73 @@ alwaysApply: true
 
 # Deploy (GitHub Pages)
 
-Live URL: https://namenameemail.github.io/rasterscape/
+Pages repo: `/home/name/Desktop/web/namenameemail.github.io/`  
+Source stays in `rasterscape`. Pages gets **built files only**.
 
-Static site lives in sibling repo:
+| Build | URL | Folder |
+|-------|-----|--------|
+| Current (`gpu-pipeline` / main line) | https://namenameemail.github.io/rasterscape/ | `…/rasterscape/` |
+| Early (`deploy/early`, commit `779f095`) | https://namenameemail.github.io/rasterscape-early/ | `…/rasterscape-early/` |
+| +1 month (`deploy/1m`, commit `202ccbb`) | https://namenameemail.github.io/rasterscape-1m/ | `…/rasterscape-1m/` |
+| +2 months (`deploy/2m`, commit `821d72d`) | https://namenameemail.github.io/rasterscape-2m/ | `…/rasterscape-2m/` |
+| +6 months (`deploy/6m`, commit `56faa74`) | https://namenameemail.github.io/rasterscape-6m/ | `…/rasterscape-6m/` |
+| +8 months (`deploy/8m`, commit `323a64c`) | https://namenameemail.github.io/rasterscape-8m/ | `…/rasterscape-8m/` |
 
-`/home/name/Desktop/web/namenameemail.github.io/rasterscape/`
-
-Source stays here (`rasterscape`). Pages repo only gets the built files.
-
-## How
+## Current
 
 ```sh
 npm run deploy
 ```
 
-Script: [`scripts/deploy.sh`](scripts/deploy.sh).
+[`scripts/deploy.sh`](scripts/deploy.sh): `vite build` (`base: './'`) → replace `rasterscape/` → commit + push pages. Override: `PAGES_DIR=…`.
 
-1. `vite build` with `base: './'` (subdir-safe asset paths; skips `tsc` — full `npm run build` often fails on existing type debt).
-2. Replace `../namenameemail.github.io/rasterscape/` with `dist/`.
-3. Commit + push that repo (`origin`, current branch).
+Skip `tsc` on purpose (`npm run build` often fails on type debt). Do not set `base` back to `/`.
 
-Override pages path: `PAGES_DIR=/other/path npm run deploy`.
+## Early (`deploy/early`)
 
-## Rules
+First real app commit (after empty CRA): `779f095` *canvas & selection*. Branch only adds `"homepage": "/rasterscape-early"`.
 
-- Do not put source into the pages repo — only `dist` contents.
-- Do not change `base` back to `/` without updating deploy; absolute `/assets/…` breaks under `/rasterscape/`.
-- After deploy, wait a minute for Pages; hard-refresh if an old bundle is cached.
+Worktree (if present): `/home/name/Desktop/web/rasterscape-early-src`.
+
+```sh
+# Node 12 required (node-sass 4 / CRA 3)
+. "$HOME/.nvm/nvm.sh" && nvm use 12
+cd /home/name/Desktop/web/rasterscape-early-src   # or checkout deploy/early
+unset CI   # CI=true turns eslint warnings into build errors
+npm ci && npm run build
+rm -rf ../namenameemail.github.io/rasterscape-early
+cp -a build/. ../namenameemail.github.io/rasterscape-early/
+# then commit + push namenameemail.github.io
+```
+
+Do not overwrite `rasterscape/` with the early build.
+
+## +1 month (`deploy/1m`)
+
+~31 days after early: `202ccbb` *rotating repeating* (2019-12-07). Branch only sets `"homepage": "/rasterscape-1m"`.
+
+Worktree: `/home/name/Desktop/web/rasterscape-1m-src`. Same Node 12 / `unset CI` flow as early; copy `build/` → `…/rasterscape-1m/`.
+
+## +2 months (`deploy/2m`)
+
+~26 days after 1m: `821d72d` *canvas mousemove outside* (2020-01-02). Branch only sets `"homepage": "/rasterscape-2m"`.
+
+Worktree: `/home/name/Desktop/web/rasterscape-2m-src`. Same Node 12 flow; copy → `…/rasterscape-2m/`.
+
+## +6 months (`deploy/6m`)
+
+~4 months after 2m (~6 from early): `56faa74` *1344* (2020-05-03). Closest to +4m from `821d72d`.
+
+Branch: `"homepage": "/rasterscape-6m"` + worker build fix (`eslint-disable no-restricted-globals`, `export {}` — иначе CRA молча не пишет JS).
+
+Worktree: `/home/name/Desktop/web/rasterscape-6m-src`. Yarn lock only → `yarn install`, then `unset CI && npm run build`. Copy → `…/rasterscape-6m/`.
+
+## +8 months (`deploy/8m`)
+
+~2 months after 6m: `323a64c` *tooltip* (2020-07-08). Branch: homepage `/rasterscape-8m` + same worker fixes on `WebWorkerCanvas/workers/*.ts`.
+
+Worktree: `/home/name/Desktop/web/rasterscape-8m-src`. Same Node 12 / yarn flow; copy → `…/rasterscape-8m/`.
+
+## After deploy
+
+Wait a minute for Pages; hard-refresh if an old bundle is cached.
