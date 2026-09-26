@@ -30,6 +30,7 @@ export interface VideoParams {
     sourceType: VideoSourceType
     sourcePatternId: string | null
     alwaysCook: boolean
+    volumeViewOn: boolean
 }
 
 export interface VideoValue {

@@ -422,5 +422,6 @@
 
 .video-controls-cube-params {
   display: flex;
-
+  flex-wrap: wrap;
+  width: 210px;
 }

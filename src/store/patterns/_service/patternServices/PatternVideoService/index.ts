@@ -1,6 +1,7 @@
 import { PatternService } from '../../PatternService'
 import { CameraService, CameraServiceInitParams } from 'bbuutoonnss'
 import { EdgeMode, MirrorMode, ShaderVideoModule, CameraAxis, StackType } from './ShaderVideoModule'
+import { VideoVolumeView } from './VideoVolumeView'
 import { FxyParams } from '../../../../changeFunctions/functions/fxy'
 import { getFxyFunctionType } from './utils'
 import { VideoOffset } from './ShaderVideoModule/types'
@@ -75,6 +76,7 @@ export class PatternVideoService {
     sourcePatternId: string | null = null
     device: MediaDeviceInfo
     cameraService: CameraService = new CameraService()
+    volumeView = new VideoVolumeView()
 
     private unsubscribeFrame: (() => void) | null = null
 
@@ -189,13 +191,36 @@ export class PatternVideoService {
     onFrame = () => {
         this.pushSourceFrame()
 
+        const state = this.patternService.storeService.getState()
+        const patternId = this.patternService.patternId
+        const videoParams = state.patterns[patternId].video.params
+        const platformerPlaying = this.patternService.platformerService.isPlaying
+        const volumeViewOn = !platformerPlaying && !!videoParams.volumeViewOn
+
         profileLogger.time('video.updateFuncParams', () => {
             if (!this.changeFunctionId) {
+                this.volumeView.clearCut()
                 return
             }
 
-            const state = this.patternService.storeService.getState()
             const changeFunctionState = state.changeFunctions.functions[this.changeFunctionId]
+            if (!changeFunctionState) {
+                this.volumeView.clearCut()
+                return
+            }
+
+            if (volumeViewOn) {
+                if (changeFunctionState.type === ECFType.FXY) {
+                    const changeFunctionParams = changeFunctionState.params as FxyParams
+                    const changeFunctionTypeParams = changeFunctionParams.typeParams[changeFunctionParams.type]
+                    this.volumeView.setFxyCut(changeFunctionParams.type, changeFunctionTypeParams)
+                } else if (changeFunctionState.type === ECFType.DEPTH) {
+                    this.volumeView.setDepthCut(changeFunctionState.params as CfDepthParams)
+                } else {
+                    this.volumeView.clearCut()
+                }
+                return
+            }
 
             if (changeFunctionState.type === ECFType.FXY) {
                 const changeFunctionParams = changeFunctionState.params as FxyParams
@@ -211,14 +236,29 @@ export class PatternVideoService {
         })
 
         profileLogger.time('video.updateOffsets', () => {
-            const state = this.patternService.storeService.getState()
-            const patternVideoOffset = state.patterns[this.patternService.patternId].video.params.offset
-            this.shaderVideoModule.updateOffsets(patternVideoOffset)
+            if (volumeViewOn) {
+                return
+            }
+            this.shaderVideoModule.updateOffsets(videoParams.offset)
         })
 
-        const frame = profileLogger.time('video.shaderDraw', () => this.shaderVideoModule.updateImage())
+        const frame = profileLogger.time('video.shaderDraw', () => {
+            if (volumeViewOn) {
+                const mod = this.shaderVideoModule
+                if (!mod.cubeTexture) {
+                    return null
+                }
+                return this.volumeView.render(mod.cubeTexture, this.width, this.height, {
+                    queueOffset: mod.queueOffset,
+                    stackSize: mod.stackSizeWithError,
+                    error: mod.error,
+                    direction: this.cameraAxis,
+                    offset: videoParams.offset,
+                })
+            }
+            return this.shaderVideoModule.updateImage()
+        })
 
-        const platformerPlaying = this.patternService.platformerService.isPlaying
         const buffer = this.patternService.canvasService.buffer
 
         if (frame && platformerPlaying) {
@@ -233,7 +273,7 @@ export class PatternVideoService {
             })
         }
 
-        const pattern = this.patternService.storeService.getState().patterns[this.patternService.patternId]
+        const pattern = state.patterns[patternId]
         const radius = Math.round(pattern.blur?.value?.radius)
 
         if (radius > 0) {

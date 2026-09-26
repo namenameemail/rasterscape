@@ -2,7 +2,7 @@ import {PatternService} from "../PatternService";
 import {EToolType} from "../../../tool/types";
 import {EBrushType} from "../../../brush/types";
 import {ELineType} from "../../../line/types";
-import {ToolService} from "./CanvasEventsService/types";
+import {ToolService, CanvasServiceEvent} from "./CanvasEventsService/types";
 import {CanvasEventHandlers, CanvasEventsService} from "./CanvasEventsService";
 import {BrushShape} from "./CanvasEventsService/ToolsServices/brushForm";
 import {BrushPattern} from "./CanvasEventsService/ToolsServices/brushPattern";
@@ -90,16 +90,44 @@ export class PatternToolService {
         this.patternService.canvasService.buffer?.present();
     };
 
+    private isVolumeViewOrbit = (): boolean => {
+        const id = this.patternService.patternId
+        return !!this.patternService.storeService.getState().patterns[id]?.video?.params?.volumeViewOn
+    }
+
+    private handleVolumePointer = (
+        type: 'down' | 'move' | 'up',
+        e: CanvasServiceEvent,
+    ) => {
+        const ev = e.events[0]
+        if (!ev) return
+        this.patternService.videoService.volumeView.handlePointer({
+            type,
+            x: ev.offsetX,
+            y: ev.offsetY,
+            buttons: ev.buttons ?? (type === 'up' ? 0 : 1),
+        })
+    }
+
     canvasEventHandlers: CanvasEventHandlers = {
         onClick: (...args) => {
+            if (this.isVolumeViewOrbit()) return
             this.canvasToolService?.handlers.onClick?.(...args);
             this.presentToolResult();
         },
         onDown: (...args) => {
+            if (this.isVolumeViewOrbit()) {
+                this.handleVolumePointer('down', args[0])
+                return
+            }
             this.canvasToolService?.handlers.onDown?.(...args);
             this.presentCanvasMonitor();
         },
         onDraw: (...args) => {
+            if (this.isVolumeViewOrbit()) {
+                this.handleVolumePointer('move', args[0])
+                return
+            }
             profileLogger.time('draw.tool', () => {
                 this.canvasToolService?.handlers.onDraw?.(...args);
             });
@@ -114,6 +142,10 @@ export class PatternToolService {
             }
         },
         onRelease: (...args) => {
+            if (this.isVolumeViewOrbit()) {
+                this.handleVolumePointer('up', args[0])
+                return
+            }
             this.canvasToolService?.handlers.onRelease?.(...args);
             this.presentToolResult();
             if (this.patternService.platformerService.isPlaying) {

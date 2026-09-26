@@ -36,6 +36,7 @@ export type SetDepthAction = PatternAction & { value: number };
 export type SetVideoSourceTypeAction = PatternAction & { value: VideoSourceType };
 export type SetVideoSourcePatternAction = PatternAction & { value: string | null };
 export type SetVideoAlwaysCookAction = PatternAction & { value: boolean };
+export type SetVideoVolumeViewAction = PatternAction & { value: boolean };
 
 export const setDevice = (id: string, device: MediaDeviceInfo) => (dispatch, getState: () => AppState) => {
     dispatch({
@@ -280,4 +281,12 @@ export const setVideoAlwaysCook = (id: string, value: boolean) => (dispatch) => 
         value,
     });
     syncPatternCook(id);
+};
+
+export const setVideoVolumeView = (id: string, value: boolean) => (dispatch) => {
+    dispatch({
+        type: EVideoAction.SET_VOLUME_VIEW,
+        id,
+        value,
+    });
 };

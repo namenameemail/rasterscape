@@ -21,6 +21,7 @@ import {
     setVideoSourceType,
     setVideoSourcePattern,
     setVideoAlwaysCook,
+    setVideoVolumeView,
 } from '../../../store/patterns/video/actions'
 import { getChangeFunctionsSelectItemsVideo } from '../../../store/changeFunctions/selectors'
 import { HoverPatternSelect } from '../HoverPatternSelect'
@@ -84,6 +85,8 @@ export interface VideoControlsActionProps {
     setVideoSourcePattern(id: string, value: string | null): void
 
     setVideoAlwaysCook(id: string, value: boolean): void
+
+    setVideoVolumeView(id: string, value: boolean): void
 }
 
 export interface VideoControlsOwnProps {
@@ -132,6 +135,11 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
     handleChangeAlwaysCook = () => {
         const { videoParams, patternId, setVideoAlwaysCook } = this.props
         setVideoAlwaysCook(patternId, !videoParams.alwaysCook)
+    }
+
+    handleChangeVolumeView = () => {
+        const { videoParams, patternId, setVideoVolumeView } = this.props
+        setVideoVolumeView(patternId, !videoParams.volumeViewOn)
     }
 
     handleChangeSlitModeParam = (axis: CameraAxis) => {
@@ -375,18 +383,6 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                         {/* {updatingOn ? t('pattern.video.stop') : t('pattern.video.update')} */}
                         {t('pattern.video.update')}
                     </ButtonHK>
-                    <ButtonHK
-                        hkLabel={'pattern.hotkeysDescription.video.alwaysCook'}
-                        hkData1={patternId}
-                        path={`pattern.${patternId}.video.alwaysCook`}
-                        className={'video-toggle'}
-                        selected={!!params.alwaysCook}
-                        name={'alwaysCook'}
-                        disabled={videoDisabled}
-                        onClick={this.handleChangeAlwaysCook}
-                    >
-                        {t('pattern.video.alwaysCook')}
-                    </ButtonHK>
                     <SelectDrop
 
                         hkByValue={false}
@@ -409,6 +405,30 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                         items={changeFunctionsSelectItems}
                         onChange={this.handleChangeChangeFunction}
                     />
+                    <ButtonHK
+                        hkLabel={'pattern.hotkeysDescription.video.alwaysCook'}
+                        hkData1={patternId}
+                        path={`pattern.${patternId}.video.alwaysCook`}
+                        className={'video-toggle'}
+                        selected={!!params.alwaysCook}
+                        name={'alwaysCook'}
+                        disabled={videoDisabled}
+                        onClick={this.handleChangeAlwaysCook}
+                    >
+                        {t('pattern.video.alwaysCook')}
+                    </ButtonHK>
+                    <ButtonHK
+                        hkLabel={'pattern.hotkeysDescription.video.volumeView'}
+                        hkData1={patternId}
+                        path={`pattern.${patternId}.video.volumeViewOn`}
+                        className={'video-toggle'}
+                        selected={!!params.volumeViewOn}
+                        name={'volumeViewOn'}
+                        disabled={videoDisabled}
+                        onClick={this.handleChangeVolumeView}
+                    >
+                        {t('pattern.video.volumeView')}
+                    </ButtonHK>
                 </div>
                 {/*<ButtonHK*/}
                 {/*    hkLabel={'pattern.hotkeysDescription.video.mirror'}*/}
@@ -497,6 +517,7 @@ const mapDispatchToProps: MapDispatchToProps<VideoControlsActionProps, VideoCont
     setVideoSourceType,
     setVideoSourcePattern,
     setVideoAlwaysCook,
+    setVideoVolumeView,
 }
 
 export const VideoControls = connect<VideoControlsStateProps, VideoControlsActionProps, VideoControlsOwnProps, AppState>(

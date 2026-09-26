@@ -17,4 +17,5 @@ export enum EVideoAction {
     SET_VIDEO_SOURCE_TYPE = 'pattern/video/set-video-source-type',
     SET_VIDEO_SOURCE_PATTERN = 'pattern/video/set-video-source-pattern',
     SET_ALWAYS_COOK = 'pattern/video/set-always-cook',
+    SET_VOLUME_VIEW = 'pattern/video/set-volume-view',
 }

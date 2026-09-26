@@ -10,12 +10,14 @@
         "camera": "camera",
         "pattern": "pattern"
       },
-      "alwaysCook": "vždy"
+      "alwaysCook": "vždy",
+      "volumeView": "objem"
     },
     "hotkeysDescription": {
       "video": {
         "sourceType": "pattern{{data1}} | video | source type",
-        "alwaysCook": "pattern{{data1}} | video | vždy"
+        "alwaysCook": "pattern{{data1}} | video | vždy",
+        "volumeView": "pattern{{data1}} | video | objem"
       },
       "platformer": {
         "alwaysCook": "pattern{{data1}} | platformer | vždy"

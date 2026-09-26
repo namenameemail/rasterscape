@@ -222,6 +222,7 @@ export class ShaderVideoModule {
 
         gl.activeTexture(gl.TEXTURE0)
         gl.bindTexture(gl.TEXTURE_3D, this.cubeTexture)
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1)
         gl.texSubImage3D(
             gl.TEXTURE_3D,
             0,
@@ -231,6 +232,7 @@ export class ShaderVideoModule {
             gl.UNSIGNED_BYTE,
             source,
         )
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 0)
         this.advanceQueue()
     }
 

@@ -8,6 +8,7 @@ import {
     SetVideoParamsAction,
     SetVideoSourcePatternAction, SetVideoSourceTypeAction,
     SetVideoAlwaysCookAction,
+    SetVideoVolumeViewAction,
 } from './actions'
 import {act} from "react-dom/test-utils";
 import {EVideoAction} from "./consts";
@@ -218,6 +219,17 @@ export const videoReducers = {
                 params: {
                     ...pattern.video.params,
                     alwaysCook: action.value,
+                }
+            }
+        })),
+    [EVideoAction.SET_VOLUME_VIEW]: reducePattern<SetVideoVolumeViewAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    volumeViewOn: action.value,
                 }
             }
         })),

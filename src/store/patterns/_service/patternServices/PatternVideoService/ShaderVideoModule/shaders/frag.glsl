@@ -272,7 +272,7 @@ void main() {
 
     // QUEUE OFFSET
     z = fract(1.0 + u_TexQueueOffset - z * ((float(u_StackSize) - float(u_Error)) / float(u_StackSize)));
-    outputColor = texture(u_Sampler, vec3(x, 1.0 - y, z));
+    outputColor = texture(u_Sampler, vec3(x, y, z));
 
     //    if (x > 0.5) {
     //        outputColor = texture(u_CFParamTexture, vec2(x, 1.0 - y));
