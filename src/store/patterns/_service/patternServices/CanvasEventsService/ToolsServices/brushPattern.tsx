@@ -109,7 +109,7 @@ export class BrushPattern implements ToolService {
         context.fillStyle = getRandomColor();
         context.globalAlpha = opacity;
         context.globalCompositeOperation = compositeOperation;
-        context.imageSmoothingEnabled = true;
+        context.imageSmoothingEnabled = false;
 
         const width = patternSize * brushPatternImage.width;
         const height = patternSize * brushPatternImage.height;

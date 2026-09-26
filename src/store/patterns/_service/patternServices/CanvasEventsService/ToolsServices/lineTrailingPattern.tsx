@@ -168,7 +168,7 @@ export class LineTrailingPattern implements ToolService {
         context.fillStyle = getRandomColor();
         context.globalAlpha = opacity;
         context.globalCompositeOperation = compositeOperation;
-        context.imageSmoothingEnabled = true;
+        context.imageSmoothingEnabled = false;
 
         this.helperCanvas1.clear();
 

@@ -51,6 +51,10 @@ export const stampTextures = (
     gl.useProgram(ctx.stampLayerProgram)
     gl.activeTexture(gl.TEXTURE0)
     gl.bindTexture(gl.TEXTURE_2D, stampSource)
+    const mag = gl.getTexParameter(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER)
+    const min = gl.getTexParameter(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
     gl.uniform1i(gl.getUniformLocation(ctx.stampLayerProgram, 'u_tex'), 0)
     gl.activeTexture(gl.TEXTURE1)
     gl.bindTexture(gl.TEXTURE_2D, clipMask ? ctx.uploadClipMask(clipMask) : ctx.ensureWhiteTex())
@@ -79,6 +83,10 @@ export const stampTextures = (
     }
 
     gl.disable(gl.BLEND)
+    gl.activeTexture(gl.TEXTURE0)
+    gl.bindTexture(gl.TEXTURE_2D, stampSource)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, mag)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, min)
     gl.activeTexture(gl.TEXTURE1)
     gl.bindTexture(gl.TEXTURE_2D, null)
     gl.activeTexture(gl.TEXTURE0)

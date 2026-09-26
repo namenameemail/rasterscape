@@ -6,3 +6,4 @@
 
 - [кисть | выдел-е: заморозить штамп](brush-select-lock-source.md)
 - [кисть | shape: квадрат и паттерн](brush-shape-types.md)
+- [масштаб source: nearest / smooth](source-scale-filter.md)

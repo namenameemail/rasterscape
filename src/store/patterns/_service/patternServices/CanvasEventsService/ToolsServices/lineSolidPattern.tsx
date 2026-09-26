@@ -210,6 +210,7 @@ export class LineSolidPattern implements ToolService {
             const trail = this.trails[id] ?? [];
             if (trail.length < 2) return;
             const strokeCtx = this.helperCanvas1.context;
+            strokeCtx.imageSmoothingEnabled = false;
             strokeCtx.lineWidth = size;
             strokeCtx.lineJoin = join;
             strokeCtx.lineCap = cap;
