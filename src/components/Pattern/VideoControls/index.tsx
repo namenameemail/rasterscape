@@ -22,6 +22,7 @@ import {
     setVideoSourcePattern,
     setVideoAlwaysCook,
     setVideoVolumeView,
+    setVideoVolumeGhost,
 } from '../../../store/patterns/video/actions'
 import { getChangeFunctionsSelectItemsVideo } from '../../../store/changeFunctions/selectors'
 import { HoverPatternSelect } from '../HoverPatternSelect'
@@ -34,6 +35,7 @@ import { LabelFormatter } from '../../../store/hotkeys/label-formatters'
 import { Translations } from '../../../store/language/helpers'
 import { SelectVideoDevice } from 'bbuutoonnss'
 import { InputNumber, InputNumberProps } from '../../_shared/inputs/InputNumber'
+import { ButtonNumberCF } from '../../_shared/buttons/hotkeyed/ButtonNumberCF'
 import { VideoOffsetForm } from './VideoOffsetForm'
 import { CameraAxis, EdgeMode, MirrorMode, StackType } from '../../../store/patterns/_service/patternServices/PatternVideoService/ShaderVideoModule'
 import { ButtonEventData } from '../../_shared/buttons/simple/Button'
@@ -87,6 +89,8 @@ export interface VideoControlsActionProps {
     setVideoAlwaysCook(id: string, value: boolean): void
 
     setVideoVolumeView(id: string, value: boolean): void
+
+    setVideoVolumeGhost(id: string, value: number): void
 }
 
 export interface VideoControlsOwnProps {
@@ -111,6 +115,9 @@ const inputNumberProps: Pick<InputNumberProps, 'min' | 'max' | 'step' | 'delay' 
     delay: 1000,
     notZero: true,
 }
+
+const volumeGhostRange = [0, 1] as [number, number]
+const volumeGhostValueText = (value: number) => value.toFixed(3)
 
 export class VideoControlsComponent extends React.PureComponent<VideoControlsProps, VideoControlsState> {
 
@@ -140,6 +147,11 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
     handleChangeVolumeView = () => {
         const { videoParams, patternId, setVideoVolumeView } = this.props
         setVideoVolumeView(patternId, !videoParams.volumeViewOn)
+    }
+
+    handleChangeVolumeGhost = ({ value }: { value: number }) => {
+        const { patternId, setVideoVolumeGhost } = this.props
+        setVideoVolumeGhost(patternId, value)
     }
 
     handleChangeSlitModeParam = (axis: CameraAxis) => {
@@ -429,6 +441,21 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                     >
                         {t('pattern.video.volumeView')}
                     </ButtonHK>
+                    <ButtonNumberCF
+                        withoutCF
+                        pres={3}
+                        valueD={1000}
+                        precisionGain={5}
+                        getText={volumeGhostValueText}
+                        path={`patterns.${patternId}.video.params.volumeGhost`}
+                        hkLabel={'pattern.hotkeysDescription.video.volumeGhost'}
+                        hkData1={patternId}
+                        value={typeof params.volumeGhost === 'number' ? params.volumeGhost : 0.14}
+                        name={'volumeGhost'}
+                        onChange={this.handleChangeVolumeGhost}
+                        range={volumeGhostRange}
+                        disabled={videoDisabled}
+                    />
                 </div>
                 {/*<ButtonHK*/}
                 {/*    hkLabel={'pattern.hotkeysDescription.video.mirror'}*/}
@@ -482,10 +509,15 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
 
 const mapStateToProps: MapStateToProps<VideoControlsStateProps, VideoControlsOwnProps, AppState> = (state, { patternId }) => {
     const changeFunctionId = state.patterns[patternId]?.video?.params?.changeFunctionId
+    const defaults = getVideoState().params
+    const videoParams = {
+        ...defaults,
+        ...(state.patterns[patternId]?.video?.params ?? {}),
+    }
 
     return {
         changeFunctionsSelectItems: getChangeFunctionsSelectItemsVideo(state),
-        videoParams: state.patterns[patternId]?.video?.params ?? getVideoState().params,
+        videoParams,
         changeFunctionParams: changeFunctionId
             ? state.changeFunctions.functions[changeFunctionId]?.params || null
             : null,
@@ -518,6 +550,7 @@ const mapDispatchToProps: MapDispatchToProps<VideoControlsActionProps, VideoCont
     setVideoSourcePattern,
     setVideoAlwaysCook,
     setVideoVolumeView,
+    setVideoVolumeGhost,
 }
 
 export const VideoControls = connect<VideoControlsStateProps, VideoControlsActionProps, VideoControlsOwnProps, AppState>(

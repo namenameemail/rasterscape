@@ -37,6 +37,7 @@ export type SetVideoSourceTypeAction = PatternAction & { value: VideoSourceType 
 export type SetVideoSourcePatternAction = PatternAction & { value: string | null };
 export type SetVideoAlwaysCookAction = PatternAction & { value: boolean };
 export type SetVideoVolumeViewAction = PatternAction & { value: boolean };
+export type SetVideoVolumeGhostAction = PatternAction & { value: number };
 
 export const setDevice = (id: string, device: MediaDeviceInfo) => (dispatch, getState: () => AppState) => {
     dispatch({
@@ -286,6 +287,14 @@ export const setVideoAlwaysCook = (id: string, value: boolean) => (dispatch) => 
 export const setVideoVolumeView = (id: string, value: boolean) => (dispatch) => {
     dispatch({
         type: EVideoAction.SET_VOLUME_VIEW,
+        id,
+        value,
+    });
+};
+
+export const setVideoVolumeGhost = (id: string, value: number) => (dispatch) => {
+    dispatch({
+        type: EVideoAction.SET_VOLUME_GHOST,
         id,
         value,
     });

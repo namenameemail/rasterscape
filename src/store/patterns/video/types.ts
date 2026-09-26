@@ -31,6 +31,7 @@ export interface VideoParams {
     sourcePatternId: string | null
     alwaysCook: boolean
     volumeViewOn: boolean
+    volumeGhost: number
 }
 
 export interface VideoValue {

@@ -403,7 +403,8 @@
         "pattern": "pattern"
       },
       "alwaysCook": "always",
-      "volumeView": "volume"
+      "volumeView": "volume",
+      "volumeGhost": "ghost"
     },
     "hotkeysDescription": {
       "save": "pattern{{data1}} | save",
@@ -472,7 +473,8 @@
         "cutFunction": "pattern{{data1}} | video | cut function",
         "sourceType": "pattern{{data1}} | video | source type",
         "alwaysCook": "pattern{{data1}} | video | always",
-        "volumeView": "pattern{{data1}} | video | volume"
+        "volumeView": "pattern{{data1}} | video | volume",
+        "volumeGhost": "pattern{{data1}} | video | ghost"
       },
       "platformer": {
         "playingOn": "pattern{{data1}} | platformer | play/stop",

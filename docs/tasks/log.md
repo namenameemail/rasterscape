@@ -2,6 +2,7 @@
 
 Новые сверху.
 
+- 2026-09-26 21:20 — [vv.06 ghost cut](video-volume-view/done/06-cut-ghost.md)
 - 2026-09-26 20:47 — [vv.05 DEPTH cut](video-volume-view/done/05-cut-depth.md)
 - 2026-09-26 20:47 — [vv.04 FXY cut](video-volume-view/done/04-cut-fxy.md)
 - 2026-09-26 20:47 — [vv.03 мышь = орбита](video-volume-view/done/03-mouse-orbit.md)

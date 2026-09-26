@@ -1,5 +1,7 @@
 # 06 — полупрозрачный «отрезанный» объём
 
+**Статус: закрыт** (2026-09-26).
+
 ## Сейчас
 
 Cut (FXY / DEPTH) в volume view — жёсткий half-space: сэмплы с «вырезанной» стороны просто не копятся. Снаружи куб выглядит обрезанным, отрезанную часть не видно.
@@ -10,10 +12,15 @@ Cut (FXY / DEPTH) в volume view — жёсткий half-space: сэмплы с 
 
 ## Прикидка
 
-- Уже есть: alpha accumulation в raymarch; cut = `insideFxyCut` / DEPTH в [`fxyCut.glsl`](../../../../src/store/patterns/_service/patternServices/PatternVideoService/VideoVolumeView/shaders/fxyCut.glsl).
+- Уже есть: alpha accumulation в raymarch; cut = `insideFxyCut` / DEPTH в [`fxyCut.glsl`](../../../../../src/store/patterns/_service/patternServices/PatternVideoService/VideoVolumeView/shaders/fxyCut.glsl).
 - Сделать: на «вырезанной» стороне не skip, а копить с умноженным alpha (константа или слайдер в UI); order raymarch уже front-to-back — должно стыковаться.
 - Риски: больше шума / стоимость тех же шагов (чуть дороже fill); нужен понятный дефолт и выключатель.
-- Сложность: средняя; зависит от стабильного cut ([04](done/04-cut-fxy.md), [05](done/05-cut-depth.md)).
+- Сложность: средняя; зависит от стабильного cut ([04](04-cut-fxy.md), [05](05-cut-depth.md)).
+
+## Сделано
+
+- `cutSampleWeight`: solid = внутри offset **и** cut; всё остальное в кубе — ghost с `u_ghost` (в т.ч. вне границ обрезки).
+- `volumeGhost` 0…1 (дефолт 0.14) — ползунок рядом с объёмом; `0` = жёсткий срез без призрака; точность тысячные.
 
 ## Готово
 

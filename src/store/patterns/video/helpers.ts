@@ -19,6 +19,7 @@ export const getVideoState = getFunctionState<VideoValue, VideoParams>(
         sourcePatternId: null,
         alwaysCook: false,
         volumeViewOn: false,
+        volumeGhost: 0.14,
         offset: {
             x0: 0.0,//.25,
             x1: 1.0,//.75,

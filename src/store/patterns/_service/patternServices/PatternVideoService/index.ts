@@ -254,6 +254,7 @@ export class PatternVideoService {
                     error: mod.error,
                     direction: this.cameraAxis,
                     offset: videoParams.offset,
+                    ghost: typeof videoParams.volumeGhost === 'number' ? videoParams.volumeGhost : 0.14,
                 })
             }
             return this.shaderVideoModule.updateImage()

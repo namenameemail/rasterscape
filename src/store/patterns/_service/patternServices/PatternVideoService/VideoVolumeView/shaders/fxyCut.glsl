@@ -140,10 +140,7 @@ float normInRange(float v, float a, float b) {
     return (v - a) / d;
 }
 
-bool insideFxyCut(vec3 p) {
-    if (!insideOffsetBox(p)) {
-        return false;
-    }
+bool inCutHalfSpace(vec3 p) {
     if (u_CutFuncType == 0) {
         return true;
     }
@@ -159,4 +156,16 @@ bool insideFxyCut(vec3 p) {
         return uy > evalCut(ux, uz);
     }
     return uz > evalCut(ux, uy);
+}
+
+bool insideFxyCut(vec3 p) {
+    return insideOffsetBox(p) && inCutHalfSpace(p);
+}
+
+// 1 = solid (в окне offset и по cut), иначе ghost всего остального куба
+float cutSampleWeight(vec3 p) {
+    if (insideOffsetBox(p) && inCutHalfSpace(p)) {
+        return 1.0;
+    }
+    return u_ghost;
 }

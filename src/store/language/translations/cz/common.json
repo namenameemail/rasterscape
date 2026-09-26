@@ -11,13 +11,15 @@
         "pattern": "pattern"
       },
       "alwaysCook": "vždy",
-      "volumeView": "objem"
+      "volumeView": "objem",
+      "volumeGhost": "duch"
     },
     "hotkeysDescription": {
       "video": {
         "sourceType": "pattern{{data1}} | video | source type",
         "alwaysCook": "pattern{{data1}} | video | vždy",
-        "volumeView": "pattern{{data1}} | video | objem"
+        "volumeView": "pattern{{data1}} | video | objem",
+        "volumeGhost": "pattern{{data1}} | video | duch"
       },
       "platformer": {
         "alwaysCook": "pattern{{data1}} | platformer | vždy"

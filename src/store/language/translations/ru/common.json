@@ -411,7 +411,8 @@
         "pattern": "паттерн"
       },
       "alwaysCook": "всегда",
-      "volumeView": "объём"
+      "volumeView": "объём",
+      "volumeGhost": "призрак"
     },
     "hotkeysDescription": {
       "save": "паттерн{{data1}} | сохранить",
@@ -480,7 +481,8 @@
         "cutFunction": "паттерн{{data1}} | видео | функция среза",
         "sourceType": "паттерн{{data1}} | видео | источник",
         "alwaysCook": "паттерн{{data1}} | видео | всегда",
-        "volumeView": "паттерн{{data1}} | видео | объём"
+        "volumeView": "паттерн{{data1}} | видео | объём",
+        "volumeGhost": "паттерн{{data1}} | видео | призрак"
       },
       "platformer": {
         "playingOn": "паттерн{{data1}} | платформер | старт/стоп",

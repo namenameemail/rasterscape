@@ -14,6 +14,7 @@ uniform float u_aspect;
 uniform float u_queueOffset;
 uniform float u_stackScale;
 uniform int u_steps;
+uniform float u_ghost;
 
 __FXY_CUT__
 
@@ -63,9 +64,10 @@ void main() {
     for (int i = 0; i < 128; i++) {
         if (i >= steps) break;
         vec3 pc = clamp(p, 0.0, 1.0);
-        if (insideFxyCut(pc)) {
+        float w = cutSampleWeight(pc);
+        if (w > 0.0) {
             vec4 s = sampleVolume(pc);
-            float a = s.a;
+            float a = s.a * w;
             acc.rgb += (1.0 - acc.a) * a * s.rgb;
             acc.a += (1.0 - acc.a) * a;
             if (acc.a > 0.97) break;

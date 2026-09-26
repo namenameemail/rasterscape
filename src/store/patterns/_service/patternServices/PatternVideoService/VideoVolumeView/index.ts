@@ -37,6 +37,7 @@ export type VolumeRenderParams = {
     steps?: number
     direction?: CameraAxis
     offset?: VideoOffset
+    ghost?: number
 }
 
 const DEFAULT_OFFSET: VideoOffset = {
@@ -73,8 +74,18 @@ export class VideoVolumeView {
     private cutParams: AnyFxyParams | CfDepthParams | null = null
 
     private ensureProgram = (): WebGLProgram => {
-        if (this.program) return this.program
         const {gl} = getGlContext()
+        if (this.program) {
+            if (gl.getUniformLocation(this.program, 'u_ghost') !== null) {
+                return this.program
+            }
+            gl.deleteProgram(this.program)
+            this.program = null
+            if (this.quadBuffer) {
+                gl.deleteBuffer(this.quadBuffer)
+                this.quadBuffer = null
+            }
+        }
         const fs = (fsBody as string).replace('__FXY_CUT__', fxyCut as string)
         this.program = linkProgram(gl, vs, fs)
         this.quadBuffer = gl.createBuffer()
@@ -233,6 +244,7 @@ export class VideoVolumeView {
         gl.uniform1f(gl.getUniformLocation(program, 'u_CutOffset_y1'), offset.y1)
         gl.uniform1f(gl.getUniformLocation(program, 'u_CutOffset_z0'), offset.z0)
         gl.uniform1f(gl.getUniformLocation(program, 'u_CutOffset_z1'), offset.z1)
+        gl.uniform1f(gl.getUniformLocation(program, 'u_ghost'), params.ghost ?? 0)
 
         if (!this.cutFuncType || !this.cutParams) {
             return
