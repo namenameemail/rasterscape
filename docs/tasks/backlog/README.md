@@ -11,3 +11,4 @@
 ## Уже вынесено в блоки
 
 - [видео: объём 3D / raymarch](../video-volume-view/README.md)
+- [видео: источник «файл»](../video-file-source/README.md)

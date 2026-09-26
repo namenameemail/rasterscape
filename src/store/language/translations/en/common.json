@@ -400,8 +400,11 @@
       },
       "sourceType": {
         "camera": "camera",
-        "pattern": "pattern"
+        "pattern": "pattern",
+        "file": "file"
       },
+      "loadFile": "file",
+      "filePlaying": "play",
       "alwaysCook": "always",
       "volumeView": "volume",
       "volumeGhost": "ghost"
@@ -472,6 +475,7 @@
         "stackType": "pattern{{data1}} | video | stack type",
         "cutFunction": "pattern{{data1}} | video | cut function",
         "sourceType": "pattern{{data1}} | video | source type",
+        "filePlaying": "pattern{{data1}} | video | file play",
         "alwaysCook": "pattern{{data1}} | video | always",
         "volumeView": "pattern{{data1}} | video | volume",
         "volumeGhost": "pattern{{data1}} | video | ghost"

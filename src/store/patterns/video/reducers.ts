@@ -6,7 +6,8 @@ import {
     SetSlitModeAction, SetStackSizeAction,
     SetStackTypeAction, SetVideoParamAction,
     SetVideoParamsAction,
-    SetVideoSourcePatternAction, SetVideoSourceTypeAction,
+    SetVideoSourcePatternAction, SetVideoSourceTypeAction, SetVideoSourceFileAction,
+    SetVideoFileLoopRangeAction,
     SetVideoAlwaysCookAction,
     SetVideoVolumeViewAction,
     SetVideoVolumeGhostAction,
@@ -196,8 +197,16 @@ export const videoReducers = {
                 params: {
                     ...pattern.video.params,
                     sourceType: action.value,
-                    sourcePatternId: action.value === VideoSourceType.Camera ? null : pattern.video.params.sourcePatternId,
-                    cameraOn: action.value === VideoSourceType.Pattern ? false : pattern.video.params.cameraOn,
+                    sourcePatternId: action.value === VideoSourceType.Pattern
+                        ? pattern.video.params.sourcePatternId
+                        : null,
+                    sourceFileName: action.value === VideoSourceType.File
+                        ? pattern.video.params.sourceFileName
+                        : null,
+                    filePlaying: false,
+                    cameraOn: action.value === VideoSourceType.Camera
+                        ? pattern.video.params.cameraOn
+                        : false,
                 }
             }
         })),
@@ -209,6 +218,54 @@ export const videoReducers = {
                 params: {
                     ...pattern.video.params,
                     sourcePatternId: action.value,
+                }
+            }
+        })),
+    [EVideoAction.SET_VIDEO_SOURCE_FILE]: reducePattern<SetVideoSourceFileAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    sourceFileName: action.value,
+                    filePlaying: false,
+                    fileLoopIn: 0,
+                    fileLoopOut: 1,
+                }
+            }
+        })),
+    [EVideoAction.START_FILE_PLAYING]: reducePattern<PatternAction>(
+        (pattern: PatternState) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    filePlaying: true,
+                }
+            }
+        })),
+    [EVideoAction.STOP_FILE_PLAYING]: reducePattern<PatternAction>(
+        (pattern: PatternState) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    filePlaying: false,
+                }
+            }
+        })),
+    [EVideoAction.SET_FILE_LOOP_RANGE]: reducePattern<SetVideoFileLoopRangeAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    fileLoopIn: action.loopIn,
+                    fileLoopOut: action.loopOut,
                 }
             }
         })),

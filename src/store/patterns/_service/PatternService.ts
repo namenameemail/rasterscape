@@ -43,6 +43,7 @@ export class PatternService {
         this.previewService.unbindAll();
         this.videoService.stop();
         this.videoService.stopCamera();
+        this.videoService.clearSourceFile();
         this.platformerService.stop();
     };
 

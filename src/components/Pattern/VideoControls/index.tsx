@@ -20,6 +20,9 @@ import {
     setVideoOffset,
     setVideoSourceType,
     setVideoSourcePattern,
+    setVideoSourceFile,
+    startFilePlaying,
+    stopFilePlaying,
     setVideoAlwaysCook,
     setVideoVolumeView,
     setVideoVolumeGhost,
@@ -27,6 +30,7 @@ import {
 import { getChangeFunctionsSelectItemsVideo } from '../../../store/changeFunctions/selectors'
 import { HoverPatternSelect } from '../HoverPatternSelect'
 import './videoControls.scss'
+import '../../_shared/File/inputFile.scss'
 import { setCFHighlights, setCFTypeHighlights } from '../../../store/changeFunctionsHighlights'
 import { SelectButtonsEventData } from '../../_shared/buttons/complex/SelectButtons'
 import { ButtonHK } from '../../_shared/buttons/hotkeyed/ButtonHK'
@@ -37,6 +41,7 @@ import { SelectVideoDevice } from 'bbuutoonnss'
 import { InputNumber, InputNumberProps } from '../../_shared/inputs/InputNumber'
 import { ButtonNumberCF } from '../../_shared/buttons/hotkeyed/ButtonNumberCF'
 import { VideoOffsetForm } from './VideoOffsetForm'
+import { VideoTimeline } from './VideoTimeline'
 import { CameraAxis, EdgeMode, MirrorMode, StackType } from '../../../store/patterns/_service/patternServices/PatternVideoService/ShaderVideoModule'
 import { ButtonEventData } from '../../_shared/buttons/simple/Button'
 import { getVideoState } from '../../../store/patterns/video/helpers'
@@ -86,6 +91,12 @@ export interface VideoControlsActionProps {
 
     setVideoSourcePattern(id: string, value: string | null): void
 
+    setVideoSourceFile(id: string, file: File | null): void
+
+    startFilePlaying(id: string): void
+
+    stopFilePlaying(id: string): void
+
     setVideoAlwaysCook(id: string, value: boolean): void
 
     setVideoVolumeView(id: string, value: boolean): void
@@ -130,6 +141,13 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
         videoParams.cameraOn
             ? this.props.stopCamera(patternId)
             : this.props.startCamera(patternId)
+    }
+
+    handleChangeFilePlaying = () => {
+        const { videoParams, patternId } = this.props
+        videoParams.filePlaying
+            ? this.props.stopFilePlaying(patternId)
+            : this.props.startFilePlaying(patternId)
     }
 
     handleChangeUpdatingOnParam = () => {
@@ -303,6 +321,12 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
         setVideoSourcePattern(patternId, value)
     }
 
+    handleSelectSourceFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] ?? null
+        this.props.setVideoSourceFile(this.props.patternId, file)
+        e.target.value = ''
+    }
+
     sourceTypeGetValue = (id: VideoSourceType) => id
     sourceTypeGetText = (id: VideoSourceType) => {
         const { t } = this.props
@@ -319,9 +343,13 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
             autoblur,
             autofocus,
         } = this.props
-        const { cameraOn, updatingOn, sourceType, sourcePatternId } = params
+        const { cameraOn, updatingOn, sourceType, sourcePatternId, sourceFileName, filePlaying } = params
         const isCameraSource = sourceType === VideoSourceType.Camera
         const isPatternSource = sourceType === VideoSourceType.Pattern
+        const isFileSource = sourceType === VideoSourceType.File
+        const updateDisabled = videoDisabled
+            || (isPatternSource && !sourcePatternId)
+            || (isFileSource && !sourceFileName)
 
         return (
             <div className={'video-controls'}>
@@ -368,7 +396,41 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                             onChange={this.handleSelectSourcePattern}
                         />
                     )}
+                    {isFileSource && (
+                        <>
+                            <div className={'input-file video-source-file'}>
+                                <input
+                                    type="file"
+                                    accept="video/*"
+                                    id={`${patternId}-video-source-file`}
+                                    name={`${patternId}-video-source-file`}
+                                    onChange={this.handleSelectSourceFile}
+                                />
+                                <label htmlFor={`${patternId}-video-source-file`}>
+                                    {sourceFileName || t('pattern.video.loadFile')}
+                                </label>
+                            </div>
+                            <ButtonHK
+                                hkLabel={'pattern.hotkeysDescription.video.filePlaying'}
+                                hkData1={patternId}
+                                path={`pattern.${patternId}.video.filePlaying`}
+                                className={'video-toggle'}
+                                selected={!!filePlaying}
+                                name={'filePlaying'}
+                                disabled={videoDisabled || !sourceFileName}
+                                onClick={this.handleChangeFilePlaying}
+                            >
+                                {t('pattern.video.filePlaying')}
+                            </ButtonHK>
+                        </>
+                    )}
                 </div>
+                {isFileSource && (
+                    <VideoTimeline
+                        patternId={patternId}
+                        disabled={videoDisabled || !sourceFileName}
+                    />
+                )}
 
                 <div className={'video-controls-cube-params'}>
 
@@ -389,7 +451,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                         className={'video-toggle'}
                         selected={updatingOn}
                         name={'updatingOn'}
-                        disabled={videoDisabled || (isPatternSource && !sourcePatternId)}
+                        disabled={updateDisabled}
                         onClick={this.handleChangeUpdatingOnParam}
                     >
                         {/* {updatingOn ? t('pattern.video.stop') : t('pattern.video.update')} */}
@@ -548,6 +610,9 @@ const mapDispatchToProps: MapDispatchToProps<VideoControlsActionProps, VideoCont
 
     setVideoSourceType,
     setVideoSourcePattern,
+    setVideoSourceFile,
+    startFilePlaying,
+    stopFilePlaying,
     setVideoAlwaysCook,
     setVideoVolumeView,
     setVideoVolumeGhost,

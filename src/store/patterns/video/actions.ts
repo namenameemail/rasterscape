@@ -14,6 +14,7 @@ import {
     StackType,
 } from '../_service/patternServices/PatternVideoService/ShaderVideoModule'
 import {depthPatternIdsForCf, syncPatternCook, syncPatternsCook} from '../cook/syncCook';
+import {profileDebug} from '../../../utils/profileDebug';
 
 export interface SetVideoParamsAction extends PatternAction {
     value: VideoParams
@@ -35,6 +36,8 @@ export type SetCutOffsetAction = PatternAction & { value: number };
 export type SetDepthAction = PatternAction & { value: number };
 export type SetVideoSourceTypeAction = PatternAction & { value: VideoSourceType };
 export type SetVideoSourcePatternAction = PatternAction & { value: string | null };
+export type SetVideoSourceFileAction = PatternAction & { value: string | null };
+export type SetVideoFileLoopRangeAction = PatternAction & { loopIn: number; loopOut: number };
 export type SetVideoAlwaysCookAction = PatternAction & { value: boolean };
 export type SetVideoVolumeViewAction = PatternAction & { value: boolean };
 export type SetVideoVolumeGhostAction = PatternAction & { value: number };
@@ -86,7 +89,18 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
         offset,
         sourceType,
         sourcePatternId,
+        filePlaying,
+        sourceFileName,
     } = pattern?.video?.params || {};
+
+    profileDebug('video', 'file.action.updateOn', {
+        patternId,
+        sourceType,
+        sourceFileName,
+        filePlaying,
+        width: pattern.width,
+        height: pattern.height,
+    });
 
     dispatch(updateImage({
         id: patternId,
@@ -111,19 +125,45 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
         .setSourceType(sourceType ?? getVideoState().params.sourceType)
         .setSourcePatternId(sourcePatternId ?? getVideoState().params.sourcePatternId);
 
+    if (sourceType === VideoSourceType.File) {
+        const ready = await patternService.videoService.ensureSourceFile();
+        profileDebug('video', 'file.action.updateOn.ensure', {patternId, ready});
+        if (!ready) {
+            dispatch({
+                type: EVideoAction.SET_VIDEO_SOURCE_FILE,
+                id: patternId,
+                value: null,
+            });
+        } else if (filePlaying) {
+            const ok = await patternService.videoService.playSourceFile();
+            profileDebug('video', 'file.action.updateOn.rePlay', {patternId, ok});
+        }
+    }
+
     const state = getState();
     syncPatternsCook(
         patternId,
         sourcePatternId,
         ...depthPatternIdsForCf(state, pattern?.video?.params?.changeFunctionId),
     );
+    profileDebug('video', 'file.action.updateOn.done', {
+        patternId,
+        cooking: patternService.videoService.isCooking(),
+        hasSource: patternService.videoService.hasSourceFile(),
+    });
 };
 
 export const stop = (id: string) => (dispatch, getState: () => AppState) => {
     const pattern = getState().patterns[id];
     const sourcePatternId = pattern?.video?.params?.sourcePatternId;
     const changeFunctionId = pattern?.video?.params?.changeFunctionId;
-    
+
+    profileDebug('video', 'file.action.updateOff', {
+        id,
+        sourceType: pattern?.video?.params?.sourceType,
+        filePlaying: pattern?.video?.params?.filePlaying,
+    });
+
     dispatch(updateImage({
         id,
         noHistory: true,
@@ -240,8 +280,12 @@ export const setVideoSourceType = (id: string, value: VideoSourceType) => (dispa
     const videoParams = pattern?.video?.params ?? getVideoState().params;
     const prevSource = videoParams.sourcePatternId;
 
-    if (value === VideoSourceType.Pattern && videoParams.cameraOn) {
+    if (value !== VideoSourceType.Camera && videoParams.cameraOn) {
         dispatch(stopCamera(id));
+    }
+
+    if (value !== VideoSourceType.File) {
+        patternsService.pattern[id].videoService.clearSourceFile();
     }
 
     dispatch({
@@ -250,11 +294,13 @@ export const setVideoSourceType = (id: string, value: VideoSourceType) => (dispa
         value,
     });
 
+    const nextPatternId = value === VideoSourceType.Pattern ? videoParams.sourcePatternId : null;
+
     patternsService.pattern[id].videoService
         .setSourceType(value)
-        .setSourcePatternId(value === VideoSourceType.Camera ? null : videoParams.sourcePatternId);
+        .setSourcePatternId(nextPatternId);
 
-    syncPatternsCook(id, prevSource, value === VideoSourceType.Camera ? null : videoParams.sourcePatternId);
+    syncPatternsCook(id, prevSource, nextPatternId);
 };
 
 export const setVideoSourcePattern = (id: string, sourcePatternId: string | null) => (dispatch, getState: () => AppState) => {
@@ -273,6 +319,81 @@ export const setVideoSourcePattern = (id: string, sourcePatternId: string | null
     patternsService.pattern[id].videoService.setSourcePatternId(sourcePatternId);
 
     syncPatternsCook(id, prevSource, sourcePatternId);
+};
+
+export const setVideoSourceFile = (id: string, file: File | null) => async (dispatch) => {
+    const videoService = patternsService.pattern[id].videoService;
+    profileDebug('video', 'file.action.setFile', {
+        id,
+        name: file?.name ?? null,
+        size: file?.size ?? null,
+        type: file?.type ?? null,
+    });
+    if (!file) {
+        videoService.clearSourceFile();
+        dispatch({
+            type: EVideoAction.SET_VIDEO_SOURCE_FILE,
+            id,
+            value: null,
+        });
+        return;
+    }
+
+    await videoService.setSourceFile(file);
+    dispatch({
+        type: EVideoAction.SET_VIDEO_SOURCE_FILE,
+        id,
+        value: file.name,
+    });
+    profileDebug('video', 'file.action.setFile.done', {
+        id,
+        name: file.name,
+        ready: videoService.hasSourceFile(),
+    });
+};
+
+export const startFilePlaying = (id: string) => async (dispatch) => {
+    const videoService = patternsService.pattern[id]?.videoService;
+    profileDebug('video', 'file.action.play', {
+        id,
+        hasSource: !!videoService?.hasSourceFile(),
+    });
+    if (!videoService) {
+        return;
+    }
+    const ready = await videoService.ensureSourceFile();
+    if (!ready) {
+        profileDebug('video', 'file.action.play.abortNoSource', {id});
+        dispatch({
+            type: EVideoAction.SET_VIDEO_SOURCE_FILE,
+            id,
+            value: null,
+        });
+        return;
+    }
+    const ok = await videoService.playSourceFile();
+    if (!ok) {
+        profileDebug('video', 'file.action.play.abortFailed', {id});
+        return;
+    }
+    dispatch({type: EVideoAction.START_FILE_PLAYING, id});
+    profileDebug('video', 'file.action.play.dispatched', {id});
+};
+
+export const stopFilePlaying = (id: string) => (dispatch) => {
+    profileDebug('video', 'file.action.pause', {id});
+    dispatch({type: EVideoAction.STOP_FILE_PLAYING, id});
+    patternsService.pattern[id]?.videoService.pauseSourceFile();
+};
+
+export const setVideoFileLoopRange = (id: string, loopIn: number, loopOut: number) => (dispatch) => {
+    dispatch({
+        type: EVideoAction.SET_FILE_LOOP_RANGE,
+        id,
+        loopIn,
+        loopOut,
+    });
+    patternsService.pattern[id]?.videoService.setSourceFileLoopRange(loopIn, loopOut);
 };
 
 export const setVideoAlwaysCook = (id: string, value: boolean) => (dispatch) => {

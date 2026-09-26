@@ -408,8 +408,11 @@
       },
       "sourceType": {
         "camera": "камера",
-        "pattern": "паттерн"
+        "pattern": "паттерн",
+        "file": "файл"
       },
+      "loadFile": "файл",
+      "filePlaying": "play",
       "alwaysCook": "всегда",
       "volumeView": "объём",
       "volumeGhost": "призрак"
@@ -480,6 +483,7 @@
         "stackType": "паттерн{{data1}} | видео | режим добавления кадров",
         "cutFunction": "паттерн{{data1}} | видео | функция среза",
         "sourceType": "паттерн{{data1}} | видео | источник",
+        "filePlaying": "паттерн{{data1}} | видео | play файла",
         "alwaysCook": "паттерн{{data1}} | видео | всегда",
         "volumeView": "паттерн{{data1}} | видео | объём",
         "volumeGhost": "паттерн{{data1}} | видео | призрак"

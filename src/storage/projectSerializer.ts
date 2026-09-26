@@ -98,6 +98,7 @@ function sanitizePatternState(pattern: PatternState): PatternState {
                 ...pattern.video.params,
                 cameraOn: false,
                 updatingOn: false,
+                filePlaying: false,
                 device: undefined as any,
             },
         } : pattern.video,

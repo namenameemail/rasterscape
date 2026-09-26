@@ -14,6 +14,7 @@ import { VideoOffset } from '../_service/patternServices/PatternVideoService/Sha
 export enum VideoSourceType {
     Camera = 'camera',
     Pattern = 'pattern',
+    File = 'file',
 }
 
 export interface VideoParams {
@@ -29,6 +30,10 @@ export interface VideoParams {
     device: MediaDeviceInfo
     sourceType: VideoSourceType
     sourcePatternId: string | null
+    sourceFileName: string | null
+    filePlaying: boolean
+    fileLoopIn: number
+    fileLoopOut: number
     alwaysCook: boolean
     volumeViewOn: boolean
     volumeGhost: number

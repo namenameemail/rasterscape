@@ -15,6 +15,16 @@
     }
   }
 
+  .video-source-file {
+    label {
+      background: #ebebeb;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
   .select-device {
     width: 140px;
     &, .bbuutoonn-select-drop__items {

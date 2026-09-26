@@ -8,8 +8,11 @@
     "video": {
       "sourceType": {
         "camera": "camera",
-        "pattern": "pattern"
+        "pattern": "pattern",
+        "file": "file"
       },
+      "loadFile": "file",
+      "filePlaying": "play",
       "alwaysCook": "vždy",
       "volumeView": "objem",
       "volumeGhost": "duch"
@@ -17,6 +20,7 @@
     "hotkeysDescription": {
       "video": {
         "sourceType": "pattern{{data1}} | video | source type",
+        "filePlaying": "pattern{{data1}} | video | file play",
         "alwaysCook": "pattern{{data1}} | video | vždy",
         "volumeView": "pattern{{data1}} | video | objem",
         "volumeGhost": "pattern{{data1}} | video | duch"

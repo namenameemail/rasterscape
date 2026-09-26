@@ -1,0 +1,83 @@
+.video-timeline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  height: 20px;
+  box-sizing: border-box;
+  padding: 0 2px;
+  background: #ebebeb;
+  border: 1px solid #dedede #ababab #ababab #dedede;
+
+  &--disabled {
+    pointer-events: none;
+    opacity: 0.55;
+  }
+}
+
+.video-timeline-time {
+  flex: 0 0 auto;
+  font-size: 10px;
+  line-height: 1;
+  min-width: 28px;
+  text-align: center;
+}
+
+.video-timeline-track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 10px;
+  background: lightgrey;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.video-timeline-range {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: #c8c8c8;
+  pointer-events: none;
+}
+
+.video-timeline-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: #ababab;
+  pointer-events: none;
+}
+
+.video-timeline-thumb {
+  position: absolute;
+  top: -2px;
+  width: 4px;
+  height: 14px;
+  margin-left: -2px;
+  background: #333;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.video-timeline-handle {
+  position: absolute;
+  top: -4px;
+  width: 8px;
+  height: 18px;
+  margin-left: -4px;
+  background: #666;
+  border: 1px solid #333;
+  box-sizing: border-box;
+  cursor: ew-resize;
+  z-index: 3;
+  touch-action: none;
+
+  &--in {
+    background: #444;
+  }
+
+  &--out {
+    background: #888;
+  }
+}

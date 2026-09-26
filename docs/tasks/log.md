@@ -2,6 +2,10 @@
 
 Новые сверху.
 
+- 2026-09-26 22:15 — [vfs.04 участок цикла](video-file-source/done/04-loop-range.md)
+- 2026-09-26 22:15 — [vfs.03 таймлайн](video-file-source/done/03-timeline-ui.md)
+- 2026-09-26 22:15 — [vfs.02 play vs update](video-file-source/done/02-play-vs-update.md)
+- 2026-09-26 22:15 — [vfs.01 File + загрузка](video-file-source/done/01-source-and-load.md)
 - 2026-09-26 21:20 — [vv.06 ghost cut](video-volume-view/done/06-cut-ghost.md)
 - 2026-09-26 20:47 — [vv.05 DEPTH cut](video-volume-view/done/05-cut-depth.md)
 - 2026-09-26 20:47 — [vv.04 FXY cut](video-volume-view/done/04-cut-fxy.md)

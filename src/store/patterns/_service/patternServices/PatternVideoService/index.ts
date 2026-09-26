@@ -12,6 +12,9 @@ import { patternsService } from '../../../../index'
 import { profileLogger } from '../../../../../utils/profiling/ProfileLogger'
 import { frameScheduler, FramePriority } from '../../../../../utils/FrameScheduler'
 import { getGlContext } from '../../../../../gl/GlContext'
+import { VideoFileSource } from './VideoFileSource'
+import { profileDebug } from '../../../../../utils/profileDebug'
+import { getRetainedVideoFile, retainVideoFile } from './retainedVideoFiles'
 
 export const CameraAxisDirectionMap = {
     [CameraAxis.T]: 0,
@@ -76,9 +79,11 @@ export class PatternVideoService {
     sourcePatternId: string | null = null
     device: MediaDeviceInfo
     cameraService: CameraService = new CameraService()
+    fileSource = new VideoFileSource()
     volumeView = new VideoVolumeView()
 
     private unsubscribeFrame: (() => void) | null = null
+    private fileFrameLogAt = 0
 
     shaderVideoModule: ShaderVideoModule
 
@@ -126,7 +131,8 @@ export class PatternVideoService {
         this.cameraAxis = params.cameraAxis
         this.stackType = params.stackType
         this.mirrorMode = params.mirrorMode
-        this.offset = params.offset;
+        this.offset = params.offset
+        this.fileSource.setSize(params.width, params.height);
 
         (
             await this.shaderVideoModule.instantiate()
@@ -144,6 +150,10 @@ export class PatternVideoService {
 
     start = () => {
         if (this.unsubscribeFrame) {
+            profileDebug('video', 'file.update.start.already', {
+                patternId: this.patternService.patternId,
+                sourceType: this.sourceType,
+            })
             return
         }
         this.unsubscribeFrame = frameScheduler.subscribe(
@@ -151,11 +161,21 @@ export class PatternVideoService {
             this.onFrameTick,
             FramePriority.Video,
         )
+        profileDebug('video', 'file.update.start', {
+            patternId: this.patternService.patternId,
+            sourceType: this.sourceType,
+            ...this.fileSource.snapshot(),
+        })
     }
 
     stop = () => {
         this.unsubscribeFrame?.()
         this.unsubscribeFrame = null
+        profileDebug('video', 'file.update.stop', {
+            patternId: this.patternService.patternId,
+            sourceType: this.sourceType,
+            ...this.fileSource.snapshot(),
+        })
     }
 
     onFrameTick = () => {
@@ -165,6 +185,33 @@ export class PatternVideoService {
     private pushSourceFrame = (): void => {
         if (this.sourceType === VideoSourceType.Camera) {
             const source = this.cameraService.receiveImage()
+            if (source) {
+                profileLogger.time('video.pushNewFrame', () => {
+                    this.shaderVideoModule.pushNewFrame(source)
+                })
+            }
+            return
+        }
+
+        if (this.sourceType === VideoSourceType.File) {
+            const filePlaying = !!this.patternService.storeService.getState()
+                .patterns[this.patternService.patternId]?.video?.params?.filePlaying
+            if (filePlaying && !this.fileSource.playing) {
+                profileDebug('video', 'file.frame.rePlay', this.fileSource.snapshot())
+                void this.fileSource.play()
+            }
+            const source = this.fileSource.receiveImage()
+            const now = performance.now()
+            if (now - this.fileFrameLogAt > 500) {
+                this.fileFrameLogAt = now
+                profileDebug('video', 'file.frame', {
+                    patternId: this.patternService.patternId,
+                    filePlaying,
+                    pushed: !!source,
+                    cooking: this.isCooking(),
+                    ...this.fileSource.snapshot(),
+                })
+            }
             if (source) {
                 profileLogger.time('video.pushNewFrame', () => {
                     this.shaderVideoModule.pushNewFrame(source)
@@ -362,6 +409,83 @@ export class PatternVideoService {
 
     setSourcePatternId = (sourcePatternId: string | null): PatternVideoService => {
         this.sourcePatternId = sourcePatternId
+        return this
+    }
+
+    setSourceFile = async (file: File | null): Promise<PatternVideoService> => {
+        retainVideoFile(this.patternService.patternId, file)
+        if (this.width && this.height) {
+            this.fileSource.setSize(this.width, this.height)
+        } else {
+            const pattern = this.patternService.storeService.getState().patterns[this.patternService.patternId]
+            if (pattern?.width && pattern?.height) {
+                this.fileSource.setSize(pattern.width, pattern.height)
+            }
+        }
+        await this.fileSource.setFile(file)
+        const params = this.patternService.storeService.getState()
+            .patterns[this.patternService.patternId]?.video?.params
+        this.fileSource.setLoopRange(params?.fileLoopIn ?? 0, params?.fileLoopOut ?? 1)
+        return this
+    }
+
+    clearSourceFile = (): PatternVideoService => {
+        retainVideoFile(this.patternService.patternId, null)
+        this.fileSource.clear()
+        return this
+    }
+
+    ensureSourceFile = async (): Promise<boolean> => {
+        if (this.fileSource.ready) {
+            return true
+        }
+        const file = getRetainedVideoFile(this.patternService.patternId)
+        if (!file) {
+            profileDebug('video', 'file.ensure.missing', {
+                patternId: this.patternService.patternId,
+                ...this.fileSource.snapshot(),
+            })
+            return false
+        }
+        profileDebug('video', 'file.ensure.rehydrate', {
+            patternId: this.patternService.patternId,
+            name: file.name,
+        })
+        await this.setSourceFile(file)
+        return this.fileSource.ready
+    }
+
+    playSourceFile = async (): Promise<boolean> => {
+        if (!await this.ensureSourceFile()) {
+            return false
+        }
+        return this.fileSource.play()
+    }
+
+    pauseSourceFile = (): PatternVideoService => {
+        this.fileSource.pause()
+        return this
+    }
+
+    hasSourceFile = (): boolean =>
+        this.fileSource.ready || !!getRetainedVideoFile(this.patternService.patternId)
+
+    getSourceFileCurrentTime = (): number => this.fileSource.currentTime
+
+    getSourceFileDuration = (): number => this.fileSource.duration
+
+    getSourceFileLoopRange = (): { loopIn: number; loopOut: number } => ({
+        loopIn: this.fileSource.loopIn,
+        loopOut: this.fileSource.loopOut,
+    })
+
+    setSourceFileCurrentTime = (time: number): PatternVideoService => {
+        this.fileSource.setCurrentTime(time)
+        return this
+    }
+
+    setSourceFileLoopRange = (loopIn: number, loopOut: number): PatternVideoService => {
+        this.fileSource.setLoopRange(loopIn, loopOut)
         return this
     }
 }
