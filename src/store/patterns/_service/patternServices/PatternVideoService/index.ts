@@ -7,7 +7,7 @@ import { getFxyFunctionType } from './utils'
 import { VideoOffset } from './ShaderVideoModule/types'
 import { ECFType } from '../../../../changeFunctions/types'
 import { CfDepthParams } from '../../../../changeFunctions/functions/depth'
-import { VideoSourceType } from '../../../video/types'
+import { VideoSourceType, VolumeBackground } from '../../../video/types'
 import { patternsService } from '../../../../index'
 import { profileLogger } from '../../../../../utils/profiling/ProfileLogger'
 import { frameScheduler, FramePriority } from '../../../../../utils/FrameScheduler'
@@ -299,6 +299,12 @@ export class PatternVideoService {
                 if (!mod.cubeTexture) {
                     return null
                 }
+                const bg = videoParams.volumeBackground
+                const background =
+                    bg === VolumeBackground.White ? 1
+                        : bg === VolumeBackground.Transparent ? 2
+                            : bg === VolumeBackground.Random ? 3
+                                : 0
                 return this.volumeView.render(mod.cubeTexture, this.width, this.height, {
                     queueOffset: mod.queueOffset,
                     stackSize: mod.stackSizeWithError,
@@ -306,6 +312,7 @@ export class PatternVideoService {
                     direction: this.cameraAxis,
                     offset: videoParams.offset,
                     ghost: typeof videoParams.volumeGhost === 'number' ? videoParams.volumeGhost : 0.015,
+                    background,
                 })
             }
             return this.shaderVideoModule.updateImage()
@@ -332,7 +339,7 @@ export class PatternVideoService {
             profileLogger.time('video.blur', () => {
                 if (platformerPlaying) {
                     this.patternService.platformerService.applyBlurToWorld(radius)
-                } else if (buffer?.texture) {
+                } else if (buffer?.texture && !buffer.isRepeatActive) {
                     getGlContext().blurTexture(buffer.texture, buffer.width, buffer.height, radius)
                     buffer.markGpuContent()
                     getGlContext().blitToDefault(buffer.texture, buffer.width, buffer.height)
@@ -341,7 +348,9 @@ export class PatternVideoService {
         }
 
         if (!platformerPlaying && buffer) {
-            buffer.presentGl()
+            if (!buffer.isRepeatActive) {
+                buffer.presentGl()
+            }
 
             profileLogger.time('video.valuesService', () => {
                 this.patternService.valuesService.updateForVideoFrame()

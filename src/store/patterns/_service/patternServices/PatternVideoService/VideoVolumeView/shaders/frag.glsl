@@ -15,11 +15,30 @@ uniform float u_queueOffset;
 uniform float u_stackScale;
 uniform int u_steps;
 uniform float u_ghost;
+uniform int u_bgMode;
 
 __FXY_CUT__
 
 in vec2 v_uv;
 out vec4 o;
+
+// 0 black, 1 white, 2 transparent, 3 random
+vec4 backgroundColor() {
+    if (u_bgMode == 1) {
+        return vec4(1.0);
+    }
+    if (u_bgMode == 2) {
+        return vec4(0.0);
+    }
+    if (u_bgMode == 3) {
+        vec2 p = gl_FragCoord.xy;
+        float r = fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+        float g = fract(sin(dot(p, vec2(39.346, 11.135))) * 22578.1459);
+        float b = fract(sin(dot(p, vec2(73.156, 52.420))) * 37195.5731);
+        return vec4(r, g, b, 1.0);
+    }
+    return vec4(0.0, 0.0, 0.0, 1.0);
+}
 
 bool intersectAabb(vec3 ro, vec3 rd, out float t0, out float t1) {
     vec3 inv = 1.0 / rd;
@@ -80,7 +99,7 @@ void main() {
     float tEnter;
     float tExit;
     if (!intersectAabb(ro, rd, tEnter, tExit)) {
-        o = vec4(0.05, 0.05, 0.07, 1.0);
+        o = backgroundColor();
         return;
     }
 
@@ -115,6 +134,10 @@ void main() {
         p += rd * dt;
     }
 
-    vec3 bg = vec3(0.05, 0.05, 0.07);
-    o = vec4(acc.rgb + bg * (1.0 - acc.a), 1.0);
+    if (u_bgMode == 2) {
+        o = acc;
+        return;
+    }
+    vec4 bg = backgroundColor();
+    o = vec4(acc.rgb + bg.rgb * (1.0 - acc.a), 1.0);
 }

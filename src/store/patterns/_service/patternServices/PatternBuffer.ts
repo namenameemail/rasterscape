@@ -205,12 +205,24 @@ export class PatternBuffer {
     };
 
     compositeVideo = (video: WebGLTexture): void => {
+        const {width, height} = this.canvas;
+        const glc = getGlContext();
+        if (this.repeatReady && this.repeatBase) {
+            glc.compositeTextureOver(
+                video,
+                this.repeatBase,
+                width,
+                height,
+                false,
+            );
+            return;
+        }
         const dest = this.ensureGpu();
-        getGlContext().compositeTextureOver(
+        glc.compositeTextureOver(
             video,
             dest,
-            this.canvas.width,
-            this.canvas.height,
+            width,
+            height,
             false,
         );
         this.afterGpuDraw();
@@ -320,6 +332,10 @@ export class PatternBuffer {
         });
         this.afterGpuDraw();
     };
+
+    get isRepeatActive(): boolean {
+        return this.repeatReady
+    }
 
     beginRepeat = (): void => {
         const {width, height} = this.canvas;

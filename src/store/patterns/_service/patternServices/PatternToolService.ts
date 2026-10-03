@@ -90,9 +90,18 @@ export class PatternToolService {
         this.patternService.canvasService.buffer?.present();
     };
 
-    private isVolumeViewOrbit = (): boolean => {
+    private volumeOrbiting = false
+
+    private isVolumeViewOn = (): boolean => {
         const id = this.patternService.patternId
         return !!this.patternService.storeService.getState().patterns[id]?.video?.params?.volumeViewOn
+    }
+
+    private isVolumeOrbitButtons = (e: CanvasServiceEvent): boolean => {
+        const ev = e.events[0]
+        if (!ev) return false
+        const buttons = ev.buttons ?? 0
+        return !!(buttons & 2) || !!(buttons & 4)
     }
 
     private handleVolumePointer = (
@@ -111,12 +120,17 @@ export class PatternToolService {
 
     canvasEventHandlers: CanvasEventHandlers = {
         onClick: (...args) => {
-            if (this.isVolumeViewOrbit()) return
+            if (this.volumeOrbiting) return
             this.canvasToolService?.handlers.onClick?.(...args);
             this.presentToolResult();
         },
         onDown: (...args) => {
-            if (this.isVolumeViewOrbit()) {
+            if (this.isVolumeViewOn() && this.isVolumeOrbitButtons(args[0])) {
+                this.volumeOrbiting = true
+                const ev = args[0].events[0]
+                ev?.preventDefault()
+                const blockMenu = (e: Event) => e.preventDefault()
+                document.addEventListener('contextmenu', blockMenu, {once: true})
                 this.handleVolumePointer('down', args[0])
                 return
             }
@@ -124,7 +138,8 @@ export class PatternToolService {
             this.presentCanvasMonitor();
         },
         onDraw: (...args) => {
-            if (this.isVolumeViewOrbit()) {
+            if (this.volumeOrbiting || (this.isVolumeViewOn() && this.isVolumeOrbitButtons(args[0]))) {
+                this.volumeOrbiting = true
                 this.handleVolumePointer('move', args[0])
                 return
             }
@@ -142,7 +157,8 @@ export class PatternToolService {
             }
         },
         onRelease: (...args) => {
-            if (this.isVolumeViewOrbit()) {
+            if (this.volumeOrbiting) {
+                this.volumeOrbiting = false
                 this.handleVolumePointer('up', args[0])
                 return
             }
@@ -155,6 +171,13 @@ export class PatternToolService {
         },
         onPushPosition: this.pushCanvasPositionToStore,
         onResetPosition: this.resetPositionToStore,
+        onWheel: (e) => {
+            if (!this.isVolumeViewOn()) {
+                return
+            }
+            e.preventDefault()
+            this.patternService.videoService.volumeView.handleWheel(e.deltaY)
+        },
     };
 
     private presentMaskToolResult = () => {

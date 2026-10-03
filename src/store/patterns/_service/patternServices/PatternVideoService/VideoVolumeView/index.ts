@@ -148,6 +148,7 @@ export type VolumeRenderParams = {
     direction?: CameraAxis
     offset?: VideoOffset
     ghost?: number
+    background?: number
 }
 
 const DEFAULT_OFFSET: VideoOffset = {
@@ -166,7 +167,7 @@ const QUAD = new Float32Array([
     1, -1,
 ])
 
-const VOLUME_SHADER_REV = 8
+const VOLUME_SHADER_REV = 9
 
 export class VideoVolumeView {
     // -Z: снаружи у грани p.z=0 (логический «новый» кадр), как 2D-видео по оси T
@@ -302,6 +303,11 @@ export class VideoVolumeView {
             this.pitch = Math.max(-1.2, Math.min(1.2, this.pitch))
             this.logUvProbe(false)
         }
+    }
+
+    handleWheel = (deltaY: number): void => {
+        this.distance = Math.max(0.35, Math.min(14, this.distance * Math.exp(deltaY * 0.0012)))
+        this.logUvProbe(false)
     }
 
     private logUvProbe = (force: boolean): void => {
@@ -544,6 +550,7 @@ export class VideoVolumeView {
         gl.uniform1f(gl.getUniformLocation(program, 'u_queueOffset'), queueOffset)
         gl.uniform1f(gl.getUniformLocation(program, 'u_stackScale'), stackScale)
         gl.uniform1i(gl.getUniformLocation(program, 'u_steps'), steps)
+        gl.uniform1i(gl.getUniformLocation(program, 'u_bgMode'), params.background ?? 0)
         this.bindCutUniforms(gl, program, params)
 
         gl.activeTexture(gl.TEXTURE0)

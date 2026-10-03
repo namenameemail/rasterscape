@@ -23,4 +23,5 @@ export enum EVideoAction {
     SET_ALWAYS_COOK = 'pattern/video/set-always-cook',
     SET_VOLUME_VIEW = 'pattern/video/set-volume-view',
     SET_VOLUME_GHOST = 'pattern/video/set-volume-ghost',
+    SET_VOLUME_BACKGROUND = 'pattern/video/set-volume-background',
 }

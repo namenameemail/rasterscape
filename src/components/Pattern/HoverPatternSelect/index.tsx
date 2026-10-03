@@ -14,6 +14,7 @@ export interface HoverPatternSelectOwnProps {
     patternId: string
     value?: string | null
     namePrefix: string
+    allowSelf?: boolean
     onChange(value: string | null): void
 }
 
@@ -29,6 +30,7 @@ const HoverPatternSelectComponent: React.FC<HoverPatternSelectProps> = ({
     patternId,
     value,
     namePrefix,
+    allowSelf,
     onChange,
 }) => {
     const rootRef = React.useRef<HTMLDivElement>(null)
@@ -36,7 +38,9 @@ const HoverPatternSelectComponent: React.FC<HoverPatternSelectProps> = ({
     const [open, setOpen] = React.useState(false)
     const [panelStyle, setPanelStyle] = React.useState<React.CSSProperties>({})
 
-    const items = patternsSelectItems.filter(({id}) => id !== patternId)
+    const items = allowSelf
+        ? patternsSelectItems
+        : patternsSelectItems.filter(({id}) => id !== patternId)
 
     const updatePanelPosition = React.useCallback(() => {
         const root = rootRef.current

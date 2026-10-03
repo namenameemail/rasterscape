@@ -11,11 +11,17 @@
         "pattern": "pattern",
         "file": "file"
       },
-      "loadFile": "file",
+      "loadFile": "open...",
       "filePlaying": "play",
       "alwaysCook": "vždy",
       "volumeView": "objem",
-      "volumeGhost": "duch"
+      "volumeGhost": "duch",
+      "volumeBackground": {
+        "black": "black",
+        "white": "white",
+        "transparent": "alpha",
+        "random": "random"
+      }
     },
     "hotkeysDescription": {
       "video": {
@@ -23,7 +29,8 @@
         "filePlaying": "pattern{{data1}} | video | file play",
         "alwaysCook": "pattern{{data1}} | video | vždy",
         "volumeView": "pattern{{data1}} | video | objem",
-        "volumeGhost": "pattern{{data1}} | video | duch"
+        "volumeGhost": "pattern{{data1}} | video | duch",
+        "volumeBackground": "pattern{{data1}} | video | volume background"
       },
       "platformer": {
         "alwaysCook": "pattern{{data1}} | platformer | vždy"

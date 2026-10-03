@@ -403,11 +403,17 @@
         "pattern": "pattern",
         "file": "file"
       },
-      "loadFile": "file",
+      "loadFile": "open...",
       "filePlaying": "play",
       "alwaysCook": "always",
       "volumeView": "volume",
-      "volumeGhost": "ghost"
+      "volumeGhost": "ghost",
+      "volumeBackground": {
+        "black": "black",
+        "white": "white",
+        "transparent": "alpha",
+        "random": "random"
+      }
     },
     "hotkeysDescription": {
       "save": "pattern{{data1}} | save",
@@ -478,7 +484,8 @@
         "filePlaying": "pattern{{data1}} | video | file play",
         "alwaysCook": "pattern{{data1}} | video | always",
         "volumeView": "pattern{{data1}} | video | volume",
-        "volumeGhost": "pattern{{data1}} | video | ghost"
+        "volumeGhost": "pattern{{data1}} | video | ghost",
+        "volumeBackground": "pattern{{data1}} | video | volume background"
       },
       "platformer": {
         "playingOn": "pattern{{data1}} | platformer | play/stop",

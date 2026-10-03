@@ -210,13 +210,17 @@ const VideoTimelineComponent: React.FC<VideoTimelineProps> = ({
                     data-handle="in"
                     style={{ left: `${inPct}%` }}
                     onPointerDown={onPointerDownHandle('in')}
-                />
+                >
+                    {'{'}
+                </div>
                 <div
                     className="video-timeline-handle video-timeline-handle--out"
                     data-handle="out"
                     style={{ left: `${outPct}%` }}
                     onPointerDown={onPointerDownHandle('out')}
-                />
+                >
+                    {'}'}
+                </div>
                 <div className="video-timeline-thumb" style={{ left: `${pct}%` }} />
             </div>
             <span className="video-timeline-time">{formatTime(duration)}</span>

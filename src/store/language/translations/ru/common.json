@@ -411,11 +411,17 @@
         "pattern": "паттерн",
         "file": "файл"
       },
-      "loadFile": "файл",
+      "loadFile": "open...",
       "filePlaying": "play",
       "alwaysCook": "всегда",
       "volumeView": "объём",
-      "volumeGhost": "призрак"
+      "volumeGhost": "призрак",
+      "volumeBackground": {
+        "black": "чёрный",
+        "white": "белый",
+        "transparent": "alpha",
+        "random": "random"
+      }
     },
     "hotkeysDescription": {
       "save": "паттерн{{data1}} | сохранить",
@@ -486,7 +492,8 @@
         "filePlaying": "паттерн{{data1}} | видео | play файла",
         "alwaysCook": "паттерн{{data1}} | видео | всегда",
         "volumeView": "паттерн{{data1}} | видео | объём",
-        "volumeGhost": "паттерн{{data1}} | видео | призрак"
+        "volumeGhost": "паттерн{{data1}} | видео | призрак",
+        "volumeBackground": "паттерн{{data1}} | видео | фон объёма"
       },
       "platformer": {
         "playingOn": "паттерн{{data1}} | платформер | старт/стоп",

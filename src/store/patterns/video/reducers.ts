@@ -11,6 +11,7 @@ import {
     SetVideoAlwaysCookAction,
     SetVideoVolumeViewAction,
     SetVideoVolumeGhostAction,
+    SetVideoVolumeBackgroundAction,
 } from './actions'
 import { act } from "react-dom/test-utils";
 import { EVideoAction } from "./consts";
@@ -299,6 +300,17 @@ export const videoReducers = {
                 params: {
                     ...pattern.video.params,
                     volumeGhost: action.value,
+                }
+            }
+        })),
+    [EVideoAction.SET_VOLUME_BACKGROUND]: reducePattern<SetVideoVolumeBackgroundAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    volumeBackground: action.value,
                 }
             }
         })),

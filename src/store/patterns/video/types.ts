@@ -17,6 +17,13 @@ export enum VideoSourceType {
     File = 'file',
 }
 
+export enum VolumeBackground {
+    Black = 'black',
+    White = 'white',
+    Transparent = 'transparent',
+    Random = 'random',
+}
+
 export interface VideoParams {
     cameraOn: boolean
     updatingOn: boolean
@@ -37,6 +44,7 @@ export interface VideoParams {
     alwaysCook: boolean
     volumeViewOn: boolean
     volumeGhost: number
+    volumeBackground: VolumeBackground
 }
 
 export interface VideoValue {

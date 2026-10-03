@@ -23,6 +23,7 @@ export interface CanvasEventHandlers {
     onDown?: (e: CanvasServiceEvent) => void,
     onDraw?: (e: CanvasServiceEvent) => void,
     onRelease?: (e: CanvasServiceEvent) => void,
+    onWheel?: (e: WheelEvent) => void,
 }
 
 
@@ -62,6 +63,7 @@ export class CanvasEventsService {
 
         this.monitor.addEventListener("mousedown", this.mouseDownHandler);
         this.monitor.addEventListener("mousemove", this.canvasMouseMoveHandler); // 1 внутри канваса
+        this.monitor.addEventListener("wheel", this.wheelHandler, {passive: false});
         /**
          * есть два вида движения мыши
          * 1 внутри канваса
@@ -71,8 +73,13 @@ export class CanvasEventsService {
     unbindCanvas = () => {
         this.monitor?.removeEventListener("mousedown", this.mouseDownHandler);
         this.monitor?.removeEventListener("mousemove", this.canvasMouseMoveHandler);
+        this.monitor?.removeEventListener("wheel", this.wheelHandler);
         this.monitor = null;
         this.buffer = null;
+    };
+
+    private wheelHandler = (e: WheelEvent) => {
+        this.handlers.onWheel?.(e);
     };
 
     pushFrameRelatedEvent = (e: MouseEvent) => {

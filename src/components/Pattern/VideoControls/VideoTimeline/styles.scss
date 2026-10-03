@@ -26,58 +26,80 @@
 .video-timeline-track {
   position: relative;
   flex: 1 1 auto;
-  height: 10px;
-  background: lightgrey;
+  height: 14px;
+  background: transparent;
   cursor: pointer;
   touch-action: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    margin-top: -1px;
+    background: #c8c8c8;
+    pointer-events: none;
+  }
 }
 
 .video-timeline-range {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  background: #c8c8c8;
+  top: 50%;
+  height: 2px;
+  margin-top: -1px;
+  background: #b0b0b0;
   pointer-events: none;
 }
 
 .video-timeline-fill {
   position: absolute;
   left: 0;
-  top: 0;
-  bottom: 0;
-  background: #ababab;
+  top: 50%;
+  height: 2px;
+  margin-top: -1px;
+  background: #555;
   pointer-events: none;
+  z-index: 1;
 }
 
 .video-timeline-thumb {
   position: absolute;
-  top: -2px;
-  width: 4px;
-  height: 14px;
-  margin-left: -2px;
-  background: #333;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #e0e0e0 0%, #444 100%);
   pointer-events: none;
   z-index: 2;
 }
 
 .video-timeline-handle {
   position: absolute;
-  top: -4px;
-  width: 8px;
-  height: 18px;
-  margin-left: -4px;
-  background: #666;
-  border: 1px solid #333;
+  top: 50%;
+  width: 10px;
+  height: 20px;
+  margin-left: -5px;
+  margin-top: -10px;
+  background: none;
+  border: none;
   box-sizing: border-box;
   cursor: ew-resize;
   z-index: 3;
   touch-action: none;
+  color: #e6b422;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  text-align: center;
+  user-select: none;
 
-  &--in {
-    background: #444;
-  }
-
+  &--in,
   &--out {
-    background: #888;
+    background: none;
+    border: none;
   }
 }

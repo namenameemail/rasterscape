@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { VideoParams, VideoSourceType } from '../../../store/patterns/video/types'
+import { VideoParams, VideoSourceType, VolumeBackground } from '../../../store/patterns/video/types'
 import { SelectDrop } from '../../_shared/buttons/complex/SelectDrop'
 import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
 import { AppState } from '../../../store'
@@ -23,9 +23,9 @@ import {
     setVideoSourceFile,
     startFilePlaying,
     stopFilePlaying,
-    setVideoAlwaysCook,
     setVideoVolumeView,
     setVideoVolumeGhost,
+    setVideoVolumeBackground,
 } from '../../../store/patterns/video/actions'
 import { getChangeFunctionsSelectItemsVideo } from '../../../store/changeFunctions/selectors'
 import { HoverPatternSelect } from '../HoverPatternSelect'
@@ -97,11 +97,11 @@ export interface VideoControlsActionProps {
 
     stopFilePlaying(id: string): void
 
-    setVideoAlwaysCook(id: string, value: boolean): void
-
     setVideoVolumeView(id: string, value: boolean): void
 
     setVideoVolumeGhost(id: string, value: number): void
+
+    setVideoVolumeBackground(id: string, value: VolumeBackground): void
 }
 
 export interface VideoControlsOwnProps {
@@ -129,6 +129,7 @@ const inputNumberProps: Pick<InputNumberProps, 'min' | 'max' | 'step' | 'delay' 
 
 const volumeGhostRange = [0, 1] as [number, number]
 const volumeGhostValueText = (value: number) => value.toFixed(3)
+const volumeBackgroundItems = Object.values(VolumeBackground)
 
 export class VideoControlsComponent extends React.PureComponent<VideoControlsProps, VideoControlsState> {
 
@@ -157,11 +158,6 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
             : this.props.start(patternId)
     }
 
-    handleChangeAlwaysCook = () => {
-        const { videoParams, patternId, setVideoAlwaysCook } = this.props
-        setVideoAlwaysCook(patternId, !videoParams.alwaysCook)
-    }
-
     handleChangeVolumeView = () => {
         const { videoParams, patternId, setVideoVolumeView } = this.props
         setVideoVolumeView(patternId, !videoParams.volumeViewOn)
@@ -170,6 +166,16 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
     handleChangeVolumeGhost = ({ value }: { value: number }) => {
         const { patternId, setVideoVolumeGhost } = this.props
         setVideoVolumeGhost(patternId, value)
+    }
+
+    handleChangeVolumeBackground = (data: SelectButtonsEventData) => {
+        const { patternId, setVideoVolumeBackground } = this.props
+        setVideoVolumeBackground(patternId, data.value)
+    }
+
+    volumeBackgroundGetValue = (id: VolumeBackground) => id
+    volumeBackgroundGetText = (id: VolumeBackground) => {
+        return this.props.t('pattern.video.volumeBackground.' + id)
     }
 
     handleChangeSlitModeParam = (axis: CameraAxis) => {
@@ -393,43 +399,44 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                             patternId={patternId}
                             namePrefix="videoSource"
                             value={sourcePatternId ?? null}
+                            allowSelf
                             onChange={this.handleSelectSourcePattern}
                         />
                     )}
                     {isFileSource && (
-                        <>
-                            <div className={'input-file video-source-file'}>
-                                <input
-                                    type="file"
-                                    accept="video/*"
-                                    id={`${patternId}-video-source-file`}
-                                    name={`${patternId}-video-source-file`}
-                                    onChange={this.handleSelectSourceFile}
-                                />
-                                <label htmlFor={`${patternId}-video-source-file`}>
-                                    {sourceFileName || t('pattern.video.loadFile')}
-                                </label>
-                            </div>
-                            <ButtonHK
-                                hkLabel={'pattern.hotkeysDescription.video.filePlaying'}
-                                hkData1={patternId}
-                                path={`pattern.${patternId}.video.filePlaying`}
-                                className={'video-toggle'}
-                                selected={!!filePlaying}
-                                name={'filePlaying'}
-                                disabled={videoDisabled || !sourceFileName}
-                                onClick={this.handleChangeFilePlaying}
-                            >
-                                {t('pattern.video.filePlaying')}
-                            </ButtonHK>
-                        </>
+                        <div className={'input-file video-source-file'}>
+                            <input
+                                type="file"
+                                accept="video/*"
+                                id={`${patternId}-video-source-file`}
+                                name={`${patternId}-video-source-file`}
+                                onChange={this.handleSelectSourceFile}
+                            />
+                            <label htmlFor={`${patternId}-video-source-file`}>
+                                {sourceFileName || t('pattern.video.loadFile')}
+                            </label>
+                        </div>
                     )}
                 </div>
                 {isFileSource && (
-                    <VideoTimeline
-                        patternId={patternId}
-                        disabled={videoDisabled || !sourceFileName}
-                    />
+                    <div className={'video-controls-playback'}>
+                        <ButtonHK
+                            hkLabel={'pattern.hotkeysDescription.video.filePlaying'}
+                            hkData1={patternId}
+                            path={`pattern.${patternId}.video.filePlaying`}
+                            className={'video-file-play'}
+                            selected={!!filePlaying}
+                            name={'filePlaying'}
+                            disabled={videoDisabled || !sourceFileName}
+                            onClick={this.handleChangeFilePlaying}
+                        >
+                            <span className={'video-file-play-icon'} />
+                        </ButtonHK>
+                        <VideoTimeline
+                            patternId={patternId}
+                            disabled={videoDisabled || !sourceFileName}
+                        />
+                    </div>
                 )}
 
                 <div className={'video-controls-cube-params'}>
@@ -480,18 +487,6 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                         onChange={this.handleChangeChangeFunction}
                     />
                     <ButtonHK
-                        hkLabel={'pattern.hotkeysDescription.video.alwaysCook'}
-                        hkData1={patternId}
-                        path={`pattern.${patternId}.video.alwaysCook`}
-                        className={'video-toggle'}
-                        selected={!!params.alwaysCook}
-                        name={'alwaysCook'}
-                        disabled={videoDisabled}
-                        onClick={this.handleChangeAlwaysCook}
-                    >
-                        {t('pattern.video.alwaysCook')}
-                    </ButtonHK>
-                    <ButtonHK
                         hkLabel={'pattern.hotkeysDescription.video.volumeView'}
                         hkData1={patternId}
                         path={`pattern.${patternId}.video.volumeViewOn`}
@@ -504,7 +499,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                         {t('pattern.video.volumeView')}
                     </ButtonHK>
                     <ButtonNumberCF
-                        withoutCF
+                        className={'video-volume-ghost'}
                         pres={3}
                         valueD={1000}
                         precisionGain={5}
@@ -517,6 +512,18 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                         onChange={this.handleChangeVolumeGhost}
                         range={volumeGhostRange}
                         disabled={videoDisabled}
+                    />
+                    <SelectDrop
+                        hkByValue={false}
+                        hkLabel={'pattern.hotkeysDescription.video.volumeBackground'}
+                        hkData1={patternId}
+                        className={'volume-background'}
+                        name={'volumeBackground'}
+                        value={params.volumeBackground ?? VolumeBackground.Black}
+                        getValue={this.volumeBackgroundGetValue}
+                        getText={this.volumeBackgroundGetText}
+                        items={volumeBackgroundItems}
+                        onChange={this.handleChangeVolumeBackground}
                     />
                 </div>
                 {/*<ButtonHK*/}
@@ -613,9 +620,9 @@ const mapDispatchToProps: MapDispatchToProps<VideoControlsActionProps, VideoCont
     setVideoSourceFile,
     startFilePlaying,
     stopFilePlaying,
-    setVideoAlwaysCook,
     setVideoVolumeView,
     setVideoVolumeGhost,
+    setVideoVolumeBackground,
 }
 
 export const VideoControls = connect<VideoControlsStateProps, VideoControlsActionProps, VideoControlsOwnProps, AppState>(

@@ -1,5 +1,5 @@
 import { PatternAction } from "../pattern/types";
-import { VideoParams, VideoSourceType } from "./types";
+import { VideoParams, VideoSourceType, VolumeBackground } from "./types";
 import { getVideoState } from "./helpers";
 import { AppState, patternsService } from "../../index";
 import 'p5/lib/addons/p5.dom';
@@ -41,6 +41,7 @@ export type SetVideoFileLoopRangeAction = PatternAction & { loopIn: number; loop
 export type SetVideoAlwaysCookAction = PatternAction & { value: boolean };
 export type SetVideoVolumeViewAction = PatternAction & { value: boolean };
 export type SetVideoVolumeGhostAction = PatternAction & { value: number };
+export type SetVideoVolumeBackgroundAction = PatternAction & { value: VolumeBackground };
 
 export const setDevice = (id: string, device: MediaDeviceInfo) => (dispatch, getState: () => AppState) => {
     dispatch({
@@ -310,10 +311,6 @@ export const setVideoSourceType = (id: string, value: VideoSourceType) => (dispa
 };
 
 export const setVideoSourcePattern = (id: string, sourcePatternId: string | null) => (dispatch, getState: () => AppState) => {
-    if (sourcePatternId === id) {
-        return;
-    }
-
     const prevSource = getState().patterns[id]?.video?.params?.sourcePatternId;
 
     dispatch({
@@ -422,6 +419,14 @@ export const setVideoVolumeView = (id: string, value: boolean) => (dispatch) => 
 export const setVideoVolumeGhost = (id: string, value: number) => (dispatch) => {
     dispatch({
         type: EVideoAction.SET_VOLUME_GHOST,
+        id,
+        value,
+    });
+};
+
+export const setVideoVolumeBackground = (id: string, value: VolumeBackground) => (dispatch) => {
+    dispatch({
+        type: EVideoAction.SET_VOLUME_BACKGROUND,
         id,
         value,
     });

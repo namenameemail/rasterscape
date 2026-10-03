@@ -1,4 +1,4 @@
-import { VideoParams, VideoSourceType, VideoValue } from './types'
+import { VideoParams, VideoSourceType, VideoValue, VolumeBackground } from './types'
 import { getFunctionState } from '../../../utils/patterns/function'
 import { CameraAxis, EdgeMode, MirrorMode, StackType } from '../_service/patternServices/PatternVideoService/ShaderVideoModule'
 
@@ -23,7 +23,8 @@ export const getVideoState = getFunctionState<VideoValue, VideoParams>(
     fileLoopOut: 1,
     alwaysCook: false,
     volumeViewOn: false,
-        volumeGhost: 0.015,
+    volumeGhost: 0.015,
+    volumeBackground: VolumeBackground.Black,
     offset: {
         x0: 0.0,//.25,
         x1: 1.0,//.75,

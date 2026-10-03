@@ -1,0 +1,10 @@
+---
+description: ButtonNumberCF sliders include CF by default
+alwaysApply: true
+---
+
+# ButtonNumberCF
+
+Новые числовые ползунки (`ButtonNumberCF`) добавляй **с CF** — без `withoutCF`.
+
+`withoutCF` только если пользователь явно просит убрать выбор CF или это разовое исключение с понятной причиной.
