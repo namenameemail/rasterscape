@@ -22,6 +22,116 @@ import {
 } from '../ShaderVideoModule/utils'
 import {toInt32Array} from '../../../../../../utils/int32ArrayJson'
 import {profileLogger} from '../../../../../../utils/profiling/ProfileLogger'
+import {profileDebug} from '../../../../../../utils/profileDebug'
+
+type UvMode = 'face' | 'wallX' | 'wallY'
+type GeoFace = 'x0' | 'x1' | 'y0' | 'y1' | 'z0' | 'z1' | 'none'
+
+const intersectAabbCpu = (
+    ro: [number, number, number],
+    rd: [number, number, number],
+): {t0: number; t1: number} | null => {
+    let t0 = -Infinity
+    let t1 = Infinity
+    for (let i = 0; i < 3; i++) {
+        const inv = 1 / rd[i]
+        let tmin = (0 - ro[i]) * inv
+        let tmax = (1 - ro[i]) * inv
+        if (tmin > tmax) {
+            const tmp = tmin
+            tmin = tmax
+            tmax = tmp
+        }
+        t0 = Math.max(t0, tmin)
+        t1 = Math.min(t1, tmax)
+        if (t1 < Math.max(t0, 0)) {
+            return null
+        }
+    }
+    return {t0, t1}
+}
+
+const entryFaceAt = (
+    ro: [number, number, number],
+    rd: [number, number, number],
+    tEnter: number,
+): {face: GeoFace; p: [number, number, number]} => {
+    const p: [number, number, number] = [
+        ro[0] + rd[0] * tEnter,
+        ro[1] + rd[1] * tEnter,
+        ro[2] + rd[2] * tEnter,
+    ]
+    const eps = 1e-3
+    let face: GeoFace = 'none'
+    let best = Infinity
+    const candidates: Array<[GeoFace, number]> = [
+        ['x0', Math.abs(p[0] - 0)],
+        ['x1', Math.abs(p[0] - 1)],
+        ['y0', Math.abs(p[1] - 0)],
+        ['y1', Math.abs(p[1] - 1)],
+        ['z0', Math.abs(p[2] - 0)],
+        ['z1', Math.abs(p[2] - 1)],
+    ]
+    for (const [f, d] of candidates) {
+        if (d < best && d < eps) {
+            best = d
+            face = f
+        }
+    }
+    if (face === 'none') {
+        let bi = 0
+        for (let i = 1; i < 3; i++) {
+            if (Math.abs(rd[i]) > Math.abs(rd[bi])) {
+                bi = i
+            }
+        }
+        const at0 = Math.abs(p[bi] - 0) < Math.abs(p[bi] - 1)
+        face = (['x0', 'y0', 'z0'] as const)[bi]
+        if (!at0) {
+            face = (['x1', 'y1', 'z1'] as const)[bi]
+        }
+    }
+    return {face, p}
+}
+
+const sampleUvAt = (
+    p: [number, number, number],
+    offset: VideoOffset,
+    texW = 256,
+    texH = 256,
+): {mode: UvMode; uv: [number, number]} => {
+    const x0 = Math.min(offset.x0, offset.x1)
+    const x1 = Math.max(offset.x0, offset.x1)
+    const y0 = Math.min(offset.y0, offset.y1)
+    const y1 = Math.max(offset.y0, offset.y1)
+    const z0 = Math.min(offset.z0, offset.z1)
+    const z1 = Math.max(offset.z0, offset.z1)
+    const dX0 = Math.abs(p[0] - x0)
+    const dX1 = Math.abs(p[0] - x1)
+    const dY0 = Math.abs(p[1] - y0)
+    const dY1 = Math.abs(p[1] - y1)
+    const dZ = Math.min(Math.abs(p[2] - z0), Math.abs(p[2] - z1))
+    const edgeX = dX0 < dX1 ? x0 : x1
+    const dX = Math.min(dX0, dX1)
+    const edgeY = dY0 < dY1 ? y0 : y1
+    const dY = Math.min(dY0, dY1)
+    const eps = Math.max(2 / Math.max(texW, texH), 0.01)
+    const uv: [number, number] = [p[0], p[1]]
+    if (dX <= dY && dX < dZ && dX < eps) {
+        return {mode: 'wallX', uv: [edgeX, p[1]]}
+    }
+    if (dY < dX && dY < dZ && dY < eps) {
+        return {mode: 'wallY', uv: [p[0], edgeY]}
+    }
+    return {mode: 'face', uv}
+}
+
+const isWallOnFront = (mode: UvMode, face: GeoFace): boolean => {
+    if (mode === 'face') {
+        return false
+    }
+    return face === 'z0' || face === 'z1'
+}
 
 export type VolumeViewPointer = {
     type: 'down' | 'move' | 'up'
@@ -56,6 +166,8 @@ const QUAD = new Float32Array([
     1, -1,
 ])
 
+const VOLUME_SHADER_REV = 8
+
 export class VideoVolumeView {
     // -Z: снаружи у грани p.z=0 (логический «новый» кадр), как 2D-видео по оси T
     yaw = -Math.PI / 2
@@ -63,6 +175,7 @@ export class VideoVolumeView {
     distance = 2.4
 
     private program: WebGLProgram | null = null
+    private programRev = -1
     private quadBuffer: WebGLBuffer | null = null
     private frameTexture: WebGLTexture | null = null
     private frameW = 0
@@ -72,22 +185,27 @@ export class VideoVolumeView {
     private lastY = 0
     private cutFuncType = 0
     private cutParams: AnyFxyParams | CfDepthParams | null = null
+    private lastOffset: VideoOffset = DEFAULT_OFFSET
+    private lastAspect = 1
+    private lastTanHalfFov = Math.tan((50 * Math.PI) / 180 / 2)
+    private lastUvProbeKey = ''
 
     private ensureProgram = (): WebGLProgram => {
         const {gl} = getGlContext()
+        if (this.program && this.programRev === VOLUME_SHADER_REV) {
+            return this.program
+        }
         if (this.program) {
-            if (gl.getUniformLocation(this.program, 'u_ghost') !== null) {
-                return this.program
-            }
             gl.deleteProgram(this.program)
             this.program = null
-            if (this.quadBuffer) {
-                gl.deleteBuffer(this.quadBuffer)
-                this.quadBuffer = null
-            }
+        }
+        if (this.quadBuffer) {
+            gl.deleteBuffer(this.quadBuffer)
+            this.quadBuffer = null
         }
         const fs = (fsBody as string).replace('__FXY_CUT__', fxyCut as string)
         this.program = linkProgram(gl, vs, fs)
+        this.programRev = VOLUME_SHADER_REV
         this.quadBuffer = gl.createBuffer()
         gl.bindBuffer(gl.ARRAY_BUFFER, this.quadBuffer)
         gl.bufferData(gl.ARRAY_BUFFER, QUAD, gl.STATIC_DRAW)
@@ -167,7 +285,11 @@ export class VideoVolumeView {
             return
         }
         if (e.type === 'up') {
+            const wasDragging = this.dragging
             this.dragging = false
+            if (wasDragging) {
+                this.logUvProbe(true)
+            }
             return
         }
         if (e.type === 'move' && this.dragging) {
@@ -178,7 +300,90 @@ export class VideoVolumeView {
             this.yaw -= dx * 0.01
             this.pitch += dy * 0.01
             this.pitch = Math.max(-1.2, Math.min(1.2, this.pitch))
+            this.logUvProbe(false)
         }
+    }
+
+    private logUvProbe = (force: boolean): void => {
+        if (!profileLogger.isRecording) {
+            return
+        }
+        const cam = this.cameraBasis()
+        const offset = this.lastOffset
+        const absFwd = [
+            +Math.abs(cam.forward[0]).toFixed(3),
+            +Math.abs(cam.forward[1]).toFixed(3),
+            +Math.abs(cam.forward[2]).toFixed(3),
+        ]
+        const probes = [
+            {ndc: [0, 0] as [number, number], label: 'center'},
+            {ndc: [-0.6, 0] as [number, number], label: 'left'},
+            {ndc: [0.6, 0] as [number, number], label: 'right'},
+            {ndc: [0, 0.6] as [number, number], label: 'top'},
+            {ndc: [0, -0.6] as [number, number], label: 'bottom'},
+        ].map(({ndc, label}) => {
+            const rd: [number, number, number] = [
+                cam.forward[0]
+                    + cam.right[0] * (-ndc[0] * this.lastAspect * this.lastTanHalfFov)
+                    + cam.up[0] * (ndc[1] * this.lastTanHalfFov),
+                cam.forward[1]
+                    + cam.right[1] * (-ndc[0] * this.lastAspect * this.lastTanHalfFov)
+                    + cam.up[1] * (ndc[1] * this.lastTanHalfFov),
+                cam.forward[2]
+                    + cam.right[2] * (-ndc[0] * this.lastAspect * this.lastTanHalfFov)
+                    + cam.up[2] * (ndc[1] * this.lastTanHalfFov),
+            ]
+            const rl = Math.hypot(rd[0], rd[1], rd[2]) || 1
+            rd[0] /= rl
+            rd[1] /= rl
+            rd[2] /= rl
+            const hit = intersectAabbCpu(cam.pos, rd)
+            if (!hit) {
+                return {label, miss: true}
+            }
+            const tEnter = Math.max(hit.t0, 0)
+            const {face, p} = entryFaceAt(cam.pos, rd, tEnter)
+            const sampled = sampleUvAt(p, offset)
+            const wallOnFront = isWallOnFront(sampled.mode, face)
+            return {
+                label,
+                face,
+                mode: sampled.mode,
+                sampleUv: sampled.uv.map((v) => +v.toFixed(3)),
+                p: [+p[0].toFixed(3), +p[1].toFixed(3), +p[2].toFixed(3)],
+                wallOnFront,
+            }
+        })
+        const anyWallOnFront = probes.some((p) => 'wallOnFront' in p && p.wallOnFront)
+        const key = probes
+            .map((p) => (
+                'face' in p
+                    ? `${p.label}:${p.face}:${p.mode}:${p.wallOnFront ? 1 : 0}`
+                    : `${p.label}:miss`
+            ))
+            .join('|')
+        if (!force && key === this.lastUvProbeKey) {
+            return
+        }
+        this.lastUvProbeKey = key
+        profileDebug('video', 'volume.uvProbe', {
+            force,
+            remap: 'geoWall',
+            yaw: +this.yaw.toFixed(3),
+            pitch: +this.pitch.toFixed(3),
+            forward: cam.forward.map((v) => +v.toFixed(3)),
+            absFwd,
+            offset: {
+                x0: offset.x0,
+                x1: offset.x1,
+                y0: offset.y0,
+                y1: offset.y1,
+                z0: offset.z0,
+                z1: offset.z1,
+            },
+            anyWallOnFront,
+            probes,
+        })
     }
 
     clearCut = (): void => {
@@ -319,6 +524,10 @@ export class VideoVolumeView {
         const steps = params.steps ?? 64
         const aspect = width / Math.max(height, 1)
         const tanHalfFov = Math.tan((50 * Math.PI) / 180 / 2)
+        this.lastOffset = params.offset ?? DEFAULT_OFFSET
+        this.lastAspect = aspect
+        this.lastTanHalfFov = tanHalfFov
+        this.logUvProbe(false)
 
         glc.bindTexture2DTarget(frame, width, height)
         gl.useProgram(program)

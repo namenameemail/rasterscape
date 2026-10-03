@@ -162,7 +162,7 @@ bool insideFxyCut(vec3 p) {
     return insideOffsetBox(p) && inCutHalfSpace(p);
 }
 
-// 1 = solid (в окне offset и по cut), иначе ghost всего остального куба
+// solid = offset ∩ cut; ghost = остальной объём куба текстуры (в т.ч. вне offset)
 float cutSampleWeight(vec3 p) {
     if (insideOffsetBox(p) && inCutHalfSpace(p)) {
         return 1.0;

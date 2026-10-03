@@ -1,8 +1,8 @@
 // VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO
 
-import {FunctionState} from "../../../utils/patterns/function";
-import {ECFType} from "../../changeFunctions/types";
-import {ECompositeOperation} from "../../compositeOperations";
+import { FunctionState } from "../../../utils/patterns/function";
+import { ECFType } from "../../changeFunctions/types";
+import { ECompositeOperation } from "../../compositeOperations";
 import {
     EdgeMode,
     MirrorMode,

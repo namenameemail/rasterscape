@@ -512,7 +512,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                         path={`patterns.${patternId}.video.params.volumeGhost`}
                         hkLabel={'pattern.hotkeysDescription.video.volumeGhost'}
                         hkData1={patternId}
-                        value={typeof params.volumeGhost === 'number' ? params.volumeGhost : 0.14}
+                        value={typeof params.volumeGhost === 'number' ? params.volumeGhost : 0.015}
                         name={'volumeGhost'}
                         onChange={this.handleChangeVolumeGhost}
                         range={volumeGhostRange}

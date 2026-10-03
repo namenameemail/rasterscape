@@ -1,5 +1,5 @@
-import {reducePattern} from "../pattern/helpers";
-import {PatternAction, PatternState} from "../pattern/types";
+import { reducePattern } from "../pattern/helpers";
+import { PatternAction, PatternState } from "../pattern/types";
 import {
     SetCFAction, SetCutOffsetAction, SetDepthAction, SetDeviceAction,
     SetEdgeModeAction, SetMirrorModeAction,
@@ -12,9 +12,9 @@ import {
     SetVideoVolumeViewAction,
     SetVideoVolumeGhostAction,
 } from './actions'
-import {act} from "react-dom/test-utils";
-import {EVideoAction} from "./consts";
-import {VideoSourceType} from "./types";
+import { act } from "react-dom/test-utils";
+import { EVideoAction } from "./consts";
+import { VideoSourceType } from "./types";
 
 export const videoReducers = {
 

@@ -73,7 +73,7 @@ export class PatternVideoService {
     cutOffset: number
     depth: number
 
-    changeFunctionId: string
+    changeFunctionId: string | null = null
 
     sourceType: VideoSourceType = VideoSourceType.Camera
     sourcePatternId: string | null = null
@@ -245,12 +245,16 @@ export class PatternVideoService {
         const volumeViewOn = !platformerPlaying && !!videoParams.volumeViewOn
 
         profileLogger.time('video.updateFuncParams', () => {
-            if (!this.changeFunctionId) {
+            const changeFunctionId = this.changeFunctionId || videoParams.changeFunctionId
+            if (changeFunctionId && this.changeFunctionId !== changeFunctionId) {
+                this.setChangeFunction(changeFunctionId)
+            }
+            if (!changeFunctionId) {
                 this.volumeView.clearCut()
                 return
             }
 
-            const changeFunctionState = state.changeFunctions.functions[this.changeFunctionId]
+            const changeFunctionState = state.changeFunctions.functions[changeFunctionId]
             if (!changeFunctionState) {
                 this.volumeView.clearCut()
                 return
@@ -301,7 +305,7 @@ export class PatternVideoService {
                     error: mod.error,
                     direction: this.cameraAxis,
                     offset: videoParams.offset,
-                    ghost: typeof videoParams.volumeGhost === 'number' ? videoParams.volumeGhost : 0.14,
+                    ghost: typeof videoParams.volumeGhost === 'number' ? videoParams.volumeGhost : 0.015,
                 })
             }
             return this.shaderVideoModule.updateImage()
@@ -384,7 +388,7 @@ export class PatternVideoService {
         return this
     }
 
-    setChangeFunction = (changeFunctionId: string): PatternVideoService => {
+    setChangeFunction = (changeFunctionId: string | null): PatternVideoService => {
         this.changeFunctionId = changeFunctionId
 
         this.shaderVideoModule.updateCutFunctionType(

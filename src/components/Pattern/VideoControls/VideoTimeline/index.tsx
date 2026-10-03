@@ -59,10 +59,35 @@ const VideoTimelineComponent: React.FC<VideoTimelineProps> = ({
 }) => {
     const trackRef = React.useRef<HTMLDivElement>(null)
     const drag = React.useRef<DragKind | null>(null)
+    const pendingSeek = React.useRef<number | null>(null)
+    const seekRaf = React.useRef(0)
     const [currentTime, setCurrentTime] = React.useState(0)
     const [duration, setDuration] = React.useState(0)
+    const [localIn, setLocalIn] = React.useState<number | null>(null)
+    const [localOut, setLocalOut] = React.useState<number | null>(null)
 
     const videoService = () => patternsService.pattern[patternId]?.videoService
+
+    const viewIn = localIn ?? loopIn
+    const viewOut = localOut ?? loopOut
+
+    const flushSeek = React.useCallback(() => {
+        seekRaf.current = 0
+        const t = pendingSeek.current
+        if (t == null) {
+            return
+        }
+        pendingSeek.current = null
+        videoService()?.setSourceFileCurrentTime(t)
+    }, [patternId])
+
+    const queueSeek = React.useCallback((time: number) => {
+        pendingSeek.current = time
+        setCurrentTime(time)
+        if (!seekRaf.current) {
+            seekRaf.current = requestAnimationFrame(flushSeek)
+        }
+    }, [flushSeek])
 
     const sync = React.useCallback(() => {
         const vs = videoService()
@@ -82,21 +107,20 @@ const VideoTimelineComponent: React.FC<VideoTimelineProps> = ({
             raf = requestAnimationFrame(tick)
         }
         raf = requestAnimationFrame(tick)
-        return () => cancelAnimationFrame(raf)
+        return () => {
+            cancelAnimationFrame(raf)
+            if (seekRaf.current) {
+                cancelAnimationFrame(seekRaf.current)
+            }
+        }
     }, [sync])
 
     React.useEffect(() => {
-        videoService()?.setSourceFileLoopRange(loopIn, loopOut)
-    }, [patternId, loopIn, loopOut])
-
-    const seekTo = React.useCallback((time: number) => {
-        const vs = videoService()
-        if (!vs || disabled) {
+        if (drag.current === 'in' || drag.current === 'out') {
             return
         }
-        vs.setSourceFileCurrentTime(time)
-        setCurrentTime(time)
-    }, [patternId, disabled])
+        videoService()?.setSourceFileLoopRange(loopIn, loopOut)
+    }, [patternId, loopIn, loopOut])
 
     const onPointerDownTrack = (e: React.PointerEvent<HTMLDivElement>) => {
         if (disabled || !trackRef.current || duration <= 0) {
@@ -107,7 +131,7 @@ const VideoTimelineComponent: React.FC<VideoTimelineProps> = ({
         }
         drag.current = 'playhead'
         trackRef.current.setPointerCapture(e.pointerId)
-        seekTo(timeFromClientX(trackRef.current, e.clientX, duration))
+        queueSeek(timeFromClientX(trackRef.current, e.clientX, duration))
     }
 
     const onPointerDownHandle = (kind: 'in' | 'out') => (e: React.PointerEvent<HTMLDivElement>) => {
@@ -116,6 +140,8 @@ const VideoTimelineComponent: React.FC<VideoTimelineProps> = ({
         }
         e.stopPropagation()
         drag.current = kind
+        setLocalIn(loopIn)
+        setLocalOut(loopOut)
         trackRef.current.setPointerCapture(e.pointerId)
     }
 
@@ -124,14 +150,18 @@ const VideoTimelineComponent: React.FC<VideoTimelineProps> = ({
             return
         }
         if (drag.current === 'playhead') {
-            seekTo(timeFromClientX(trackRef.current, e.clientX, duration))
+            queueSeek(timeFromClientX(trackRef.current, e.clientX, duration))
             return
         }
         const n = normFromClientX(trackRef.current, e.clientX)
         if (drag.current === 'in') {
-            setLoopRange(patternId, Math.min(n, loopOut - 0.01), loopOut)
+            const next = Math.min(n, viewOut - 0.01)
+            setLocalIn(next)
+            videoService()?.setSourceFileLoopRange(next, viewOut)
         } else {
-            setLoopRange(patternId, loopIn, Math.max(n, loopIn + 0.01))
+            const next = Math.max(n, viewIn + 0.01)
+            setLocalOut(next)
+            videoService()?.setSourceFileLoopRange(viewIn, next)
         }
     }
 
@@ -139,15 +169,25 @@ const VideoTimelineComponent: React.FC<VideoTimelineProps> = ({
         if (!drag.current) {
             return
         }
+        const kind = drag.current
         drag.current = null
         if (trackRef.current?.hasPointerCapture(e.pointerId)) {
             trackRef.current.releasePointerCapture(e.pointerId)
         }
+        if (kind === 'playhead') {
+            flushSeek()
+            return
+        }
+        const inN = localIn ?? loopIn
+        const outN = localOut ?? loopOut
+        setLocalIn(null)
+        setLocalOut(null)
+        setLoopRange(patternId, inN, outN)
     }
 
     const pct = duration > 0 ? (currentTime / duration) * 100 : 0
-    const inPct = loopIn * 100
-    const outPct = loopOut * 100
+    const inPct = viewIn * 100
+    const outPct = viewOut * 100
 
     return (
         <div className={`video-timeline${disabled ? ' video-timeline--disabled' : ''}`}>

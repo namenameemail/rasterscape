@@ -2,7 +2,7 @@ import { AppState } from '../../../../index'
 import { FxyParams } from '../../../../changeFunctions/functions/fxy'
 import { ECFType } from '../../../../changeFunctions/types'
 
-export const getFxyFunctionType = (changeFunctionId: string, state: AppState) => {
+export const getFxyFunctionType = (changeFunctionId: string | null, state: AppState) => {
     if (!changeFunctionId) return null
     switch (state.changeFunctions.functions[changeFunctionId].type) {
         case ECFType.FXY:

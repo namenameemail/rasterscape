@@ -1,35 +1,35 @@
-import {VideoParams, VideoSourceType, VideoValue} from './types'
-import {getFunctionState} from '../../../utils/patterns/function'
-import {CameraAxis, EdgeMode, MirrorMode, StackType} from '../_service/patternServices/PatternVideoService/ShaderVideoModule'
+import { VideoParams, VideoSourceType, VideoValue } from './types'
+import { getFunctionState } from '../../../utils/patterns/function'
+import { CameraAxis, EdgeMode, MirrorMode, StackType } from '../_service/patternServices/PatternVideoService/ShaderVideoModule'
 
 export const getVideoState = getFunctionState<VideoValue, VideoParams>(
     {}, {
-        cameraOn: false,
-        updatingOn: false,
-        // on: false,
-        // pause: false,
-        changeFunctionId: null,
-        cameraAxis: CameraAxis.T,
-        edgeMode: EdgeMode.ALL,
-        stackType: StackType.Right,
-        mirrorMode: MirrorMode.NO,
-        stackSize: 20,
-        device: null,
-        sourceType: VideoSourceType.Camera,
-        sourcePatternId: null,
-        sourceFileName: null,
-        filePlaying: false,
-        fileLoopIn: 0,
-        fileLoopOut: 1,
-        alwaysCook: false,
-        volumeViewOn: false,
-        volumeGhost: 0.14,
-        offset: {
-            x0: 0.0,//.25,
-            x1: 1.0,//.75,
-            y0: 0.0,//.25,
-            y1: 1.0,//.75,
-            z0: 0.0,//.25,
-            z1: 1.0,//.75,
-        },
-    })
+    cameraOn: false,
+    updatingOn: false,
+    // on: false,
+    // pause: false,
+    changeFunctionId: null,
+    cameraAxis: CameraAxis.T,
+    edgeMode: EdgeMode.ALL,
+    stackType: StackType.Right,
+    mirrorMode: MirrorMode.NO,
+    stackSize: 20,
+    device: null,
+    sourceType: VideoSourceType.Camera,
+    sourcePatternId: null,
+    sourceFileName: null,
+    filePlaying: false,
+    fileLoopIn: 0,
+    fileLoopOut: 1,
+    alwaysCook: false,
+    volumeViewOn: false,
+        volumeGhost: 0.015,
+    offset: {
+        x0: 0.0,//.25,
+        x1: 1.0,//.75,
+        y0: 0.0,//.25,
+        y1: 1.0,//.75,
+        z0: 0.0,//.25,
+        z1: 1.0,//.75,
+    },
+})

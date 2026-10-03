@@ -1,20 +1,20 @@
-import {PatternAction} from "../pattern/types";
-import {VideoParams, VideoSourceType} from "./types";
-import {getVideoState} from "./helpers";
-import {AppState, patternsService} from "../../index";
+import { PatternAction } from "../pattern/types";
+import { VideoParams, VideoSourceType } from "./types";
+import { getVideoState } from "./helpers";
+import { AppState, patternsService } from "../../index";
 import 'p5/lib/addons/p5.dom';
-import {updateImage} from "../pattern/actions";
-import {ThunkAction} from "redux-thunk";
-import {EVideoAction} from "./consts";
-import {addCfToPatternDependency, removeCfToPatternDependency} from "../../dependencies";
+import { updateImage } from "../pattern/actions";
+import { ThunkAction } from "redux-thunk";
+import { EVideoAction } from "./consts";
+import { addCfToPatternDependency, removeCfToPatternDependency } from "../../dependencies";
 import {
     EdgeMode,
     MirrorMode,
     CameraAxis,
     StackType,
 } from '../_service/patternServices/PatternVideoService/ShaderVideoModule'
-import {depthPatternIdsForCf, syncPatternCook, syncPatternsCook} from '../cook/syncCook';
-import {profileDebug} from '../../../utils/profileDebug';
+import { depthPatternIdsForCf, syncPatternCook, syncPatternsCook } from '../cook/syncCook';
+import { profileDebug } from '../../../utils/profileDebug';
 
 export interface SetVideoParamsAction extends PatternAction {
     value: VideoParams
@@ -53,7 +53,7 @@ export const setDevice = (id: string, device: MediaDeviceInfo) => (dispatch, get
 
 export const startCamera = (id: string) => (dispatch, getState: () => AppState) => {
 
-    dispatch({type: EVideoAction.START_CAMERA, id});
+    dispatch({ type: EVideoAction.START_CAMERA, id });
 
     const pattern = getState().patterns[id];
 
@@ -68,7 +68,7 @@ export const startCamera = (id: string) => (dispatch, getState: () => AppState) 
 
 export const stopCamera = (id: string) => (dispatch, getState: () => AppState) => {
 
-    dispatch({type: EVideoAction.STOP_CAMERA, id});
+    dispatch({ type: EVideoAction.STOP_CAMERA, id });
     patternsService.pattern[id].videoService.stopCamera();
 };
 
@@ -91,6 +91,7 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
         sourcePatternId,
         filePlaying,
         sourceFileName,
+        changeFunctionId,
     } = pattern?.video?.params || {};
 
     profileDebug('video', 'file.action.updateOn', {
@@ -107,7 +108,7 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
         noHistory: false,
         emit: false,
     }));
-    dispatch({type: EVideoAction.START_UPDATING, id: patternId});
+    dispatch({ type: EVideoAction.START_UPDATING, id: patternId });
 
     patternService.previewService.autoUpdate(true);
 
@@ -123,11 +124,16 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
             offset
         }))
         .setSourceType(sourceType ?? getVideoState().params.sourceType)
-        .setSourcePatternId(sourcePatternId ?? getVideoState().params.sourcePatternId);
+        .setSourcePatternId(sourcePatternId ?? getVideoState().params.sourcePatternId)
+        .setChangeFunction(changeFunctionId ?? null);
+
+    if (changeFunctionId) {
+        dispatch(addCfToPatternDependency(changeFunctionId, patternId));
+    }
 
     if (sourceType === VideoSourceType.File) {
         const ready = await patternService.videoService.ensureSourceFile();
-        profileDebug('video', 'file.action.updateOn.ensure', {patternId, ready});
+        profileDebug('video', 'file.action.updateOn.ensure', { patternId, ready });
         if (!ready) {
             dispatch({
                 type: EVideoAction.SET_VIDEO_SOURCE_FILE,
@@ -136,7 +142,7 @@ export const start = (patternId: string) => async (dispatch, getState: () => App
             });
         } else if (filePlaying) {
             const ok = await patternService.videoService.playSourceFile();
-            profileDebug('video', 'file.action.updateOn.rePlay', {patternId, ok});
+            profileDebug('video', 'file.action.updateOn.rePlay', { patternId, ok });
         }
     }
 
@@ -169,9 +175,9 @@ export const stop = (id: string) => (dispatch, getState: () => AppState) => {
         noHistory: true,
         emit: true,
     }));
-    
-    dispatch({type: EVideoAction.STOP_UPDATING, id});
-    
+
+    dispatch({ type: EVideoAction.STOP_UPDATING, id });
+
     patternsService.pattern[id].videoService.stop();
 
     patternsService.pattern[id].previewService.autoUpdate(false);
@@ -190,7 +196,7 @@ export const setEdgeMode = (id: string, value: EdgeMode) => (dispatch, getState:
         id,
         value
     });
-    
+
     patternsService.pattern[id].videoService.setEdgeMode(value);
 };
 
@@ -200,7 +206,7 @@ export const setMirrorMode = (id: string, value: MirrorMode) => (dispatch, getSt
         id,
         value
     });
-    
+
     patternsService.pattern[id].videoService.setMirrorMode(value);
 };
 
@@ -219,7 +225,7 @@ export const setStackType = (id: string, value: StackType) => (dispatch, getStat
         id,
         value
     });
-    
+
     patternsService.pattern[id].videoService.setStackType(value);
 };
 
@@ -363,7 +369,7 @@ export const startFilePlaying = (id: string) => async (dispatch) => {
     }
     const ready = await videoService.ensureSourceFile();
     if (!ready) {
-        profileDebug('video', 'file.action.play.abortNoSource', {id});
+        profileDebug('video', 'file.action.play.abortNoSource', { id });
         dispatch({
             type: EVideoAction.SET_VIDEO_SOURCE_FILE,
             id,
@@ -373,16 +379,16 @@ export const startFilePlaying = (id: string) => async (dispatch) => {
     }
     const ok = await videoService.playSourceFile();
     if (!ok) {
-        profileDebug('video', 'file.action.play.abortFailed', {id});
+        profileDebug('video', 'file.action.play.abortFailed', { id });
         return;
     }
-    dispatch({type: EVideoAction.START_FILE_PLAYING, id});
-    profileDebug('video', 'file.action.play.dispatched', {id});
+    dispatch({ type: EVideoAction.START_FILE_PLAYING, id });
+    profileDebug('video', 'file.action.play.dispatched', { id });
 };
 
 export const stopFilePlaying = (id: string) => (dispatch) => {
-    profileDebug('video', 'file.action.pause', {id});
-    dispatch({type: EVideoAction.STOP_FILE_PLAYING, id});
+    profileDebug('video', 'file.action.pause', { id });
+    dispatch({ type: EVideoAction.STOP_FILE_PLAYING, id });
     patternsService.pattern[id]?.videoService.pauseSourceFile();
 };
 

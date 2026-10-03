@@ -32,9 +32,40 @@ bool intersectAabb(vec3 ro, vec3 rd, out float t0, out float t1) {
     return t1 >= max(t0, 0.0);
 }
 
+// один слайс стека, без lerp; у X/Y стенки crop — торец, иначе лицо кадра
 vec4 sampleVolume(vec3 p) {
     float z = fract(1.0 + u_queueOffset - p.z * u_stackScale);
-    return texture(u_volume, vec3(p.x, p.y, z));
+    ivec3 sz = textureSize(u_volume, 0);
+    int iz = clamp(int(floor(z * float(sz.z))), 0, sz.z - 1);
+
+    float x0 = min(u_CutOffset_x0, u_CutOffset_x1);
+    float x1 = max(u_CutOffset_x0, u_CutOffset_x1);
+    float y0 = min(u_CutOffset_y0, u_CutOffset_y1);
+    float y1 = max(u_CutOffset_y0, u_CutOffset_y1);
+    float z0 = min(u_CutOffset_z0, u_CutOffset_z1);
+    float z1 = max(u_CutOffset_z0, u_CutOffset_z1);
+
+    float dx0 = abs(p.x - x0);
+    float dx1 = abs(p.x - x1);
+    float dy0 = abs(p.y - y0);
+    float dy1 = abs(p.y - y1);
+    float dz = min(abs(p.z - z0), abs(p.z - z1));
+
+    float edgeX = dx0 < dx1 ? x0 : x1;
+    float dX = min(dx0, dx1);
+    float edgeY = dy0 < dy1 ? y0 : y1;
+    float dY = min(dy0, dy1);
+
+    float eps = max(2.0 / float(max(sz.x, sz.y)), 0.01);
+    vec2 uv = p.xy;
+    if (dX <= dY && dX < dz && dX < eps) {
+        uv.x = edgeX;
+    } else if (dY < dX && dY < dz && dY < eps) {
+        uv.y = edgeY;
+    }
+
+    ivec2 ixy = ivec2(clamp(uv, vec2(0.0), vec2(0.999999)) * vec2(sz.xy));
+    return texelFetch(u_volume, ivec3(ixy, iz), 0);
 }
 
 void main() {
@@ -67,10 +98,19 @@ void main() {
         float w = cutSampleWeight(pc);
         if (w > 0.0) {
             vec4 s = sampleVolume(pc);
-            float a = s.a * w;
-            acc.rgb += (1.0 - acc.a) * a * s.rgb;
-            acc.a += (1.0 - acc.a) * a;
-            if (acc.a > 0.97) break;
+            float dens = max(s.a, max(s.r, max(s.g, s.b)));
+            if (w >= 1.0) {
+                if (dens > 0.004) {
+                    acc.rgb += (1.0 - acc.a) * s.rgb;
+                    acc.a = 1.0;
+                    break;
+                }
+            } else if (dens > 0.004) {
+                float a = w;
+                acc.rgb += (1.0 - acc.a) * a * s.rgb;
+                acc.a += (1.0 - acc.a) * a;
+                if (acc.a > 0.97) break;
+            }
         }
         p += rd * dt;
     }
